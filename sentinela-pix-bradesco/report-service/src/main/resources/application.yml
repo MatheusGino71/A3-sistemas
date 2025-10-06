@@ -1,0 +1,64 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: report-service
+  
+  datasource:
+    url: jdbc:h2:mem:sentinela_pix
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        "[format_sql]": true
+  
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: America/Sao_Paulo
+
+logging:
+  level:
+    "[com.bradesco.sentinela]": DEBUG
+    "[org.springframework.web]": INFO
+    "[org.hibernate.SQL]": DEBUG
+    "[org.hibernate.type.descriptor.sql.BasicBinder]": TRACE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+---
+# Profile para Docker
+spring:
+  config:
+    activate:
+      on-profile: docker
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  
+logging:
+  level:
+    "[com.bradesco.sentinela]": INFO
+    "[org.hibernate.SQL]": WARN

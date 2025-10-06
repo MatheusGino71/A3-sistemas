@@ -1,0 +1,46 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: query-service
+  
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: America/Sao_Paulo
+
+# URL do report-service
+report:
+  service:
+    url: http://localhost:8081
+
+logging:
+  level:
+    "[com.bradesco.sentinela]": DEBUG
+    "[org.springframework.web]": INFO
+    reactor: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+---
+# Profile para Docker
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+report:
+  service:
+    url: ${REPORT_SERVICE_URL:http://report-service:8081}
+
+logging:
+  level:
+    "[com.bradesco.sentinela]": INFO
