@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinela PIX - Proteção para Suas Transações</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Estilo para usar a fonte Inter com Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Efeito de gradiente no fundo para melhor legibilidade */
+        .bg-hero-image {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop');
+        }
+        /* Animação de entrada */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+
+    <!-- Container Principal com Imagem de Fundo -->
+    <div class="relative bg-hero-image bg-cover bg-center min-h-screen flex flex-col">
+
+        <!-- Header -->
+        <header class="absolute top-0 left-0 right-0 z-10">
+            <div class="container mx-auto px-6 py-5 flex justify-between items-center">
+                <!-- Logo -->
+                <div class="text-2xl font-bold tracking-wider">
+                    <a href="#" class="flex items-center space-x-2">
+                        <i class="fas fa-shield-alt text-cyan-400"></i>
+                        <span>Sentinela PIX</span>
+                    </a>
+                </div>
+
+                <!-- Navegação / Call to Action -->
+                <nav>
+                    <a href="index.html" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-5 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+                        Acessar Dashboard <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Conteúdo Principal (Hero Section) -->
+        <main class="flex-grow flex items-center justify-center text-center">
+            <div class="container mx-auto px-6">
+                <div class="max-w-3xl mx-auto">
+                    <!-- Título -->
+                    <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4 fade-in" style="animation-delay: 0.2s;">
+                        Segurança e Confiança em Cada PIX.
+                    </h1>
+                    <!-- Subtítulo -->
+                    <p class="text-lg md:text-xl text-gray-300 mb-8 fade-in" style="animation-delay: 0.4s;">
+                        Nossa plataforma inovadora utiliza análise de dados para prevenir fraudes, protegendo suas transações em tempo real.
+                    </p>
+                    <!-- Botão Principal -->
+                    <a href="index.html" class="bg-white text-gray-900 font-bold py-3 px-8 rounded-lg text-lg uppercase tracking-wider hover:bg-gray-200 transition duration-300 ease-in-out transform hover:scale-105 inline-block fade-in" style="animation-delay: 0.6s;">
+                        Começar a Usar
+                    </a>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Footer -->
+         <footer class="text-center py-4 text-gray-400 text-sm">
+            <p>&copy; 2025 Sentinela PIX - Sistema de Prevenção à Fraude | Desenvolvido para o Bradesco</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
