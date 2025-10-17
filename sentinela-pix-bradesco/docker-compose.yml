@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: sentinela-postgres
+    environment:
+      POSTGRES_DB: sentinela_pix
+      POSTGRES_USER: sentinela_user
+      POSTGRES_PASSWORD: sentinela_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sentinela-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentinela_user -d sentinela_pix"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  report-service:
+    build:
+      context: ./report-service
+      dockerfile: Dockerfile
+    container_name: sentinela-report-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/sentinela_pix
+      SPRING_DATASOURCE_USERNAME: sentinela_user
+      SPRING_DATASOURCE_PASSWORD: sentinela_pass
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - sentinela-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  query-service:
+    build:
+      context: ./query-service
+      dockerfile: Dockerfile
+    container_name: sentinela-query-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      REPORT_SERVICE_URL: http://report-service:8081
+    ports:
+      - "8082:8082"
+    depends_on:
+      report-service:
+        condition: service_healthy
+    networks:
+      - sentinela-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  postgres_data:
+
+networks:
+  sentinela-network:
+    driver: bridge

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinela PIX - Sistema de Prevenção à Fraude</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <h1>Sentinela PIX</h1>
+                </div>
+                <nav class="nav">
+                    <a href="cover.html" class="nav-link cover-link">
+                        <i class="fas fa-home"></i> Capa
+                    </a>
+                    <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="#consulta" class="nav-link" data-section="consulta">
+                        <i class="fas fa-search"></i> Consultar Chave
+                    </a>
+                    <a href="#relatorio" class="nav-link" data-section="relatorio">
+                        <i class="fas fa-exclamation-triangle"></i> Reportar Fraude
+                    </a>
+                    <a href="#historico" class="nav-link" data-section="historico">
+                        <i class="fas fa-history"></i> Histórico
+                    </a>
+                    <a href="#sobre" class="nav-link" data-section="sobre">
+                        <i class="fas fa-info-circle"></i> Sobre
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="section-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                    <p>Visão geral do sistema de prevenção à fraude PIX</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-reports">-</h3>
+                            <p>Fraudes Reportadas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-queries">-</h3>
+                            <p>Consultas Realizadas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon success">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="system-status">Online</h3>
+                            <p>Status do Sistema</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon info">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="uptime">-</h3>
+                            <p>Tempo Online</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-line"></i> Relatórios por Categoria</h3>
+                        <div class="chart-placeholder">
+                            <canvas id="categoryChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-bar"></i> Atividade Recente</h3>
+                        <div class="activity-list" id="recent-activity">
+                            <div class="activity-item">
+                                <i class="fas fa-exclamation-triangle text-danger"></i>
+                                <span>Sistema iniciado com sucesso</span>
+                                <small>Agora</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Consulta Section -->
+            <section id="consulta" class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-search"></i> Consultar Chave PIX</h2>
+                    <p>Verifique o nível de risco de uma chave PIX</p>
+                </div>
+
+                <div class="form-card">
+                    <form id="query-form">
+                        <div class="form-group">
+                            <label for="pix-key">Chave PIX</label>
+                            <input type="text" id="pix-key" name="pixKey" placeholder="Digite a chave PIX (CPF, e-mail, telefone ou chave aleatória)" required>
+                            <small class="form-help">Insira a chave PIX que deseja consultar</small>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Consultar Risco
+                        </button>
+                    </form>
+                </div>
+
+                <div id="query-result" class="result-card" style="display: none;">
+                    <div class="result-header">
+                        <h3 id="result-title">Resultado da Consulta</h3>
+                        <div id="risk-badge" class="risk-badge"></div>
+                    </div>
+                    
+                    <div class="result-content">
+                        <div class="risk-details">
+                            <div class="risk-item">
+                                <span class="risk-label">Chave PIX:</span>
+                                <span id="result-pix-key">-</span>
+                            </div>
+                            <div class="risk-item">
+                                <span class="risk-label">Tipo da Chave:</span>
+                                <span id="result-key-type">-</span>
+                            </div>
+                            <div class="risk-item">
+                                <span class="risk-label">Nível de Risco:</span>
+                                <span id="result-risk-level">-</span>
+                            </div>
+                            <div class="risk-item">
+                                <span class="risk-label">Score de Risco:</span>
+                                <span id="result-risk-score">-</span>
+                            </div>
+                            <div class="risk-item">
+                                <span class="risk-label">Total de Relatórios:</span>
+                                <span id="result-report-count">-</span>
+                            </div>
+                        </div>
+                        
+                        <div id="reports-list" class="reports-section">
+                            <h4><i class="fas fa-list"></i> Relatórios Associados</h4>
+                            <div id="reports-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Relatório Section -->
+            <section id="relatorio" class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Reportar Fraude</h2>
+                    <p>Relate uma tentativa de fraude ou golpe relacionado ao PIX</p>
+                </div>
+
+                <div class="form-card">
+                    <form id="report-form">
+                        <div class="form-group">
+                            <label for="reported-pix-key">Chave PIX Suspeita *</label>
+                            <input type="text" id="reported-pix-key" name="reportedPixKey" required placeholder="Chave PIX envolvida na fraude">
+                            <small class="form-help">Chave PIX que está sendo usada para fraude</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pix-key-type">Tipo da Chave PIX *</label>
+                            <select id="pix-key-type" name="pixKeyType" required>
+                                <option value="">Selecione o tipo</option>
+                                <option value="EMAIL">E-mail</option>
+                                <option value="PHONE">Telefone</option>
+                                <option value="CPF">CPF</option>
+                                <option value="RANDOM">Chave Aleatória</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="scam-category">Categoria do Golpe *</label>
+                            <select id="scam-category" name="scamCategory" required>
+                                <option value="">Selecione a categoria</option>
+                                <option value="FALSO_VENDEDOR">Falso Vendedor</option>
+                                <option value="PHISHING">Phishing/Link Malicioso</option>
+                                <option value="ENGENHARIA_SOCIAL">Engenharia Social</option>
+                                <option value="CLONAGEM_WHATSAPP">Clonagem de WhatsApp</option>
+                                <option value="FALSO_SEQUESTRO">Falso Sequestro</option>
+                                <option value="INVESTIMENTO_FRAUDULENTO">Investimento Fraudulento</option>
+                                <option value="ROUBO_IDENTIDADE">Roubo de Identidade</option>
+                                <option value="OUTROS">Outros</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Descrição do Caso *</label>
+                            <textarea id="description" name="description" rows="5" required placeholder="Descreva detalhadamente como ocorreu a tentativa de fraude..."></textarea>
+                            <small class="form-help">Forneça o máximo de detalhes possível sobre o caso</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-exclamation-triangle"></i> Reportar Fraude
+                        </button>
+                    </form>
+                </div>
+
+                <div id="report-success" class="success-card" style="display: none;">
+                    <div class="success-content">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Relatório Enviado com Sucesso!</h3>
+                        <p>Seu relatório foi registrado em nosso sistema. ID do relatório: <strong id="report-id"></strong></p>
+                        <button class="btn btn-primary" onclick="hideReportSuccess()">
+                            <i class="fas fa-plus"></i> Reportar Outra Fraude
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Histórico Section -->
+            <section id="historico" class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-history"></i> Histórico de Relatórios</h2>
+                    <p>Visualize todos os relatórios de fraude registrados no sistema</p>
+                </div>
+
+                <div class="filters-card">
+                    <div class="filters-content">
+                        <div class="filter-group">
+                            <label for="filter-category">Filtrar por Categoria:</label>
+                            <select id="filter-category">
+                                <option value="">Todas as categorias</option>
+                                <option value="FALSO_VENDEDOR">Falso Vendedor</option>
+                                <option value="PHISHING">Phishing</option>
+                                <option value="ENGENHARIA_SOCIAL">Engenharia Social</option>
+                                <option value="CLONAGEM_WHATSAPP">Clonagem WhatsApp</option>
+                                <option value="FALSO_SEQUESTRO">Falso Sequestro</option>
+                                <option value="INVESTIMENTO_FRAUDULENTO">Investimento Fraudulento</option>
+                                <option value="ROUBO_IDENTIDADE">Roubo de Identidade</option>
+                                <option value="OUTROS">Outros</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="filter-key-type">Filtrar por Tipo de Chave:</label>
+                            <select id="filter-key-type">
+                                <option value="">Todos os tipos</option>
+                                <option value="EMAIL">E-mail</option>
+                                <option value="PHONE">Telefone</option>
+                                <option value="CPF">CPF</option>
+                                <option value="RANDOM">Chave Aleatória</option>
+                            </select>
+                        </div>
+                        
+                        <button class="btn btn-secondary" onclick="loadReports()">
+                            <i class="fas fa-sync"></i> Atualizar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-container">
+                        <table id="reports-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Chave PIX</th>
+                                    <th>Tipo</th>
+                                    <th>Categoria</th>
+                                    <th>Data</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reports-tbody">
+                                <tr>
+                                    <td colspan="6" class="loading">
+                                        <i class="fas fa-spinner fa-spin"></i> Carregando relatórios...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sobre Section -->
+            <section id="sobre" class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-info-circle"></i> Sobre o Sentinela PIX</h2>
+                    <p>Sistema inovador de prevenção à fraude em transações PIX</p>
+                </div>
+
+                <div class="about-grid">
+                    <div class="about-card">
+                        <div class="about-icon">
+                            <i class="fas fa-target"></i>
+                        </div>
+                        <h3>Objetivo</h3>
+                        <p>O Sentinela PIX foi desenvolvido para combater fraudes em transações PIX, oferecendo uma plataforma colaborativa onde usuários podem reportar tentativas de golpe e consultar o nível de risco de chaves PIX.</p>
+                    </div>
+
+                    <div class="about-card">
+                        <div class="about-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h3>Tecnologia</h3>
+                        <p>Sistema baseado em microsserviços com Java 25, Spring Boot 3.2, banco H2 em memória e arquitetura reativa para alta performance e escalabilidade.</p>
+                    </div>
+
+                    <div class="about-card">
+                        <div class="about-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Segurança</h3>
+                        <p>Implementa algoritmos avançados de análise de risco, considerando múltiplos fatores como frequência de relatórios, categorias de golpe e padrões comportamentais.</p>
+                    </div>
+
+                    <div class="about-card">
+                        <div class="about-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Colaborativo</h3>
+                        <p>Funciona como uma rede colaborativa onde cada usuário contribui para a proteção coletiva, criando uma base de conhecimento sobre fraudes PIX.</p>
+                    </div>
+                </div>
+
+                <div class="tech-details">
+                    <h3><i class="fas fa-code"></i> Detalhes Técnicos</h3>
+                    <div class="tech-grid">
+                        <div class="tech-item">
+                            <strong>Backend:</strong>
+                            <ul>
+                                <li>Java 25 + Spring Boot 3.2</li>
+                                <li>Spring Data JPA + H2 Database</li>
+                                <li>Spring WebFlux (Reactive)</li>
+                                <li>Maven + Docker</li>
+                            </ul>
+                        </div>
+                        <div class="tech-item">
+                            <strong>Arquitetura:</strong>
+                            <ul>
+                                <li>Microsserviços independentes</li>
+                                <li>Report Service (Escrita)</li>
+                                <li>Query Service (Leitura)</li>
+                                <li>Interface Web Responsiva</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoints-section">
+                    <h3><i class="fas fa-api"></i> Endpoints da API</h3>
+                    <div class="endpoints-grid">
+                        <div class="endpoint-card">
+                            <h4>Report Service (8081)</h4>
+                            <div class="endpoint-item">
+                                <span class="method post">POST</span>
+                                <code>/api/reports</code>
+                                <small>Criar relatório de fraude</small>
+                            </div>
+                            <div class="endpoint-item">
+                                <span class="method get">GET</span>
+                                <code>/api/reports</code>
+                                <small>Listar todos os relatórios</small>
+                            </div>
+                            <div class="endpoint-item">
+                                <span class="method get">GET</span>
+                                <code>/api/reports/{id}</code>
+                                <small>Buscar relatório por ID</small>
+                            </div>
+                        </div>
+
+                        <div class="endpoint-card">
+                            <h4>Query Service (8082)</h4>
+                            <div class="endpoint-item">
+                                <span class="method get">GET</span>
+                                <code>/api/query/pix-key/{pixKey}/risk</code>
+                                <small>Consultar risco de chave PIX</small>
+                            </div>
+                            <div class="endpoint-item">
+                                <span class="method get">GET</span>
+                                <code>/api/query/pix-key/{pixKey}/reports</code>
+                                <small>Listar relatórios de uma chave</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2025 Sentinela PIX - Sistema de Prevenção à Fraude | Desenvolvido para o Bradesco</p>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-database"></i> Console H2</a>
+                    <a href="#"><i class="fas fa-heartbeat"></i> Health Check</a>
+                    <a href="#"><i class="fab fa-github"></i> GitHub</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal for Report Details -->
+    <div id="report-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Detalhes do Relatório</h3>
+                <span class="close" onclick="closeReportModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Processando...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

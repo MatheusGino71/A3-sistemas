@@ -1,0 +1,59 @@
+version: '3.8'
+
+# Docker Compose para testes de integração
+services:
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: sentinela-postgres-test
+    environment:
+      POSTGRES_DB: sentinela_pix_test
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_pass
+    ports:
+      - "5433:5432"
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d sentinela_pix_test"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  report-service-test:
+    build:
+      context: ./report-service
+      dockerfile: Dockerfile
+    container_name: sentinela-report-service-test
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-test:5432/sentinela_pix_test
+      SPRING_DATASOURCE_USERNAME: test_user
+      SPRING_DATASOURCE_PASSWORD: test_pass
+    ports:
+      - "8091:8081"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    networks:
+      - test-network
+    command: ["sh", "-c", "java -jar app.jar && mvn test"]
+
+  query-service-test:
+    build:
+      context: ./query-service
+      dockerfile: Dockerfile
+    container_name: sentinela-query-service-test
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      REPORT_SERVICE_URL: http://report-service-test:8081
+    ports:
+      - "8092:8082"
+    depends_on:
+      - report-service-test
+    networks:
+      - test-network
+    command: ["sh", "-c", "mvn test"]
+
+networks:
+  test-network:
+    driver: bridge
