@@ -1,0 +1,273 @@
+version: '3.8'
+
+# ===================================================================
+# Sentinela PIX - Docker Compose Configuration
+# 
+# Orquestração completa dos microsserviços e infraestrutura:
+# - PostgreSQL (banco principal)
+# - Redis (cache e rate limiting)
+# - RabbitMQ (mensageria assíncrona)  
+# - API Gateway (ponto de entrada)
+# - fraud-report-service (denúncias)
+# - risk-analysis-service (análise de risco)
+# - notification-service (notificações)
+# ===================================================================
+
+services:
+
+  # ===================================================================
+  # INFRAESTRUTURA
+  # ===================================================================
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: sentinela-pix-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sentinela_pix
+      POSTGRES_USER: sentinela_user
+      POSTGRES_PASSWORD: sentinela_pass_2024
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - sentinela-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentinela_user -d sentinela_pix"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: sentinela-pix-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass redis_pass_2024
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - sentinela-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: sentinela-pix-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: sentinela_mq
+      RABBITMQ_DEFAULT_PASS: mq_pass_2024
+      RABBITMQ_DEFAULT_VHOST: sentinela_pix
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./scripts/rabbitmq-definitions.json:/etc/rabbitmq/definitions.json:ro
+    ports:
+      - "5672:5672"    # AMQP port
+      - "15672:15672"  # Management UI
+    networks:
+      - sentinela-network
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  # ===================================================================
+  # MICROSSERVIÇOS
+  # ===================================================================
+
+  api-gateway:
+    build:
+      context: ./microservices/api-gateway
+      dockerfile: Dockerfile
+    container_name: sentinela-pix-gateway
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PASSWORD: redis_pass_2024
+      FRAUD_REPORT_SERVICE_URL: http://fraud-report-service:8081
+      RISK_ANALYSIS_SERVICE_URL: http://risk-analysis-service:8082
+      NOTIFICATION_SERVICE_URL: http://notification-service:8083
+    ports:
+      - "8080:8080"
+    networks:
+      - sentinela-network
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  fraud-report-service:
+    build:
+      context: ./microservices/fraud-report-service
+      dockerfile: Dockerfile
+    container_name: sentinela-pix-fraud-report
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/sentinela_pix
+      SPRING_DATASOURCE_USERNAME: sentinela_user
+      SPRING_DATASOURCE_PASSWORD: sentinela_pass_2024
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: sentinela_mq
+      SPRING_RABBITMQ_PASSWORD: mq_pass_2024
+      SPRING_RABBITMQ_VIRTUAL_HOST: sentinela_pix
+    ports:
+      - "8081:8081"
+    networks:
+      - sentinela-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  risk-analysis-service:
+    build:
+      context: ./microservices/risk-analysis-service
+      dockerfile: Dockerfile
+    container_name: sentinela-pix-risk-analysis
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/sentinela_pix
+      SPRING_DATASOURCE_USERNAME: sentinela_user
+      SPRING_DATASOURCE_PASSWORD: sentinela_pass_2024
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: sentinela_mq
+      SPRING_RABBITMQ_PASSWORD: mq_pass_2024
+      SPRING_RABBITMQ_VIRTUAL_HOST: sentinela_pix
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PASSWORD: redis_pass_2024
+    ports:
+      - "8082:8082"
+    networks:
+      - sentinela-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  notification-service:
+    build:
+      context: ./microservices/notification-service
+      dockerfile: Dockerfile
+    container_name: sentinela-pix-notification
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/sentinela_pix
+      SPRING_DATASOURCE_USERNAME: sentinela_user
+      SPRING_DATASOURCE_PASSWORD: sentinela_pass_2024
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: sentinela_mq
+      SPRING_RABBITMQ_PASSWORD: mq_pass_2024
+      SPRING_RABBITMQ_VIRTUAL_HOST: sentinela_pix
+    ports:
+      - "8083:8083"
+    networks:
+      - sentinela-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ===================================================================
+  # MONITORAMENTO E OBSERVABILIDADE
+  # ===================================================================
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: sentinela-pix-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - sentinela-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: sentinela-pix-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: grafana_pass_2024
+      GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    ports:
+      - "3000:3000"
+    networks:
+      - sentinela-network
+    depends_on:
+      - prometheus
+
+# ===================================================================
+# VOLUMES
+# ===================================================================
+volumes:
+  postgres_data:
+    name: sentinela_pix_postgres_data
+  redis_data:
+    name: sentinela_pix_redis_data
+  rabbitmq_data:
+    name: sentinela_pix_rabbitmq_data
+  prometheus_data:
+    name: sentinela_pix_prometheus_data
+  grafana_data:
+    name: sentinela_pix_grafana_data
+
+# ===================================================================
+# NETWORKS
+# ===================================================================
+networks:
+  sentinela-network:
+    name: sentinela-pix-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

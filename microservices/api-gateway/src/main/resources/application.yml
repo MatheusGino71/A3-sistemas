@@ -1,0 +1,153 @@
+# ===================================================================
+# Sentinela PIX - API Gateway Configuration
+# ===================================================================
+
+# Server Configuration
+server:
+  port: 8080
+  compression:
+    enabled: true
+    min-response-size: 1024
+
+# Spring Application
+spring:
+  application:
+    name: sentinela-pix-api-gateway
+  
+  # Cloud Gateway Configuration
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: true
+      
+      # Global Filters
+      default-filters:
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenish-rate: 10
+            redis-rate-limiter.burst-capacity: 20
+            redis-rate-limiter.requested-tokens: 1
+        - name: Retry
+          args:
+            retries: 3
+            statuses: BAD_GATEWAY,GATEWAY_TIMEOUT
+            backoff:
+              first-backoff: 50ms
+              max-backoff: 500ms
+              factor: 2
+      
+      # Circuit Breaker Configuration  
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 10s
+
+  # Redis Configuration for Rate Limiting
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: 
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+  # Security Configuration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/auth/realms/sentinela-pix
+
+# Management and Monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,gateway
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+
+# Resilience4J Circuit Breaker
+resilience4j:
+  circuitbreaker:
+    instances:
+      fraud-report-cb:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 3
+        minimum-number-of-calls: 5
+      
+      risk-analysis-cb:
+        sliding-window-size: 10
+        failure-rate-threshold: 60
+        wait-duration-in-open-state: 20s
+        permitted-number-of-calls-in-half-open-state: 3
+        minimum-number-of-calls: 5
+        
+      notification-cb:
+        sliding-window-size: 10
+        failure-rate-threshold: 70
+        wait-duration-in-open-state: 15s
+        permitted-number-of-calls-in-half-open-state: 2
+        minimum-number-of-calls: 3
+
+  # Retry Configuration
+  retry:
+    instances:
+      default:
+        max-attempts: 3
+        wait-duration: 1s
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+
+# Custom Application Properties
+sentinela-pix:
+  gateway:
+    # JWT Configuration
+    jwt:
+      secret: sentinela-pix-secret-key-2024-very-secure-and-long
+      expiration: 86400000 # 24 hours
+    
+    # Rate Limiting
+    rate-limit:
+      requests-per-second: 10
+      burst-capacity: 20
+    
+    # Service URLs (for load balancing)
+    services:
+      fraud-report:
+        url: http://localhost:8081
+        health-check: /actuator/health
+      risk-analysis:
+        url: http://localhost:8082  
+        health-check: /actuator/health
+      notification:
+        url: http://localhost:8083
+        health-check: /actuator/health
+
+# Logging Configuration
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.security: DEBUG
+    br.com.sentinelapix: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/api-gateway.log

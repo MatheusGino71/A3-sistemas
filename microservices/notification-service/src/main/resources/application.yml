@@ -1,0 +1,126 @@
+spring:
+  application:
+    name: notification-service
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sentinelapix_notifications
+    username: sentinelapix_user
+    password: sentinelapix_pass
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      leak-detection-threshold: 60000
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+        generate_statistics: false
+    database: postgresql
+  
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: sentinelapix_user
+    password: sentinelapix_pass
+    virtual-host: /
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 2000
+          max-attempts: 3
+          max-interval: 10000
+        acknowledge-mode: manual
+    template:
+      retry:
+        enabled: true
+        initial-interval: 1000
+        max-attempts: 3
+
+server:
+  port: 8082
+  servlet:
+    context-path: /api/v1
+
+# Configurações específicas da aplicação
+notification:
+  webhook:
+    timeout: 30000  # 30 segundos
+    retry:
+      max-attempts: 3
+      initial-delay: 60  # 1 minuto
+      max-delay: 1440    # 24 horas
+      multiplier: 2.0
+  
+  banks:
+    # Mapping de bancos para URLs de webhook (configuração exemplo)
+    webhook-urls:
+      "001": "https://webhook.bb.com.br/fraud-notifications"  # Banco do Brasil
+      "104": "https://api.cef.gov.br/notifications/fraud"     # Caixa
+      "033": "https://santander.com.br/api/fraud-alerts"     # Santander
+      "237": "https://bradesco.com.br/webhooks/fraud"        # Bradesco
+      "341": "https://itau.com.br/api/security/fraud"        # Itaú
+      "260": "https://nubank.com.br/api/fraud-reports"       # Nubank
+      "290": "https://pagseguro.uol.com.br/api/fraud"        # PagSeguro
+      "323": "https://mercadopago.com.br/api/notifications"  # Mercado Pago
+
+# Configurações de logging
+logging:
+  level:
+    br.com.sentinelapix: DEBUG
+    org.springframework.amqp: INFO
+    org.springframework.web.reactive: INFO
+    org.hibernate.SQL: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Configurações do Eureka Client (se estiver usando Service Discovery)
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+
+# Configurações de monitoramento
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  info:
+    env:
+      enabled: true
+
+# Informações da aplicação
+info:
+  app:
+    name: Notification Service
+    description: Serviço de notificações para denúncias de fraude PIX
+    version: 1.0.0
+    encoding: UTF-8
+    java:
+      version: 17

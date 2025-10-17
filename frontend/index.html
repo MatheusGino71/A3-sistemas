@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Sentinela PIX - Dashboard</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1193d4",
+                        "secondary": "#16a34a",
+                        "danger": "#dc2626",
+                        "warning": "#f59e0b",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101c22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .pulse-ring {
+            animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.33); }
+            80%, 100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col shadow-lg">
+            <div class="h-20 flex items-center px-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-lg gradient-bg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-2xl">shield</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-gray-900 dark:text-white">Sentinela PIX</h1>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Anti-Fraude</p>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="flex-1 px-4 py-4 space-y-2">
+                <a class="nav-item active flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary font-semibold transition-all" 
+                   href="#" onclick="showPage('dashboard')">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+                <a class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all" 
+                   href="#" onclick="showPage('reports')">
+                    <span class="material-symbols-outlined">report</span>
+                    Denúncias
+                </a>
+                <a class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all" 
+                   href="#" onclick="showPage('risk-analysis')">
+                    <span class="material-symbols-outlined">analytics</span>
+                    Análise de Risco
+                </a>
+                <a class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all" 
+                   href="#" onclick="showPage('notifications')">
+                    <span class="material-symbols-outlined">notifications</span>
+                    Notificações
+                </a>
+                <a class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all" 
+                   href="#" onclick="showPage('monitoring')">
+                    <span class="material-symbols-outlined">monitoring</span>
+                    Monitoramento
+                </a>
+                <a class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all" 
+                   href="#" onclick="showPage('settings')">
+                    <span class="material-symbols-outlined">settings</span>
+                    Configurações
+                </a>
+            </nav>
+            
+            <!-- Status Connection -->
+            <div class="p-4 m-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700">
+                <div class="flex items-center gap-2">
+                    <div class="flex">
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <div class="w-3 h-3 bg-green-500 rounded-full absolute pulse-ring"></div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-green-800 dark:text-green-200">Sistema Online</p>
+                        <p class="text-xs text-green-600 dark:text-green-400">Todos os serviços ativos</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col">
+            <!-- Header -->
+            <header class="h-20 flex items-center justify-between px-8 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+                <div>
+                    <h2 id="page-title" class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h2>
+                    <p id="page-subtitle" class="text-sm text-gray-500 dark:text-gray-400">Visão geral do sistema anti-fraude</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="relative p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                        <span class="material-symbols-outlined">notifications</span>
+                        <div class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                            <span class="text-xs text-white font-semibold">3</span>
+                        </div>
+                    </button>
+                    <button onclick="toggleTheme()" class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                        <span class="material-symbols-outlined">light_mode</span>
+                    </button>
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                        <span class="text-white font-semibold">AB</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-8 bg-background-light dark:bg-background-dark">
+                <div id="page-content">
+                    <!-- Dashboard Page (Default) -->
+                    <div id="dashboard-page" class="page-content">
+                        <!-- KPI Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center gap-4">
+                                    <div class="p-3 rounded-full bg-primary/10">
+                                        <span class="material-symbols-outlined text-2xl text-primary">report</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Denúncias Hoje</p>
+                                        <p class="text-2xl font-bold text-gray-900 dark:text-white">247</p>
+                                        <div class="flex items-center gap-1 mt-1">
+                                            <span class="material-symbols-outlined text-green-500 text-sm">trending_up</span>
+                                            <span class="text-green-500 font-semibold text-sm">+12%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center gap-4">
+                                    <div class="p-3 rounded-full bg-red-500/10">
+                                        <span class="material-symbols-outlined text-2xl text-red-500">dangerous</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Chaves Bloqueadas</p>
+                                        <p class="text-2xl font-bold text-gray-900 dark:text-white">1,234</p>
+                                        <div class="flex items-center gap-1 mt-1">
+                                            <span class="material-symbols-outlined text-red-500 text-sm">trending_up</span>
+                                            <span class="text-red-500 font-semibold text-sm">+5%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center gap-4">
+                                    <div class="p-3 rounded-full bg-blue-500/10">
+                                        <span class="material-symbols-outlined text-2xl text-blue-500">notifications_active</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Notificações Enviadas</p>
+                                        <p class="text-2xl font-bold text-gray-900 dark:text-white">5,678</p>
+                                        <div class="flex items-center gap-1 mt-1">
+                                            <span class="material-symbols-outlined text-blue-500 text-sm">trending_up</span>
+                                            <span class="text-blue-500 font-semibold text-sm">+8%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center gap-4">
+                                    <div class="p-3 rounded-full bg-green-500/10">
+                                        <span class="material-symbols-outlined text-2xl text-green-500">shield_check</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Tentativas Bloqueadas</p>
+                                        <p class="text-2xl font-bold text-gray-900 dark:text-white">89</p>
+                                        <div class="flex items-center gap-1 mt-1">
+                                            <span class="material-symbols-outlined text-green-500 text-sm">trending_up</span>
+                                            <span class="text-green-500 font-semibold text-sm">+15%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Row -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                            <!-- Activity Chart -->
+                            <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                                <div class="flex justify-between items-start mb-6">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Atividade de Fraudes</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Últimos 7 dias</p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-3xl font-bold text-gray-900 dark:text-white">247</span>
+                                        <span class="text-green-500 font-semibold text-sm">+12%</span>
+                                    </div>
+                                </div>
+                                <div class="h-64 flex items-end justify-between gap-2">
+                                    <div class="flex-1 bg-gradient-to-t from-primary to-blue-300 rounded-t" style="height: 60%"></div>
+                                    <div class="flex-1 bg-gradient-to-t from-primary to-blue-300 rounded-t" style="height: 80%"></div>
+                                    <div class="flex-1 bg-gradient-to-t from-primary to-blue-300 rounded-t" style="height: 45%"></div>
+                                    <div class="flex-1 bg-gradient-to-t from-primary to-blue-300 rounded-t" style="height: 90%"></div>
+                                    <div class="flex-1 bg-gradient-to-t from-primary to-blue-300 rounded-t" style="height: 70%"></div>
+                                    <div class="flex-1 bg-gradient-to-t from-primary to-blue-300 rounded-t" style="height: 55%"></div>
+                                    <div class="flex-1 bg-gradient-to-t from-primary to-blue-300 rounded-t" style="height: 100%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                    <span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sab</span><span>Dom</span>
+                                </div>
+                            </div>
+
+                            <!-- Risk Levels -->
+                            <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                                <div class="flex justify-between items-start mb-6">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Níveis de Risco</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Distribuição atual</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-4 h-4 rounded-full bg-red-500"></div>
+                                            <span class="text-gray-700 dark:text-gray-300">Crítico</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
+                                                <div class="w-3/4 h-2 bg-red-500 rounded-full"></div>
+                                            </div>
+                                            <span class="text-sm font-semibold text-gray-900 dark:text-white">156</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-4 h-4 rounded-full bg-orange-500"></div>
+                                            <span class="text-gray-700 dark:text-gray-300">Alto</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
+                                                <div class="w-1/2 h-2 bg-orange-500 rounded-full"></div>
+                                            </div>
+                                            <span class="text-sm font-semibold text-gray-900 dark:text-white">89</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-4 h-4 rounded-full bg-yellow-500"></div>
+                                            <span class="text-gray-700 dark:text-gray-300">Médio</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
+                                                <div class="w-2/3 h-2 bg-yellow-500 rounded-full"></div>
+                                            </div>
+                                            <span class="text-sm font-semibold text-gray-900 dark:text-white">234</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-4 h-4 rounded-full bg-green-500"></div>
+                                            <span class="text-gray-700 dark:text-gray-300">Baixo</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
+                                                <div class="w-1/4 h-2 bg-green-500 rounded-full"></div>
+                                            </div>
+                                            <span class="text-sm font-semibold text-gray-900 dark:text-white">45</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Alerts -->
+                        <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Alertas Recentes</h3>
+                                <a href="#" class="text-primary hover:text-primary/80 text-sm font-medium">Ver todos</a>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-4 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                                    <div class="p-2 rounded-full bg-red-100 dark:bg-red-900/50">
+                                        <span class="material-symbols-outlined text-red-600 dark:text-red-400">warning</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium text-gray-900 dark:text-white">Chave PIX suspeita detectada</p>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">usuario@banco.com - 3 denúncias em 2 horas</p>
+                                    </div>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">há 5 min</span>
+                                </div>
+                                
+                                <div class="flex items-center gap-4 p-4 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800">
+                                    <div class="p-2 rounded-full bg-orange-100 dark:bg-orange-900/50">
+                                        <span class="material-symbols-outlined text-orange-600 dark:text-orange-400">notifications</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium text-gray-900 dark:text-white">Notificação automática enviada</p>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">Banco Itaú notificado sobre chave 11111111111</p>
+                                    </div>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">há 12 min</span>
+                                </div>
+                                
+                                <div class="flex items-center gap-4 p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                                    <div class="p-2 rounded-full bg-green-100 dark:bg-green-900/50">
+                                        <span class="material-symbols-outlined text-green-600 dark:text-green-400">check_circle</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium text-gray-900 dark:text-white">Chave PIX bloqueada com sucesso</p>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">fraudulento@email.com foi bloqueada pelo Bradesco</p>
+                                    </div>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">há 25 min</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="dashboard.js"></script>
+</body>
+</html>

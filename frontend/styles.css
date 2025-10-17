@@ -1,0 +1,325 @@
+/* Sentinela PIX Dashboard Styles */
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500 dark:bg-gray-500;
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0; 
+        transform: translateX(-20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(0); 
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        transform: scale(1); 
+        opacity: 1; 
+    }
+    50% { 
+        transform: scale(1.05); 
+        opacity: 0.8; 
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+.animate-pulse-custom {
+    animation: pulse 2s infinite;
+}
+
+/* Page transitions */
+.page-content {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Navigation enhancements */
+.nav-item {
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.nav-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    background-color: var(--primary-color, #1193d4);
+    border-radius: 0 4px 4px 0;
+    transition: all 0.2s ease;
+}
+
+.nav-item.active::before {
+    width: 4px;
+    height: 24px;
+}
+
+/* Card hover effects */
+.card-hover {
+    transition: all 0.2s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Status indicators */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.status-online {
+    background-color: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+.status-warning {
+    background-color: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
+}
+
+.status-offline {
+    background-color: #ef4444;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
+}
+
+/* Progress bars */
+.progress-bar {
+    height: 8px;
+    background-color: #e5e7eb;
+    border-radius: 9999px;
+    overflow: hidden;
+    position: relative;
+}
+
+.dark .progress-bar {
+    background-color: #374151;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #1193d4 0%, #0ea5e9 100%);
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+}
+
+/* Loading states */
+.loading-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+.dark .loading-skeleton {
+    background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+    background-size: 200% 100%;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Custom tables */
+.table-responsive {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #9ca3af #f3f4f6;
+}
+
+.dark .table-responsive {
+    scrollbar-color: #6b7280 #374151;
+}
+
+.table-row:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+.dark .table-row:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Risk level indicators */
+.risk-critical {
+    @apply bg-red-100 text-red-800 border-red-200;
+}
+
+.dark .risk-critical {
+    @apply bg-red-900/30 text-red-300 border-red-800;
+}
+
+.risk-high {
+    @apply bg-orange-100 text-orange-800 border-orange-200;
+}
+
+.dark .risk-high {
+    @apply bg-orange-900/30 text-orange-300 border-orange-800;
+}
+
+.risk-medium {
+    @apply bg-yellow-100 text-yellow-800 border-yellow-200;
+}
+
+.dark .risk-medium {
+    @apply bg-yellow-900/30 text-yellow-300 border-yellow-800;
+}
+
+.risk-low {
+    @apply bg-green-100 text-green-800 border-green-200;
+}
+
+.dark .risk-low {
+    @apply bg-green-900/30 text-green-300 border-green-800;
+}
+
+/* Form improvements */
+.form-input {
+    transition: all 0.2s ease;
+}
+
+.form-input:focus {
+    border-color: #1193d4;
+    box-shadow: 0 0 0 3px rgba(17, 147, 212, 0.1);
+}
+
+.dark .form-input:focus {
+    border-color: #1193d4;
+    box-shadow: 0 0 0 3px rgba(17, 147, 212, 0.2);
+}
+
+/* Notification badge */
+.notification-badge {
+    position: relative;
+}
+
+.notification-badge::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background-color: #ef4444;
+    border: 2px solid white;
+    border-radius: 50%;
+}
+
+.dark .notification-badge::after {
+    border-color: #1f2937;
+}
+
+/* Toggle switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #1193d4;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+    .mobile-hide {
+        display: none;
+    }
+    
+    .mobile-full {
+        width: 100%;
+    }
+    
+    .mobile-stack {
+        flex-direction: column;
+    }
+}
+
+/* Print styles */
+@media print {
+    .print-hide {
+        display: none !important;
+    }
+    
+    .print-full-width {
+        width: 100% !important;
+    }
+}

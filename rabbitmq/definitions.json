@@ -1,0 +1,164 @@
+{
+  "rabbit_version": "3.12.0",
+  "rabbitmq_version": "3.12.0",
+  "product_name": "RabbitMQ",
+  "product_version": "3.12.0",
+  "users": [
+    {
+      "name": "sentinelapix_user",
+      "password_hash": "password_hash_here",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "administrator",
+      "limits": {}
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/",
+      "description": "Default virtual host for Sentinela PIX"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "sentinelapix_user",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "topic_permissions": [],
+  "parameters": [],
+  "global_parameters": [
+    {
+      "name": "cluster_name",
+      "value": "sentinela-pix-cluster"
+    }
+  ],
+  "policies": [
+    {
+      "vhost": "/",
+      "name": "fraud-reports-ha",
+      "pattern": "fraud\\.reports\\.*",
+      "apply-to": "queues",
+      "definition": {
+        "ha-mode": "all",
+        "ha-sync-mode": "automatic"
+      },
+      "priority": 0
+    }
+  ],
+  "queues": [
+    {
+      "name": "fraud.reports.notification",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 86400000,
+        "x-dead-letter-exchange": "fraud.reports.dlx",
+        "x-dead-letter-routing-key": "fraud.reports.notification.dlq"
+      }
+    },
+    {
+      "name": "fraud.reports.risk.analysis",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 86400000,
+        "x-dead-letter-exchange": "fraud.reports.dlx",
+        "x-dead-letter-routing-key": "fraud.reports.risk.analysis.dlq"
+      }
+    },
+    {
+      "name": "fraud.reports.audit",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 604800000
+      }
+    },
+    {
+      "name": "fraud.reports.notification.dlq",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 604800000
+      }
+    },
+    {
+      "name": "fraud.reports.risk.analysis.dlq",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 604800000
+      }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "fraud.reports.topic",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "fraud.reports.dlx",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "fraud.reports.topic",
+      "vhost": "/",
+      "destination": "fraud.reports.notification",
+      "destination_type": "queue",
+      "routing_key": "fraud.reports.notification",
+      "arguments": {}
+    },
+    {
+      "source": "fraud.reports.topic",
+      "vhost": "/",
+      "destination": "fraud.reports.risk.analysis",
+      "destination_type": "queue",
+      "routing_key": "fraud.reports.risk.analysis",
+      "arguments": {}
+    },
+    {
+      "source": "fraud.reports.topic",
+      "vhost": "/",
+      "destination": "fraud.reports.audit",
+      "destination_type": "queue",
+      "routing_key": "fraud.reports.#",
+      "arguments": {}
+    },
+    {
+      "source": "fraud.reports.dlx",
+      "vhost": "/",
+      "destination": "fraud.reports.notification.dlq",
+      "destination_type": "queue",
+      "routing_key": "fraud.reports.notification.dlq",
+      "arguments": {}
+    },
+    {
+      "source": "fraud.reports.dlx",
+      "vhost": "/",
+      "destination": "fraud.reports.risk.analysis.dlq",
+      "destination_type": "queue",
+      "routing_key": "fraud.reports.risk.analysis.dlq",
+      "arguments": {}
+    }
+  ]
+}
