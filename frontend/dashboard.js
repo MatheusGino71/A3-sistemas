@@ -347,7 +347,7 @@ class SentinelaPixDashboard {
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">Enviadas Hoje</p>
-                                <p class="text-2xl font-bold text-gray-900 dark:text-white">1,247</p>
+                                <p id="notifications-sent" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
                             </div>
                         </div>
                     </div>
@@ -359,7 +359,7 @@ class SentinelaPixDashboard {
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">Bem-sucedidas</p>
-                                <p class="text-2xl font-bold text-gray-900 dark:text-white">1,195</p>
+                                <p id="notifications-success" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
                             </div>
                         </div>
                     </div>
@@ -371,7 +371,7 @@ class SentinelaPixDashboard {
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">Falharam</p>
-                                <p class="text-2xl font-bold text-gray-900 dark:text-white">52</p>
+                                <p id="notifications-failed" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
                             </div>
                         </div>
                     </div>
@@ -405,23 +405,12 @@ class SentinelaPixDashboard {
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">IT</div>
-                                            <span class="ml-2 text-gray-900 dark:text-white">Banco Itaú</span>
-                                        </div>
+                                    <td colspan="6" class="px-6 py-12 text-center">
+                                        <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-2">notifications_off</span>
+                                        <p class="text-gray-500 dark:text-gray-400">Nenhuma notificação enviada ainda</p>
+                                        <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Notificações aparecerão aqui quando forem enviadas</p>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">fraudulento@gmail.com</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 py-1 bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200 rounded-full text-xs">FRAUDE</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 py-1 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 rounded-full text-xs">SUCESSO</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">1/3</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">14:32</td>
                                 </tr>
-                                <!-- More rows... -->
                             </tbody>
                         </table>
                     </div>
@@ -440,7 +429,7 @@ class SentinelaPixDashboard {
                             <h4 class="font-semibold text-gray-900 dark:text-white">API Gateway</h4>
                             <div class="w-3 h-3 bg-green-500 rounded-full"></div>
                         </div>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">99.9%</p>
+                        <p id="api-uptime" class="text-2xl font-bold text-gray-900 dark:text-white">-</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Uptime</p>
                     </div>
 
@@ -449,7 +438,7 @@ class SentinelaPixDashboard {
                             <h4 class="font-semibold text-gray-900 dark:text-white">Fraud Service</h4>
                             <div class="w-3 h-3 bg-green-500 rounded-full"></div>
                         </div>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">456ms</p>
+                        <p id="fraud-response" class="text-2xl font-bold text-gray-900 dark:text-white">-</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Avg Response</p>
                     </div>
 
@@ -458,16 +447,16 @@ class SentinelaPixDashboard {
                             <h4 class="font-semibold text-gray-900 dark:text-white">Risk Analysis</h4>
                             <div class="w-3 h-3 bg-green-500 rounded-full"></div>
                         </div>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">234ms</p>
+                        <p id="risk-response" class="text-2xl font-bold text-gray-900 dark:text-white">-</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Avg Response</p>
                     </div>
 
                     <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
                         <div class="flex items-center justify-between mb-4">
                             <h4 class="font-semibold text-gray-900 dark:text-white">Notifications</h4>
-                            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
                         </div>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">1.2s</p>
+                        <p id="notif-response" class="text-2xl font-bold text-gray-900 dark:text-white">-</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Avg Response</p>
                     </div>
                 </div>
@@ -476,48 +465,22 @@ class SentinelaPixDashboard {
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">CPU Usage</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-600 dark:text-gray-400">API Gateway</span>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
-                                        <div class="w-1/4 h-2 bg-green-500 rounded-full"></div>
-                                    </div>
-                                    <span class="text-sm text-gray-900 dark:text-white">25%</span>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-600 dark:text-gray-400">Fraud Service</span>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
-                                        <div class="w-1/2 h-2 bg-yellow-500 rounded-full"></div>
-                                    </div>
-                                    <span class="text-sm text-gray-900 dark:text-white">45%</span>
-                                </div>
+                        <div class="h-64 flex items-center justify-center">
+                            <div class="text-center">
+                                <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-2">memory</span>
+                                <p class="text-gray-500 dark:text-gray-400">Métricas em tempo real</p>
+                                <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Dados aparecerão quando disponíveis</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Memory Usage</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-600 dark:text-gray-400">PostgreSQL</span>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
-                                        <div class="w-3/5 h-2 bg-blue-500 rounded-full"></div>
-                                    </div>
-                                    <span class="text-sm text-gray-900 dark:text-white">60%</span>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-600 dark:text-gray-400">RabbitMQ</span>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
-                                        <div class="w-1/3 h-2 bg-green-500 rounded-full"></div>
-                                    </div>
-                                    <span class="text-sm text-gray-900 dark:text-white">35%</span>
-                                </div>
+                        <div class="h-64 flex items-center justify-center">
+                            <div class="text-center">
+                                <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-2">storage</span>
+                                <p class="text-gray-500 dark:text-gray-400">Métricas em tempo real</p>
+                                <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Dados aparecerão quando disponíveis</p>
                             </div>
                         </div>
                     </div>
