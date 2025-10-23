@@ -1,259 +1,254 @@
 <!DOCTYPE html>
-<html class="dark" lang="pt-BR">
+<html lang="pt-BR">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Sentinela PIX - Dashboard</title>
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#1193d4",
-                        "secondary": "#16a34a",
-                        "danger": "#dc2626",
-                        "warning": "#f59e0b",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#101c22",
-                    },
-                    fontFamily: {
-                        "display": ["Inter"]
-                    },
-                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-                },
-            },
-        }
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinela PIX - Sistema Anti-Fraude</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500;600;700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        .material-symbols-outlined {
-            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #000;
+            overflow-x: hidden;
         }
-        .pulse-ring {
-            animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
         }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.33); }
-            80%, 100% { opacity: 0; }
+        
+        .video-container video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            filter: brightness(0.35);
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.7) 100%);
+        }
+        
+        .title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff 0%, #0066ff 50%, #6600ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s ease-out;
+            letter-spacing: 2px;
+            text-shadow: 0 0 40px rgba(0, 102, 255, 0.3);
+        }
+        
+        .subtitle {
+            font-family: 'Roboto', sans-serif;
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: #e5e7eb;
+            text-align: center;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            animation: fadeInUp 1s ease-out 0.2s backwards;
+            line-height: 1.8;
+        }
+        
+        .cta-button {
+            padding: 1.25rem 3rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(59, 130, 246, 0.3);
+            animation: fadeInUp 1s ease-out 0.4s backwards;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(59, 130, 246, 0.5);
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+            animation: fadeInUp 1s ease-out 0.6s backwards;
+        }
+        
+        .feature-card {
+            background: rgba(0, 20, 40, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            background: rgba(0, 30, 60, 0.8);
+            border-color: rgba(100, 150, 255, 0.6);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 102, 255, 0.3);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: #3b82f6;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-description {
+            color: #d1d5db;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
         }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
-    <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col shadow-lg">
-            <div class="h-20 flex items-center px-6 border-b border-gray-200 dark:border-gray-700">
-                <div class="flex items-center gap-3">
-                    <div class="h-10 w-10 rounded-lg gradient-bg flex items-center justify-center">
-                        <span class="material-symbols-outlined text-white text-2xl">shield</span>
-                    </div>
-                    <div>
-                        <h1 class="text-lg font-bold text-gray-900 dark:text-white">Sentinela PIX</h1>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Anti-Fraude</p>
-                    </div>
-                </div>
-            </div>
-            
-            <nav class="flex-1 px-4 py-4 space-y-2">
-                <a class="nav-item active flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary font-semibold transition-all" 
-                   href="#" onclick="showPage('dashboard')">
-                    <span class="material-symbols-outlined">dashboard</span>
-                    Dashboard
-                </a>
-                <a class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all" 
-                   href="#" onclick="showPage('reports')">
-                    <span class="material-symbols-outlined">report</span>
-                    Denúncias
-                </a>
-                <a class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all" 
-                   href="#" onclick="showPage('risk-analysis')">
-                    <span class="material-symbols-outlined">analytics</span>
-                    Análise de Risco
-                </a>
-                <a class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all" 
-                   href="#" onclick="showPage('notifications')">
-                    <span class="material-symbols-outlined">notifications</span>
-                    Notificações
-                </a>
-                <a class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all" 
-                   href="#" onclick="showPage('monitoring')">
-                    <span class="material-symbols-outlined">monitoring</span>
-                    Monitoramento
-                </a>
-                <a class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all" 
-                   href="#" onclick="showPage('settings')">
-                    <span class="material-symbols-outlined">settings</span>
-                    Configurações
-                </a>
-            </nav>
-            
-            <!-- Status Connection -->
-            <div class="p-4 m-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700">
-                <div class="flex items-center gap-2">
-                    <div class="flex">
-                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <div class="w-3 h-3 bg-green-500 rounded-full absolute pulse-ring"></div>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-green-800 dark:text-green-200">Sistema Online</p>
-                        <p class="text-xs text-green-600 dark:text-green-400">Todos os serviços ativos</p>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <div class="flex-1 flex flex-col">
-            <!-- Header -->
-            <header class="h-20 flex items-center justify-between px-8 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
-                <div>
-                    <h2 id="page-title" class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h2>
-                    <p id="page-subtitle" class="text-sm text-gray-500 dark:text-gray-400">Visão geral do sistema anti-fraude</p>
-                </div>
-                <div class="flex items-center gap-4">
-                    <button class="relative p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                        <span class="material-symbols-outlined">notifications</span>
-                        <div class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                            <span class="text-xs text-white font-semibold">3</span>
-                        </div>
-                    </button>
-                    <button onclick="toggleTheme()" class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                        <span class="material-symbols-outlined">light_mode</span>
-                    </button>
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                        <span class="text-white font-semibold">AB</span>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Main Content -->
-            <main class="flex-1 p-8 bg-background-light dark:bg-background-dark">
-                <div id="page-content">
-                    <!-- Dashboard Page (Default) -->
-                    <div id="dashboard-page" class="page-content">
-                        <!-- KPI Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                            <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                                <div class="flex items-center gap-4">
-                                    <div class="p-3 rounded-full bg-primary/10">
-                                        <span class="material-symbols-outlined text-2xl text-primary">report</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">Total de Transações</p>
-                                        <p id="total-transactions" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
-                                        <p class="text-xs text-gray-400 mt-1">Carregue dados reais</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                                <div class="flex items-center gap-4">
-                                    <div class="p-3 rounded-full bg-red-500/10">
-                                        <span class="material-symbols-outlined text-2xl text-red-500">dangerous</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">Fraudes Detectadas</p>
-                                        <p id="frauds-detected" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
-                                        <p class="text-xs text-gray-400 mt-1">Sistema em monitoramento</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                                <div class="flex items-center gap-4">
-                                    <div class="p-3 rounded-full bg-green-500/10">
-                                        <span class="material-symbols-outlined text-2xl text-green-500">percent</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">Taxa de Sucesso</p>
-                                        <p id="success-rate" class="text-2xl font-bold text-gray-900 dark:text-white">100%</p>
-                                        <p class="text-xs text-gray-400 mt-1">Sistema operacional</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                                <div class="flex items-center gap-4">
-                                    <div class="p-3 rounded-full bg-blue-500/10">
-                                        <span class="material-symbols-outlined text-2xl text-blue-500">report_problem</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">Total de Denúncias</p>
-                                        <p id="total-reports" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
-                                        <p class="text-xs text-gray-400 mt-1">Crie sua primeira denúncia</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Charts Row -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                            <!-- Activity Chart -->
-                            <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                                <div class="flex justify-between items-start mb-6">
-                                    <div>
-                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Atividade de Denúncias</h3>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">Últimos 7 dias</p>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <span id="chart-total" class="text-3xl font-bold text-gray-900 dark:text-white">0</span>
-                                    </div>
-                                </div>
-                                <div id="activity-chart" class="h-64 flex items-center justify-center">
-                                    <div class="text-center">
-                                        <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-2">bar_chart</span>
-                                        <p class="text-gray-500 dark:text-gray-400">Sem dados para exibir</p>
-                                        <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Crie denúncias para ver gráficos</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Risk Levels -->
-                            <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                                <div class="flex justify-between items-start mb-6">
-                                    <div>
-                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Níveis de Risco</h3>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">Distribuição atual</p>
-                                    </div>
-                                </div>
-                                <div id="risk-levels" class="h-64 flex items-center justify-center">
-                                    <div class="text-center">
-                                        <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-2">pie_chart</span>
-                                        <p class="text-gray-500 dark:text-gray-400">Sem dados de risco</p>
-                                        <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Análises aparecerão aqui</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Recent Alerts -->
-                        <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Alertas Recentes</h3>
-                                <a href="#" class="text-primary hover:text-primary/80 text-sm font-medium">Ver todos</a>
-                            </div>
-                            <div id="recent-alerts" class="h-64 flex items-center justify-center">
-                                <div class="text-center">
-                                    <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-2">notifications_off</span>
-                                    <p class="text-gray-500 dark:text-gray-400">Nenhum alerta no momento</p>
-                                    <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Alertas aparecerão em tempo real</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
+<body>
+    <!-- Background Video -->
+    <div class="video-container">
+        <video id="hero-video" autoplay muted loop playsinline preload="auto" poster="">
+            <source src="tela.mp4" type="video/mp4">
+            Seu navegador não suporta vídeos HTML5.
+        </video>
     </div>
 
-    <!-- Scripts -->
-    <script src="dashboard.js"></script>
+    <!-- Hero Content -->
+    <div class="hero-content">
+        <h1 class="title">SENTINELA PIX</h1>
+        <p class="subtitle">
+            Sistema Inteligente de Detecção e Prevenção de Fraudes em Transações PIX
+        </p>
+        
+        <a href="dashboard.html" class="cta-button">
+            <span class="material-symbols-outlined">shield</span>
+            Acessar Dashboard
+        </a>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <span class="material-symbols-outlined" style="font-size: 3rem;">verified_user</span>
+                </div>
+                <h3 class="feature-title">Verificação de Chaves PIX</h3>
+                <p class="feature-description">
+                    Análise de segurança em tempo real com score de 0 a 100 pontos
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <span class="material-symbols-outlined" style="font-size: 3rem;">report</span>
+                </div>
+                <h3 class="feature-title">Denúncias de Fraudes</h3>
+                <p class="feature-description">
+                    Sistema colaborativo para reportar e rastrear chaves suspeitas
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <span class="material-symbols-outlined" style="font-size: 3rem;">analytics</span>
+                </div>
+                <h3 class="feature-title">Análise de Riscos</h3>
+                <p class="feature-description">
+                    Algoritmos avançados para identificar padrões fraudulentos
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <span class="material-symbols-outlined" style="font-size: 3rem;">notifications_active</span>
+                </div>
+                <h3 class="feature-title">Alertas em Tempo Real</h3>
+                <p class="feature-description">
+                    Notificações instantâneas sobre atividades suspeitas
+                </p>
+            </div>
+        </div>
+        
+        <div class="scroll-indicator">
+            <span class="material-symbols-outlined text-white text-4xl">expand_more</span>
+        </div>
+    </div>
 </body>
 </html>

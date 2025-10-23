@@ -80,6 +80,33 @@ const initializeDatabase = () => {
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
 
+        // Registered PIX Keys table (for security verification)
+        db.run(`CREATE TABLE IF NOT EXISTS registered_pix_keys (
+            id TEXT PRIMARY KEY,
+            pix_key TEXT UNIQUE NOT NULL,
+            key_type TEXT NOT NULL,
+            owner_name TEXT,
+            owner_document TEXT,
+            bank_name TEXT,
+            security_score INTEGER DEFAULT 100,
+            is_verified BOOLEAN DEFAULT 0,
+            registration_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+            last_verification DATETIME DEFAULT CURRENT_TIMESTAMP,
+            status TEXT DEFAULT 'ACTIVE'
+        )`);
+
+        // Security Checks table
+        db.run(`CREATE TABLE IF NOT EXISTS security_checks (
+            id TEXT PRIMARY KEY,
+            pix_key TEXT NOT NULL,
+            check_type TEXT NOT NULL,
+            severity TEXT DEFAULT 'INFO',
+            message TEXT NOT NULL,
+            recommendation TEXT,
+            checked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (pix_key) REFERENCES registered_pix_keys (pix_key)
+        )`);
+
         // Insert initial stats if not exists
         db.get("SELECT COUNT(*) as count FROM system_stats", (err, row) => {
             if (row.count === 0) {
@@ -223,6 +250,135 @@ const identifyBankFromPixKey = (pixKey) => {
     }
     
     return 'Banco Não Identificado';
+};
+
+// Identify PIX key type
+const identifyPixKeyType = (pixKey) => {
+    if (pixKey.includes('@')) return 'EMAIL';
+    if (pixKey.match(/^\d{11}$/)) return 'CPF';
+    if (pixKey.match(/^\d{14}$/)) return 'CNPJ';
+    if (pixKey.match(/^\+55\d{10,11}$/)) return 'PHONE';
+    if (pixKey.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) return 'RANDOM';
+    return 'UNKNOWN';
+};
+
+// Perform security analysis on PIX key
+const performSecurityAnalysis = async (pixKey, keyType, ownerDocument) => {
+    const checks = [];
+    let securityScore = 100;
+    
+    // Check 1: Verify if key has fraud reports
+    const fraudCheckPromise = new Promise((resolve) => {
+        db.get("SELECT COUNT(*) as count FROM fraud_reports WHERE pix_key = ?", [pixKey], (err, row) => {
+            const fraudCount = row?.count || 0;
+            if (fraudCount > 0) {
+                securityScore -= (fraudCount * 15);
+                checks.push({
+                    id: uuidv4(),
+                    pix_key: pixKey,
+                    check_type: 'FRAUD_HISTORY',
+                    severity: fraudCount >= 3 ? 'CRITICAL' : fraudCount >= 1 ? 'HIGH' : 'MEDIUM',
+                    message: `Esta chave PIX possui ${fraudCount} denúncia(s) de fraude registrada(s)`,
+                    recommendation: 'Evite realizar transações com esta chave. Considere denunciar se for vítima de golpe.'
+                });
+            } else {
+                checks.push({
+                    id: uuidv4(),
+                    pix_key: pixKey,
+                    check_type: 'FRAUD_HISTORY',
+                    severity: 'INFO',
+                    message: 'Nenhuma denúncia de fraude encontrada',
+                    recommendation: 'Chave sem histórico de denúncias no sistema.'
+                });
+            }
+            resolve();
+        });
+    });
+
+    // Check 2: Analyze key type security
+    if (keyType === 'EMAIL') {
+        const emailDomains = pixKey.split('@')[1]?.toLowerCase() || '';
+        const suspiciousDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
+        
+        if (suspiciousDomains.includes(emailDomains)) {
+            securityScore -= 5;
+            checks.push({
+                id: uuidv4(),
+                pix_key: pixKey,
+                check_type: 'KEY_TYPE_ANALYSIS',
+                severity: 'LOW',
+                message: 'E-mail pessoal genérico (maior risco de phishing)',
+                recommendation: 'Prefira chaves de e-mails corporativos ou institucionais para maior segurança.'
+            });
+        }
+    } else if (keyType === 'RANDOM') {
+        securityScore += 10;
+        checks.push({
+            id: uuidv4(),
+            pix_key: pixKey,
+            check_type: 'KEY_TYPE_ANALYSIS',
+            severity: 'INFO',
+            message: 'Chave aleatória (maior privacidade)',
+            recommendation: 'Tipo de chave mais seguro, pois não expõe dados pessoais.'
+        });
+    } else if (keyType === 'CPF' || keyType === 'CNPJ') {
+        securityScore -= 10;
+        checks.push({
+            id: uuidv4(),
+            pix_key: pixKey,
+            check_type: 'KEY_TYPE_ANALYSIS',
+            severity: 'MEDIUM',
+            message: 'Documento como chave PIX expõe dados pessoais',
+            recommendation: 'Considere usar chave aleatória para maior privacidade e segurança.'
+        });
+    }
+
+    // Check 3: Verify risk analysis
+    const riskCheckPromise = new Promise((resolve) => {
+        db.get("SELECT * FROM risk_analysis WHERE pix_key = ?", [pixKey], (err, row) => {
+            if (row) {
+                if (row.risk_level === 'CRITICAL') {
+                    securityScore -= 40;
+                    checks.push({
+                        id: uuidv4(),
+                        pix_key: pixKey,
+                        check_type: 'RISK_LEVEL',
+                        severity: 'CRITICAL',
+                        message: `Nível de risco CRÍTICO (Score: ${row.risk_score})`,
+                        recommendation: 'NÃO realize transações com esta chave. Alto risco de fraude!'
+                    });
+                } else if (row.risk_level === 'HIGH') {
+                    securityScore -= 25;
+                    checks.push({
+                        id: uuidv4(),
+                        pix_key: pixKey,
+                        check_type: 'RISK_LEVEL',
+                        severity: 'HIGH',
+                        message: `Nível de risco ALTO (Score: ${row.risk_score})`,
+                        recommendation: 'Cautela! Verifique a identidade do destinatário antes de transferir.'
+                    });
+                } else if (row.risk_level === 'MEDIUM') {
+                    securityScore -= 10;
+                    checks.push({
+                        id: uuidv4(),
+                        pix_key: pixKey,
+                        check_type: 'RISK_LEVEL',
+                        severity: 'MEDIUM',
+                        message: `Nível de risco MÉDIO (Score: ${row.risk_score})`,
+                        recommendation: 'Confirme os dados do destinatário antes de realizar a transação.'
+                    });
+                }
+            }
+            resolve();
+        });
+    });
+
+    await Promise.all([fraudCheckPromise, riskCheckPromise]);
+    
+    // Ensure score is between 0 and 100
+    securityScore = Math.max(0, Math.min(100, securityScore));
+    
+    return { checks, securityScore };
 };
 
 const sendNotification = (notificationId) => {
@@ -455,6 +611,188 @@ app.get('/api/v1/risk-analysis/:pixKey', (req, res) => {
         res.json({
             success: true,
             data: row
+        });
+    });
+});
+
+// PIX Key Registration and Security Check Routes
+
+// Register a new PIX key for security monitoring
+app.post('/api/v1/pix-keys/register', async (req, res) => {
+    const { pixKey, ownerName, ownerDocument, bankName } = req.body;
+    
+    if (!pixKey) {
+        return res.status(400).json({
+            success: false,
+            message: 'Chave PIX é obrigatória'
+        });
+    }
+    
+    try {
+        const keyType = identifyPixKeyType(pixKey);
+        const identifiedBank = bankName || identifyBankFromPixKey(pixKey);
+        
+        // Perform security analysis
+        const { checks, securityScore } = await performSecurityAnalysis(pixKey, keyType, ownerDocument);
+        
+        const newKey = {
+            id: uuidv4(),
+            pix_key: pixKey,
+            key_type: keyType,
+            owner_name: ownerName || null,
+            owner_document: ownerDocument || null,
+            bank_name: identifiedBank,
+            security_score: securityScore,
+            is_verified: 0
+        };
+        
+        // Insert PIX key
+        db.run(`INSERT INTO registered_pix_keys 
+               (id, pix_key, key_type, owner_name, owner_document, bank_name, security_score, is_verified) 
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [newKey.id, newKey.pix_key, newKey.key_type, newKey.owner_name, 
+             newKey.owner_document, newKey.bank_name, newKey.security_score, newKey.is_verified],
+            function(err) {
+                if (err) {
+                    if (err.message.includes('UNIQUE constraint failed')) {
+                        return res.status(400).json({
+                            success: false,
+                            message: 'Esta chave PIX já está cadastrada no sistema'
+                        });
+                    }
+                    console.error('Erro ao registrar chave PIX:', err);
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Erro ao registrar chave PIX'
+                    });
+                }
+                
+                // Insert security checks
+                const stmt = db.prepare(`INSERT INTO security_checks 
+                    (id, pix_key, check_type, severity, message, recommendation) 
+                    VALUES (?, ?, ?, ?, ?, ?)`);
+                
+                checks.forEach(check => {
+                    stmt.run([check.id, check.pix_key, check.check_type, 
+                             check.severity, check.message, check.recommendation]);
+                });
+                stmt.finalize();
+                
+                res.status(201).json({
+                    success: true,
+                    data: {
+                        ...newKey,
+                        securityChecks: checks
+                    },
+                    message: 'Chave PIX registrada e analisada com sucesso'
+                });
+                
+                console.log(`🔐 Nova chave PIX registrada: ${pixKey} - Score: ${securityScore}`);
+            });
+            
+    } catch (error) {
+        console.error('Erro ao processar registro:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno ao processar registro'
+        });
+    }
+});
+
+// Verify security of a PIX key (can be used without registration)
+app.post('/api/v1/pix-keys/verify', async (req, res) => {
+    const { pixKey } = req.body;
+    
+    if (!pixKey) {
+        return res.status(400).json({
+            success: false,
+            message: 'Chave PIX é obrigatória'
+        });
+    }
+    
+    try {
+        const keyType = identifyPixKeyType(pixKey);
+        const { checks, securityScore } = await performSecurityAnalysis(pixKey, keyType, null);
+        
+        // Check if key is registered
+        db.get("SELECT * FROM registered_pix_keys WHERE pix_key = ?", [pixKey], (err, registeredKey) => {
+            let riskLevel = 'SAFE';
+            if (securityScore < 30) riskLevel = 'CRITICAL';
+            else if (securityScore < 50) riskLevel = 'HIGH';
+            else if (securityScore < 70) riskLevel = 'MEDIUM';
+            else if (securityScore < 85) riskLevel = 'LOW';
+            
+            res.json({
+                success: true,
+                data: {
+                    pixKey,
+                    keyType,
+                    securityScore,
+                    riskLevel,
+                    isRegistered: !!registeredKey,
+                    securityChecks: checks,
+                    recommendation: securityScore >= 70 
+                        ? '✅ Chave segura para transações' 
+                        : securityScore >= 50 
+                        ? '⚠️ Proceda com cautela' 
+                        : '🚨 Não recomendado! Alto risco de fraude'
+                }
+            });
+        });
+        
+    } catch (error) {
+        console.error('Erro ao verificar chave PIX:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro ao verificar segurança da chave PIX'
+        });
+    }
+});
+
+// Get all registered PIX keys
+app.get('/api/v1/pix-keys', (req, res) => {
+    db.all(`SELECT * FROM registered_pix_keys ORDER BY registration_date DESC`, (err, rows) => {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Erro ao buscar chaves PIX' });
+        }
+        
+        res.json({
+            success: true,
+            data: rows
+        });
+    });
+});
+
+// Get specific PIX key details
+app.get('/api/v1/pix-keys/:pixKey', (req, res) => {
+    const { pixKey } = req.params;
+    
+    db.get("SELECT * FROM registered_pix_keys WHERE pix_key = ?", [pixKey], (err, keyData) => {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Erro ao buscar chave PIX' });
+        }
+        
+        if (!keyData) {
+            return res.status(404).json({
+                success: false,
+                message: 'Chave PIX não encontrada'
+            });
+        }
+        
+        // Get security checks for this key
+        db.all("SELECT * FROM security_checks WHERE pix_key = ? ORDER BY checked_at DESC", 
+               [pixKey], (err, checks) => {
+            if (err) {
+                return res.status(500).json({ success: false, message: 'Erro ao buscar verificações' });
+            }
+            
+            res.json({
+                success: true,
+                data: {
+                    ...keyData,
+                    securityChecks: checks
+                }
+            });
         });
     });
 });

@@ -23,7 +23,7 @@ Write-Host "📂 Diretório atual: $frontendPath" -ForegroundColor Green
 Write-Host ""
 
 # Verificar se os arquivos existem
-$requiredFiles = @("index.html", "dashboard.js", "styles.css")
+$requiredFiles = @("index.html", "dashboard.html", "dashboard.js", "styles.css")
 $missingFiles = @()
 
 foreach ($file in $requiredFiles) {

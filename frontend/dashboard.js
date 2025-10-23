@@ -224,68 +224,110 @@ class SentinelaPixDashboard {
     createRiskAnalysisPage() {
         return `
             <div class="space-y-6">
-                <!-- Search and Analysis -->
-                <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Consulta de Risco PIX</h3>
-                    <div class="flex gap-4 items-end">
-                        <div class="flex-1">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Chave PIX</label>
-                            <input type="text" id="risk-pix-key" placeholder="Digite a chave PIX para análise..." 
-                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                        </div>
-                        <button onclick="dashboard.analyzePixKey()" class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 flex items-center gap-2 transition-colors">
-                            <span class="material-symbols-outlined">search</span>
-                            Analisar
+                <!-- Tabs -->
+                <div class="bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <div class="flex border-b border-gray-200 dark:border-gray-700">
+                        <button onclick="dashboard.switchRiskTab('verify')" id="tab-verify" class="flex-1 px-6 py-4 text-sm font-medium text-primary border-b-2 border-primary bg-primary/5">
+                            Verificar Segurança
+                        </button>
+                        <button onclick="dashboard.switchRiskTab('register')" id="tab-register" class="flex-1 px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                            Cadastrar Chave
+                        </button>
+                        <button onclick="dashboard.switchRiskTab('risks')" id="tab-risks" class="flex-1 px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                            Alto Risco
                         </button>
                     </div>
                 </div>
 
-                <!-- Risk Analysis Result -->
-                <div id="risk-result" class="hidden bg-white dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-                    <!-- Dynamic risk analysis content -->
-                </div>
-
-                <!-- High Risk Keys -->
-                <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Chaves de Alto Risco</h3>
-                        <button class="text-primary hover:text-primary/80 text-sm font-medium">Atualizar</button>
-                    </div>
-                    <div class="grid gap-4">
-                        <div class="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-red-600 dark:text-red-400">dangerous</span>
-                                </div>
-                                <div>
-                                    <p class="font-semibold text-gray-900 dark:text-white">fraudulento@gmail.com</p>
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">Score: 85 | 5 denúncias em 24h</p>
-                                </div>
+                <!-- Tab Content: Verify Security -->
+                <div id="content-verify" class="space-y-6">
+                    <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-start gap-4 mb-6">
+                            <div class="p-3 rounded-full bg-blue-500/10">
+                                <span class="material-symbols-outlined text-2xl text-blue-500">verified_user</span>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <span class="px-3 py-1 bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200 rounded-full text-xs font-medium">CRÍTICO</span>
-                                <button class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                                    <span class="material-symbols-outlined">more_vert</span>
-                                </button>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Verificação de Segurança PIX</h3>
+                                <p class="text-gray-600 dark:text-gray-400">Digite uma chave PIX para verificar sua segurança e histórico de denúncias</p>
                             </div>
                         </div>
+                        
+                        <div class="flex gap-4 items-end">
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Chave PIX</label>
+                                <input type="text" id="verify-pix-key" placeholder="exemplo@email.com, CPF, telefone..." 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary">
+                            </div>
+                            <button onclick="dashboard.verifyPixKeySecurity()" class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 flex items-center gap-2 transition-colors">
+                                <span class="material-symbols-outlined">search</span>
+                                Verificar
+                            </button>
+                        </div>
+                    </div>
 
-                        <div class="flex items-center justify-between p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900/50 rounded-full flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-orange-600 dark:text-orange-400">warning</span>
-                                </div>
-                                <div>
-                                    <p class="font-semibold text-gray-900 dark:text-white">11111111111</p>
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">Score: 65 | 3 denúncias em 12h</p>
-                                </div>
+                    <!-- Security Result -->
+                    <div id="security-result" class="hidden"></div>
+                </div>
+
+                <!-- Tab Content: Register Key -->
+                <div id="content-register" class="hidden space-y-6">
+                    <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-start gap-4 mb-6">
+                            <div class="p-3 rounded-full bg-green-500/10">
+                                <span class="material-symbols-outlined text-2xl text-green-500">app_registration</span>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <span class="px-3 py-1 bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 rounded-full text-xs font-medium">ALTO</span>
-                                <button class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                                    <span class="material-symbols-outlined">more_vert</span>
-                                </button>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Cadastrar Chave PIX</h3>
+                                <p class="text-gray-600 dark:text-gray-400">Registre sua chave PIX para monitoramento contínuo de segurança</p>
                             </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Chave PIX *</label>
+                                <input type="text" id="register-pix-key" placeholder="Sua chave PIX" 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nome do Titular</label>
+                                <input type="text" id="register-owner-name" placeholder="Nome completo" 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">CPF/CNPJ</label>
+                                <input type="text" id="register-document" placeholder="000.000.000-00" 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Banco</label>
+                                <input type="text" id="register-bank" placeholder="Nome do banco" 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 flex justify-end gap-4">
+                            <button onclick="dashboard.clearRegisterForm()" class="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                                Limpar
+                            </button>
+                            <button onclick="dashboard.registerPixKey()" class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 flex items-center gap-2 transition-colors">
+                                <span class="material-symbols-outlined">save</span>
+                                Cadastrar e Verificar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: High Risks -->
+                <div id="content-risks" class="hidden space-y-6">
+                    <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Chaves de Alto Risco</h3>
+                            <button onclick="dashboard.loadHighRiskKeys()" class="text-primary hover:text-primary/80 text-sm font-medium">
+                                <span class="material-symbols-outlined text-sm">refresh</span> Atualizar
+                            </button>
+                        </div>
+                        <div id="high-risk-keys-list" class="grid gap-4">
+                            <p class="text-gray-500 dark:text-gray-400 text-center py-8">Carregando chaves de alto risco...</p>
                         </div>
                     </div>
                 </div>
@@ -686,6 +728,293 @@ class SentinelaPixDashboard {
         `;
 
         resultDiv.classList.remove('hidden');
+    }
+
+    // Switch between risk analysis tabs
+    switchRiskTab(tabName) {
+        // Update tab buttons
+        ['verify', 'register', 'risks'].forEach(tab => {
+            const button = document.getElementById(`tab-${tab}`);
+            const content = document.getElementById(`content-${tab}`);
+            
+            if (tab === tabName) {
+                button.classList.add('text-primary', 'border-b-2', 'border-primary', 'bg-primary/5');
+                button.classList.remove('text-gray-500', 'dark:text-gray-400');
+                content.classList.remove('hidden');
+            } else {
+                button.classList.remove('text-primary', 'border-b-2', 'border-primary', 'bg-primary/5');
+                button.classList.add('text-gray-500', 'dark:text-gray-400');
+                content.classList.add('hidden');
+            }
+        });
+
+        // Load content if needed
+        if (tabName === 'risks') {
+            this.loadHighRiskKeys();
+        }
+    }
+
+    // Verify PIX key security
+    async verifyPixKeySecurity() {
+        const pixKey = document.getElementById('verify-pix-key')?.value;
+        if (!pixKey) {
+            this.showNotification('⚠️ Por favor, digite uma chave PIX', 'warning');
+            return;
+        }
+
+        try {
+            this.showNotification('🔍 Verificando segurança...', 'info');
+            
+            const response = await fetch(`${this.apiUrl}/pix-keys/verify`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pixKey })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                this.displaySecurityResult(result.data);
+                this.showNotification(`✅ Verificação concluída!`, 'success');
+            } else {
+                this.showNotification(`❌ Erro: ${result.message}`, 'error');
+            }
+        } catch (error) {
+            console.error('Erro ao verificar segurança:', error);
+            this.showNotification('❌ Erro ao verificar segurança da chave PIX', 'error');
+        }
+    }
+
+    // Display security verification result
+    displaySecurityResult(data) {
+        const resultDiv = document.getElementById('security-result');
+        if (!resultDiv) return;
+
+        const scoreColor = data.securityScore >= 70 ? 'green' : data.securityScore >= 50 ? 'yellow' : 'red';
+        const riskIcon = data.riskLevel === 'SAFE' ? 'verified_user' : 
+                        data.riskLevel === 'LOW' ? 'info' :
+                        data.riskLevel === 'MEDIUM' ? 'warning' : 'dangerous';
+
+        let checksHtml = '';
+        if (data.securityChecks && data.securityChecks.length > 0) {
+            checksHtml = data.securityChecks.map(check => {
+                const severityColors = {
+                    'CRITICAL': 'red',
+                    'HIGH': 'orange',
+                    'MEDIUM': 'yellow',
+                    'LOW': 'blue',
+                    'INFO': 'green'
+                };
+                const color = severityColors[check.severity] || 'gray';
+                
+                return `
+                    <div class="p-4 bg-${color}-50 dark:bg-${color}-900/20 border border-${color}-200 dark:border-${color}-800 rounded-lg">
+                        <div class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-${color}-600 dark:text-${color}-400 text-xl">
+                                ${check.severity === 'CRITICAL' || check.severity === 'HIGH' ? 'error' : check.severity === 'INFO' ? 'check_circle' : 'warning'}
+                            </span>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="font-medium text-${color}-900 dark:text-${color}-100">${check.message}</span>
+                                    <span class="px-2 py-0.5 bg-${color}-200 dark:bg-${color}-800 text-${color}-800 dark:text-${color}-200 rounded text-xs font-medium">
+                                        ${check.severity}
+                                    </span>
+                                </div>
+                                ${check.recommendation ? `<p class="text-sm text-${color}-700 dark:text-${color}-300">${check.recommendation}</p>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        resultDiv.innerHTML = `
+            <div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                <div class="flex items-start gap-6 mb-6">
+                    <div class="p-4 rounded-full bg-${scoreColor}-500/10">
+                        <span class="material-symbols-outlined text-4xl text-${scoreColor}-500">${riskIcon}</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Relatório de Segurança</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Chave PIX</p>
+                                <p class="font-mono text-gray-900 dark:text-white break-all">${data.pixKey}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Tipo</p>
+                                <p class="font-semibold text-gray-900 dark:text-white">${data.keyType}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Score de Segurança</p>
+                                <p class="text-3xl font-bold text-${scoreColor}-500">${data.securityScore}/100</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Nível de Risco</p>
+                                <span class="inline-block px-3 py-1 bg-${scoreColor}-100 dark:bg-${scoreColor}-900/50 text-${scoreColor}-800 dark:text-${scoreColor}-200 rounded-full text-sm font-medium">
+                                    ${data.riskLevel}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-${scoreColor}-50 dark:bg-${scoreColor}-900/20 border border-${scoreColor}-200 dark:border-${scoreColor}-800 rounded-lg mb-6">
+                    <p class="text-${scoreColor}-900 dark:text-${scoreColor}-100 font-medium">${data.recommendation}</p>
+                </div>
+
+                ${checksHtml ? `
+                    <div class="space-y-3">
+                        <h5 class="font-semibold text-gray-900 dark:text-white">Verificações de Segurança:</h5>
+                        ${checksHtml}
+                    </div>
+                ` : ''}
+
+                ${data.isRegistered ? `
+                    <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <p class="text-blue-800 dark:text-blue-200 text-sm">
+                            <span class="material-symbols-outlined text-sm">info</span>
+                            Esta chave está cadastrada no sistema de monitoramento
+                        </p>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+
+        resultDiv.classList.remove('hidden');
+    }
+
+    // Register PIX key
+    async registerPixKey() {
+        const pixKey = document.getElementById('register-pix-key')?.value;
+        const ownerName = document.getElementById('register-owner-name')?.value;
+        const ownerDocument = document.getElementById('register-document')?.value;
+        const bankName = document.getElementById('register-bank')?.value;
+
+        if (!pixKey) {
+            this.showNotification('⚠️ Por favor, preencha a chave PIX', 'warning');
+            return;
+        }
+
+        try {
+            this.showNotification('💾 Cadastrando chave PIX...', 'info');
+            
+            const response = await fetch(`${this.apiUrl}/pix-keys/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pixKey, ownerName, ownerDocument, bankName })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                this.showNotification(`✅ Chave PIX cadastrada com sucesso!`, 'success');
+                
+                // Switch to verify tab and show results
+                this.switchRiskTab('verify');
+                document.getElementById('verify-pix-key').value = pixKey;
+                this.displaySecurityResult({
+                    pixKey: result.data.pix_key,
+                    keyType: result.data.key_type,
+                    securityScore: result.data.security_score,
+                    riskLevel: result.data.security_score >= 70 ? 'SAFE' : 
+                              result.data.security_score >= 50 ? 'MEDIUM' : 'HIGH',
+                    recommendation: result.data.security_score >= 70 
+                        ? '✅ Chave cadastrada e segura para transações' 
+                        : '⚠️ Chave cadastrada - Monitore transações',
+                    securityChecks: result.data.securityChecks,
+                    isRegistered: true
+                });
+                
+                this.clearRegisterForm();
+            } else {
+                this.showNotification(`❌ Erro: ${result.message}`, 'error');
+            }
+        } catch (error) {
+            console.error('Erro ao cadastrar chave PIX:', error);
+            this.showNotification('❌ Erro ao cadastrar chave PIX', 'error');
+        }
+    }
+
+    // Clear registration form
+    clearRegisterForm() {
+        document.getElementById('register-pix-key').value = '';
+        document.getElementById('register-owner-name').value = '';
+        document.getElementById('register-document').value = '';
+        document.getElementById('register-bank').value = '';
+    }
+
+    // Load high risk keys
+    async loadHighRiskKeys() {
+        const container = document.getElementById('high-risk-keys-list');
+        if (!container) return;
+
+        try {
+            const response = await fetch(`${this.apiUrl}/risk-analysis`);
+            const result = await response.json();
+
+            if (result.success && result.data.length > 0) {
+                const highRiskKeys = result.data.filter(key => 
+                    key.risk_level === 'CRITICAL' || key.risk_level === 'HIGH'
+                );
+
+                if (highRiskKeys.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-8">
+                            <span class="material-symbols-outlined text-6xl text-green-500 mb-4">verified_user</span>
+                            <p class="text-gray-500 dark:text-gray-400">Nenhuma chave de alto risco encontrada</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = highRiskKeys.map(key => {
+                    const isCritical = key.risk_level === 'CRITICAL';
+                    const color = isCritical ? 'red' : 'orange';
+                    const icon = isCritical ? 'dangerous' : 'warning';
+
+                    return `
+                        <div class="flex items-center justify-between p-4 bg-${color}-50 dark:bg-${color}-900/20 border border-${color}-200 dark:border-${color}-800 rounded-lg">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-${color}-100 dark:bg-${color}-900/50 rounded-full flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-${color}-600 dark:text-${color}-400">${icon}</span>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-900 dark:text-white">${key.pix_key}</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                                        Score: ${key.risk_score} | ${key.report_count} denúncia(s)
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 bg-${color}-100 dark:bg-${color}-900/50 text-${color}-800 dark:text-${color}-200 rounded-full text-xs font-medium">
+                                    ${key.risk_level}
+                                </span>
+                                <button onclick="dashboard.verifyPixKeySecurity(); document.getElementById('verify-pix-key').value='${key.pix_key}'; dashboard.switchRiskTab('verify');" 
+                                        class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" title="Ver detalhes">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <span class="material-symbols-outlined text-6xl text-gray-400 mb-4">search_off</span>
+                        <p class="text-gray-500 dark:text-gray-400">Nenhum dado de risco disponível</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Erro ao carregar chaves de alto risco:', error);
+            container.innerHTML = `
+                <div class="text-center py-8">
+                    <span class="material-symbols-outlined text-6xl text-red-400 mb-4">error</span>
+                    <p class="text-red-500">Erro ao carregar dados</p>
+                </div>
+            `;
+        }
     }
 
     showReportForm() {
