@@ -1,415 +1,268 @@
-# Sentinela PIX - Deployment Guide
+# Guia de Deployment - Sentinela PIX
 
-## Table of Contents
+## Índice
 
-1. [Prerequisites](#prerequisites)
-2. [Environment Configuration](#environment-configuration)
-3. [Database Setup](#database-setup)
-4. [Backend Deployment](#backend-deployment)
-5. [Frontend Deployment](#frontend-deployment)
-6. [Production Checklist](#production-checklist)
-7. [Monitoring and Maintenance](#monitoring-and-maintenance)
-8. [Troubleshooting](#troubleshooting)
+1. [Visão Geral](#visão-geral)
+2. [Pré-requisitos](#pré-requisitos)
+3. [Preparação para Deploy](#preparação-para-deploy)
+4. [Deploy do Backend](#deploy-do-backend)
+5. [Deploy do Frontend](#deploy-do-frontend)
+6. [Configuração do Firebase](#configuração-do-firebase)
+7. [Checklist de Produção](#checklist-de-produção)
+8. [Monitoramento](#monitoramento)
+9. [Troubleshooting](#troubleshooting)
 
-## Prerequisites
+## Visão Geral
 
-### Required Software
+Este guia fornece instruções detalhadas para fazer deploy da plataforma Sentinela PIX em ambiente de produção.
 
-- **Node.js**: Version 18.0.0 or higher
-- **npm**: Version 8.0.0 or higher
-- **Git**: Version 2.30 or higher
-- **Python**: Version 3.8 or higher (for development server)
+### Arquitetura de Deployment
 
-### Required Accounts
+```
+┌─────────────────────────────────────────────────┐
+│          Usuários / Navegadores Web            │
+└──────────────────┬──────────────────────────────┘
+                   │
+         ┌─────────▼──────────┐
+         │  Firebase Hosting  │
+         │  (Frontend Estático)│
+         └─────────┬──────────┘
+                   │
+         ┌─────────▼──────────┐
+         │  Railway / Heroku  │
+         │  (Backend Node.js) │
+         └─────────┬──────────┘
+                   │
+    ┌──────────────┼──────────────┐
+    ▼              ▼              ▼
+┌────────┐  ┌──────────┐  ┌──────────┐
+│ SQLite │  │ Firebase │  │  Cloud   │
+│   DB   │  │ Services │  │ Storage  │
+└────────┘  └──────────┘  └──────────┘
+```
 
-- **Firebase Account**: For authentication, Firestore, and hosting
-- **Cloud Provider Account**: Railway, Heroku, Azure, or AWS
-- **Domain Name**: (Optional) For custom domain configuration
+## Pré-requisitos
 
-### Required Knowledge
+### Contas Necessárias
 
-- Basic command line operations
-- Understanding of environment variables
-- Basic networking concepts (DNS, SSL/TLS)
-- Firebase console navigation
+- Conta Firebase (gratuita)
+- Conta Railway.app ou Heroku (gratuita para começar)
+- Conta GitHub (para CI/CD)
+- Domínio customizado (opcional)
 
-## Environment Configuration
+### Software Local
 
-### Backend Environment Variables
+- Node.js 18+ instalado
+- npm 8+ instalado
+- Git instalado
+- Firebase CLI instalado
+- Railway CLI ou Heroku CLI instalado
 
-Create a `.env` file in the `backend/` directory:
+### Instalação das Ferramentas
+
+```powershell
+# Firebase CLI
+npm install -g firebase-tools
+
+# Railway CLI
+npm install -g @railway/cli
+
+# Heroku CLI (alternativa)
+npm install -g heroku
+```
+
+## Preparação para Deploy
+
+### 1. Clonar Repositório
+
+```powershell
+git clone https://github.com/MatheusGino71/A3-sistemas.git
+cd A3-sistemas/sentinela-pix
+```
+
+### 2. Instalar Dependências Backend
+
+```powershell
+cd backend
+npm install --production
+```
+
+### 3. Configurar Variáveis de Ambiente
+
+Criar arquivo `.env` no diretório `backend/`:
 
 ```env
-# Server Configuration
+# Configurações do Servidor
 PORT=3001
 NODE_ENV=production
 
-# Security
-JWT_SECRET=your_secure_jwt_secret_minimum_32_characters_long
-JWT_EXPIRATION=3600
+# Segurança
+JWT_SECRET=sua_chave_secreta_jwt_minimo_32_caracteres_aqui
 
-# Database
+# Banco de Dados
 DATABASE_PATH=./database.sqlite
-DATABASE_BACKUP_PATH=./backups
 
-# CORS Configuration
-CORS_ORIGIN=https://your-frontend-domain.com
-CORS_CREDENTIALS=true
+# CORS
+CORS_ORIGIN=https://seu-dominio.com
 
-# Rate Limiting
-RATE_LIMIT_WINDOW_MS=60000
-RATE_LIMIT_MAX_REQUESTS=100
-
-# WebSocket
-WS_PATH=/ws
-WS_MAX_CONNECTIONS=1000
-
-# Logging
-LOG_LEVEL=info
-LOG_FILE=./logs/app.log
-
-# Firebase Admin (Optional for backend push)
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_CLIENT_EMAIL=your-service-account@project.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key\n-----END PRIVATE KEY-----\n"
+# Firebase Admin (opcional)
+FIREBASE_PROJECT_ID=seu-projeto-id
+FIREBASE_PRIVATE_KEY=sua-chave-privada
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk@seu-projeto.iam.gserviceaccount.com
 ```
 
-### Frontend Configuration
-
-#### backend-config.js
-
-Update `frontend/backend-config.js`:
-
-```javascript
-const BACKEND_CONFIG = {
-  development: {
-    API_URL: 'http://localhost:3001/api/v1',
-    WS_URL: 'ws://localhost:3001/ws'
-  },
-  production: {
-    API_URL: 'https://api.sentinela-pix.com/api/v1',
-    WS_URL: 'wss://api.sentinela-pix.com/ws'
-  }
-};
-
-const ENV = window.location.hostname === 'localhost' ? 'development' : 'production';
-const API_BASE_URL = BACKEND_CONFIG[ENV].API_URL;
-const WS_BASE_URL = BACKEND_CONFIG[ENV].WS_URL;
-```
-
-#### firebase-config.js
-
-Update `frontend/firebase-config.js` with production credentials:
-
-```javascript
-const firebaseConfig = {
-  apiKey: "production_api_key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "your_sender_id",
-  appId: "your_production_app_id",
-  measurementId: "your_measurement_id"
-};
-```
-
-#### user-system.js
-
-Update VAPID key in `frontend/user-system.js` line 133:
-
-```javascript
-this.fcmToken = await getToken(messaging, {
-  vapidKey: 'YOUR_PRODUCTION_VAPID_KEY'
-});
-```
-
-## Database Setup
-
-### Development Database
-
-The SQLite database is automatically created on first run.
+### 4. Gerar JWT Secret Seguro
 
 ```powershell
-cd backend
-node server.js
+# PowerShell
+$bytes = New-Object byte[] 32
+[Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+[Convert]::ToBase64String($bytes)
 ```
 
-### Production Database Options
+## Deploy do Backend
 
-#### Option 1: Continue with SQLite
+### Opção 1: Railway.app (Recomendado)
 
-**Pros:**
-- No additional setup required
-- Lightweight and fast
-- Zero configuration
-
-**Cons:**
-- Single-file database
-- Limited concurrent connections
-- Manual backup required
-
-**Backup Strategy:**
+#### Passo 1: Login no Railway
 
 ```powershell
-# Create backup script (backup-db.ps1)
-$timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-Copy-Item "database.sqlite" "backups/database-$timestamp.sqlite"
-```
-
-Schedule with Windows Task Scheduler or cron.
-
-#### Option 2: PostgreSQL (Recommended for Production)
-
-**Install PostgreSQL Client:**
-
-```powershell
-npm install pg
-```
-
-**Create Migration Script:**
-
-```javascript
-// migrate-to-postgres.js
-const sqlite3 = require('sqlite3').verbose();
-const { Client } = require('pg');
-
-// Connection details
-const pgClient = new Client({
-  host: 'your-postgres-host',
-  port: 5432,
-  database: 'sentinela_pix',
-  user: 'your_username',
-  password: 'your_password',
-  ssl: { rejectUnauthorized: false }
-});
-
-// Migration logic here
-```
-
-**Update server.js for PostgreSQL:**
-
-Replace SQLite initialization with PostgreSQL connection pooling.
-
-## Backend Deployment
-
-### Option 1: Railway.app
-
-**Step 1: Create Railway Account**
-
-Visit https://railway.app and sign up.
-
-**Step 2: Create New Project**
-
-```powershell
-# Install Railway CLI
-npm install -g @railway/cli
-
-# Login
 railway login
+```
 
-# Initialize project
+#### Passo 2: Criar Novo Projeto
+
+```powershell
 cd backend
 railway init
+```
 
-# Link to existing project or create new
+#### Passo 3: Vincular ao Projeto
+
+```powershell
 railway link
 ```
 
-**Step 3: Configure Environment Variables**
+#### Passo 4: Configurar Variáveis de Ambiente
 
-In Railway dashboard:
-1. Go to your project
-2. Click on "Variables" tab
-3. Add all variables from `.env` file
-4. Ensure `PORT` variable is not set (Railway assigns it automatically)
+No dashboard da Railway (https://railway.app):
+1. Selecione seu projeto
+2. Clique em "Variables"
+3. Adicione todas as variáveis do arquivo `.env`
+4. Não defina PORT (Railway define automaticamente)
 
-**Step 4: Deploy**
+#### Passo 5: Deploy
 
 ```powershell
 railway up
 ```
 
-**Step 5: Get Deployment URL**
-
-Railway will provide a URL like: `https://sentinela-pix-backend.railway.app`
-
-### Option 2: Heroku
-
-**Step 1: Install Heroku CLI**
+#### Passo 6: Obter URL de Produção
 
 ```powershell
-npm install -g heroku
+railway domain
 ```
 
-**Step 2: Login and Create App**
+A URL será algo como: `https://sentinela-pix-production.up.railway.app`
+
+### Opção 2: Heroku
+
+#### Passo 1: Login no Heroku
 
 ```powershell
 heroku login
+```
 
+#### Passo 2: Criar Aplicação
+
+```powershell
 cd backend
 heroku create sentinela-pix-backend
 ```
 
-**Step 3: Configure Environment Variables**
+#### Passo 3: Configurar Variáveis
 
 ```powershell
-heroku config:set JWT_SECRET=your_secret
+heroku config:set JWT_SECRET=sua_chave_secreta
 heroku config:set NODE_ENV=production
-heroku config:set CORS_ORIGIN=https://your-frontend.com
+heroku config:set CORS_ORIGIN=https://seu-dominio.com
 ```
 
-**Step 4: Create Procfile**
-
-Already exists in `backend/Procfile`:
-
-```
-web: node server.js
-```
-
-**Step 5: Deploy**
+#### Passo 4: Deploy
 
 ```powershell
-git add .
-git commit -m "Deploy to Heroku"
 git push heroku main
 ```
 
-**Step 6: Scale Dynos**
+#### Passo 5: Verificar Logs
 
 ```powershell
-heroku ps:scale web=1
+heroku logs --tail
 ```
 
-### Option 3: Azure App Service
+### Opção 3: Azure App Service
 
-**Step 1: Install Azure CLI**
-
-```powershell
-# Windows
-winget install Microsoft.AzureCLI
-```
-
-**Step 2: Login to Azure**
+#### Passo 1: Login no Azure
 
 ```powershell
 az login
 ```
 
-**Step 3: Create Resource Group**
+#### Passo 2: Criar Resource Group
 
 ```powershell
-az group create --name sentinela-pix-rg --location eastus
+az group create --name sentinela-pix-rg --location brazilsouth
 ```
 
-**Step 4: Create App Service Plan**
+#### Passo 3: Criar App Service Plan
 
 ```powershell
-az appservice plan create `
-  --name sentinela-pix-plan `
-  --resource-group sentinela-pix-rg `
-  --sku B1 `
-  --is-linux
+az appservice plan create --name sentinela-pix-plan --resource-group sentinela-pix-rg --sku B1 --is-linux
 ```
 
-**Step 5: Create Web App**
+#### Passo 4: Criar Web App
 
 ```powershell
-az webapp create `
-  --resource-group sentinela-pix-rg `
-  --plan sentinela-pix-plan `
-  --name sentinela-pix-backend `
-  --runtime "NODE|18-lts"
+az webapp create --resource-group sentinela-pix-rg --plan sentinela-pix-plan --name sentinela-pix-backend --runtime "NODE|18-lts"
 ```
 
-**Step 6: Enable WebSocket**
+#### Passo 5: Configurar Variáveis
 
 ```powershell
-az webapp config set `
-  --resource-group sentinela-pix-rg `
-  --name sentinela-pix-backend `
-  --web-sockets-enabled true
+az webapp config appsettings set --resource-group sentinela-pix-rg --name sentinela-pix-backend --settings JWT_SECRET=sua_chave NODE_ENV=production
 ```
 
-**Step 7: Configure Environment Variables**
+#### Passo 6: Deploy via Git
 
 ```powershell
-az webapp config appsettings set `
-  --resource-group sentinela-pix-rg `
-  --name sentinela-pix-backend `
-  --settings JWT_SECRET=your_secret NODE_ENV=production
+az webapp deployment source config-local-git --name sentinela-pix-backend --resource-group sentinela-pix-rg
+git remote add azure <deployment_url>
+git push azure main
 ```
 
-**Step 8: Deploy from GitHub**
+## Deploy do Frontend
 
-In Azure Portal:
-1. Go to your Web App
-2. Select "Deployment Center"
-3. Choose GitHub as source
-4. Authenticate and select repository
-5. Select branch and save
+### Firebase Hosting
 
-### Option 4: AWS Elastic Beanstalk
-
-**Step 1: Install EB CLI**
-
-```powershell
-pip install awsebcli
-```
-
-**Step 2: Initialize Application**
-
-```powershell
-cd backend
-eb init -p node.js-18 sentinela-pix-backend
-```
-
-**Step 3: Create Environment**
-
-```powershell
-eb create sentinela-pix-env
-```
-
-**Step 4: Set Environment Variables**
-
-```powershell
-eb setenv JWT_SECRET=your_secret NODE_ENV=production
-```
-
-**Step 5: Deploy**
-
-```powershell
-eb deploy
-```
-
-## Frontend Deployment
-
-### Option 1: Firebase Hosting (Recommended)
-
-**Step 1: Install Firebase CLI**
-
-```powershell
-npm install -g firebase-tools
-```
-
-**Step 2: Login to Firebase**
+#### Passo 1: Login no Firebase
 
 ```powershell
 firebase login
 ```
 
-**Step 3: Initialize Firebase**
+#### Passo 2: Inicializar Projeto
 
 ```powershell
 cd sentinela-pix
 firebase init hosting
 ```
 
-Configuration:
-- **Public directory**: frontend
-- **Single-page app**: No
-- **Automatic builds**: No
+Configurações:
+- Diretório público: `frontend`
+- SPA (Single Page App): `Não`
+- Builds automáticos: `Não`
 
-**Step 4: Update firebase.json**
+#### Passo 3: Configurar firebase.json
 
 ```json
 {
@@ -420,12 +273,7 @@ Configuration:
       "**/.*",
       "**/node_modules/**"
     ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ],
+    "rewrites": [],
     "headers": [
       {
         "source": "**/*.@(js|css)",
@@ -435,173 +283,209 @@ Configuration:
             "value": "max-age=31536000"
           }
         ]
+      },
+      {
+        "source": "**/*.@(jpg|jpeg|gif|png|svg|webp)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=604800"
+          }
+        ]
       }
     ]
   }
 }
 ```
 
-**Step 5: Deploy**
+#### Passo 4: Atualizar URLs da API
+
+Editar `frontend/backend-config.js`:
+
+```javascript
+const BACKEND_CONFIG = {
+  API_BASE_URL: 'https://sua-url-railway.up.railway.app/api/v1',
+  WS_BASE_URL: 'wss://sua-url-railway.up.railway.app/ws'
+};
+```
+
+#### Passo 5: Deploy
 
 ```powershell
 firebase deploy --only hosting
 ```
 
-**Step 6: Custom Domain (Optional)**
+#### Passo 6: Obter URL
 
-In Firebase Console:
-1. Go to Hosting
-2. Click "Add custom domain"
-3. Follow instructions to verify domain
-4. Update DNS records
+O Firebase fornecerá uma URL como: `https://seu-projeto.web.app`
 
-### Option 2: Netlify
+### Configurar Domínio Customizado
 
-**Step 1: Create netlify.toml**
+#### No Firebase Console
 
-```toml
-[build]
-  base = "frontend"
-  publish = "frontend"
+1. Acesse https://console.firebase.google.com
+2. Selecione seu projeto
+3. Vá para Hosting
+4. Clique em "Add custom domain"
+5. Siga as instruções para adicionar registros DNS
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+## Configuração do Firebase
 
-[[headers]]
-  for = "/*.js"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
+### 1. Criar Projeto Firebase
 
-[[headers]]
-  for = "/*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-```
+1. Acesse https://console.firebase.google.com
+2. Clique em "Add project"
+3. Nomeie o projeto: "Sentinela PIX"
+4. Siga o wizard de criação
 
-**Step 2: Deploy via GitHub**
+### 2. Habilitar Authentication
 
-1. Go to https://netlify.com
-2. Click "New site from Git"
-3. Connect GitHub repository
-4. Configure build settings
-5. Deploy
+1. No console, vá para Authentication
+2. Clique em "Get Started"
+3. Habilite "Email/Password"
+4. Opcionalmente habilite outros provedores
 
-### Option 3: Vercel
+### 3. Configurar Firestore
 
-**Step 1: Install Vercel CLI**
+1. No console, vá para Firestore Database
+2. Clique em "Create database"
+3. Selecione "Start in production mode"
+4. Escolha localização: `southamerica-east1` (São Paulo)
+
+#### Deploy de Regras Firestore
 
 ```powershell
-npm install -g vercel
+firebase deploy --only firestore:rules
 ```
 
-**Step 2: Deploy**
+Conteúdo de `firestore.rules`:
 
-```powershell
-cd frontend
-vercel
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    match /reports/{reportId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && 
+        (resource.data.createdBy == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+    }
+  }
+}
 ```
 
-Follow prompts to configure and deploy.
+### 4. Configurar Cloud Messaging
 
-### Option 4: Azure Static Web Apps
+1. No console, vá para Project Settings
+2. Clique na aba "Cloud Messaging"
+3. Gere um novo par de chaves Web Push
+4. Copie a chave VAPID pública
 
-**Step 1: Create Static Web App**
+Atualizar `frontend/user-system.js` linha 133:
 
-```powershell
-az staticwebapp create `
-  --name sentinela-pix-frontend `
-  --resource-group sentinela-pix-rg `
-  --source https://github.com/MatheusGino71/A3-sistemas `
-  --location eastus `
-  --branch main `
-  --app-location "/sentinela-pix/frontend" `
-  --output-location "/"
+```javascript
+this.fcmToken = await getToken(messaging, {
+  vapidKey: 'SUA_CHAVE_VAPID_PUBLICA_AQUI'
+});
 ```
 
-## Production Checklist
+### 5. Configurar Service Worker
 
-### Security
+Verificar `frontend/firebase-messaging-sw.js`:
 
-- [ ] Change all default passwords and secrets
-- [ ] Generate strong JWT secret (minimum 32 characters)
-- [ ] Enable HTTPS/SSL for all endpoints
-- [ ] Configure secure WebSocket (WSS)
-- [ ] Set up CORS with specific origins
-- [ ] Enable rate limiting
-- [ ] Configure security headers (Helmet.js)
-- [ ] Remove console.log statements from production code
-- [ ] Set up Web Application Firewall (WAF)
-- [ ] Enable DDoS protection
+```javascript
+importScripts('https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.5.0/firebase-messaging-compat.js');
+
+firebase.initializeApp({
+  apiKey: "sua_api_key",
+  authDomain: "seu-projeto.firebaseapp.com",
+  projectId: "seu-projeto-id",
+  storageBucket: "seu-projeto.appspot.com",
+  messagingSenderId: "seu_sender_id",
+  appId: "seu_app_id"
+});
+
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage((payload) => {
+  console.log('Mensagem recebida em background:', payload);
+  
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: '/icon.png',
+    badge: '/badge.png'
+  };
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
+});
+```
+
+## Checklist de Produção
+
+### Segurança
+
+- [ ] Alterar todas as senhas e secrets padrão
+- [ ] Gerar JWT secret forte (32+ caracteres)
+- [ ] Habilitar HTTPS/SSL em todos os endpoints
+- [ ] Configurar WebSocket seguro (WSS)
+- [ ] Configurar CORS com origens específicas
+- [ ] Habilitar rate limiting
+- [ ] Remover console.log do código de produção
+- [ ] Configurar headers de segurança (Helmet.js)
+- [ ] Validar todas as entradas do usuário
+- [ ] Implementar proteção contra CSRF
 
 ### Performance
 
-- [ ] Enable response compression (gzip/brotli)
-- [ ] Configure CDN for static assets
-- [ ] Set up database connection pooling
-- [ ] Enable caching (Redis recommended)
-- [ ] Optimize database queries with indexes
-- [ ] Minify JavaScript and CSS files
-- [ ] Optimize images (WebP format)
-- [ ] Enable lazy loading for images
-- [ ] Configure proper cache headers
+- [ ] Habilitar compressão gzip/brotli
+- [ ] Configurar CDN para assets estáticos
+- [ ] Otimizar queries de banco de dados
+- [ ] Habilitar caching
+- [ ] Minificar JavaScript e CSS
+- [ ] Otimizar imagens
+- [ ] Configurar headers de cache adequados
+- [ ] Habilitar HTTP/2
 
-### Monitoring
+### Monitoramento
 
-- [ ] Set up error tracking (Sentry, Rollbar)
-- [ ] Configure application monitoring (New Relic, DataDog)
-- [ ] Set up log aggregation (ELK Stack, Splunk)
-- [ ] Configure uptime monitoring (UptimeRobot, Pingdom)
-- [ ] Set up alerts for critical errors
-- [ ] Configure performance monitoring
-- [ ] Enable database query monitoring
-- [ ] Set up WebSocket connection monitoring
+- [ ] Configurar rastreamento de erros (Sentry)
+- [ ] Configurar monitoramento de aplicação
+- [ ] Configurar agregação de logs
+- [ ] Configurar alertas para erros críticos
+- [ ] Configurar monitoramento de uptime
+- [ ] Configurar backup automático de banco de dados
+- [ ] Configurar métricas de performance
 
-### Backup
+### Banco de Dados
 
-- [ ] Configure automatic database backups
-- [ ] Set up backup retention policy
-- [ ] Test database restore procedure
-- [ ] Configure off-site backup storage
-- [ ] Document backup and restore procedures
-- [ ] Schedule regular backup tests
+- [ ] Criar backup inicial do banco de dados
+- [ ] Configurar backups automáticos diários
+- [ ] Testar restauração de backup
+- [ ] Otimizar índices do banco de dados
+- [ ] Configurar retenção de dados
+- [ ] Implementar limpeza de dados antigos
 
-### Testing
+## Monitoramento
 
-- [ ] Run all automated tests
-- [ ] Perform manual testing of critical flows
-- [ ] Test WebSocket connections
-- [ ] Test push notifications
-- [ ] Verify email functionality
-- [ ] Test payment flows (if applicable)
-- [ ] Perform load testing
-- [ ] Test disaster recovery procedures
+### Health Check
 
-### Documentation
+Endpoint para verificação de saúde:
 
-- [ ] Update API documentation
-- [ ] Document deployment procedures
-- [ ] Create runbook for common issues
-- [ ] Document monitoring and alerting
-- [ ] Create user documentation
-- [ ] Document architecture decisions
+```http
+GET /health
 
-## Monitoring and Maintenance
-
-### Health Check Endpoint
-
-Configure monitoring service to check:
-
-```
-GET https://api.sentinela-pix.com/health
-```
-
-Expected response:
-
-```json
+Resposta: 200 OK
 {
   "status": "healthy",
+  "timestamp": "2024-10-24T10:30:00Z",
+  "uptime": 86400,
   "services": {
     "database": "connected",
     "websocket": "running",
@@ -610,218 +494,132 @@ Expected response:
 }
 ```
 
-### Log Monitoring
+### Logs
 
-**Backend Logs:**
+#### Ver Logs Railway
 
 ```powershell
-# Railway
 railway logs
+```
 
-# Heroku
+#### Ver Logs Heroku
+
+```powershell
 heroku logs --tail
-
-# Azure
-az webapp log tail --name sentinela-pix-backend --resource-group sentinela-pix-rg
 ```
 
-**Frontend Logs:**
+### Métricas
 
-Check Firebase Hosting logs in Firebase Console.
-
-### Database Maintenance
-
-**Backup Command:**
-
-```powershell
-# Create automated backup script
-$date = Get-Date -Format "yyyyMMdd-HHmmss"
-railway run "sqlite3 database.sqlite .dump > backup-$date.sql"
-```
-
-**Schedule with Task Scheduler (Windows):**
-
-1. Open Task Scheduler
-2. Create Basic Task
-3. Set trigger (daily at 2 AM)
-4. Set action to run PowerShell script
-
-### SSL Certificate Renewal
-
-Most platforms handle this automatically:
-
-- **Firebase Hosting**: Automatic Let's Encrypt
-- **Railway**: Automatic SSL
-- **Heroku**: Automatic SSL on paid plans
-- **Azure**: Automatic with App Service Certificate
-
-### Scaling
-
-**Horizontal Scaling (Railway):**
-
-```powershell
-# Scale to 2 instances
-railway scale --replicas 2
-```
-
-**Vertical Scaling (Azure):**
-
-```powershell
-# Scale up to higher tier
-az appservice plan update `
-  --name sentinela-pix-plan `
-  --resource-group sentinela-pix-rg `
-  --sku S1
-```
+Monitorar:
+- Taxa de requisições por segundo
+- Tempo de resposta médio
+- Taxa de erro
+- Conexões WebSocket ativas
+- Uso de memória
+- Uso de CPU
 
 ## Troubleshooting
 
-### Issue: Backend Not Starting
+### Backend não inicia
 
-**Check logs:**
+**Problema**: Servidor não inicia ou crasheia
 
-```powershell
-railway logs
+**Soluções**:
+1. Verificar logs: `railway logs` ou `heroku logs --tail`
+2. Verificar variáveis de ambiente estão configuradas
+3. Verificar PORT não está hardcoded (usar `process.env.PORT`)
+4. Verificar dependências instaladas: `npm install`
+
+### WebSocket não conecta
+
+**Problema**: Conexão WebSocket falha
+
+**Soluções**:
+1. Verificar URL usa `wss://` em produção (não `ws://`)
+2. Verificar CORS está configurado corretamente
+3. Verificar firewall/proxy não bloqueia WebSocket
+4. Testar com ferramentas: `wscat -c wss://sua-url.com/ws`
+
+### Notificações push não funcionam
+
+**Problema**: Notificações FCM não são recebidas
+
+**Soluções**:
+1. Verificar chave VAPID está configurada corretamente
+2. Verificar Service Worker está registrado
+3. Verificar permissões de notificação concedidas
+4. Testar no console do Firebase (Cloud Messaging > Send test message)
+5. Verificar token FCM está sendo salvo no backend
+
+### Erro CORS
+
+**Problema**: Requisições bloqueadas por CORS
+
+**Soluções**:
+1. Verificar `CORS_ORIGIN` inclui URL do frontend
+2. Em desenvolvimento, usar `*` (NUNCA em produção)
+3. Verificar headers CORS no backend:
+
+```javascript
+app.use(cors({
+  origin: process.env.CORS_ORIGIN,
+  credentials: true
+}));
 ```
 
-**Common causes:**
-- Missing environment variables
-- Port conflicts
-- Database connection errors
-- Syntax errors in code
+### Banco de dados não persiste
 
-**Solutions:**
-1. Verify all environment variables are set
-2. Check for error messages in logs
-3. Ensure database is accessible
-4. Review recent code changes
+**Problema**: Dados são perdidos após restart
 
-### Issue: WebSocket Connection Fails
+**Soluções**:
+1. Railway: Adicionar volume persistente
+2. Heroku: Usar add-on de banco de dados
+3. Verificar `DATABASE_PATH` aponta para volume persistente
+4. Considerar migrar para PostgreSQL em produção
 
-**Symptoms:**
-- Real-time notifications not working
-- WebSocket connection errors in console
+### Alto uso de memória
 
-**Solutions:**
-1. Ensure WebSocket is enabled in hosting platform
-2. Verify WSS is used in production (not WS)
-3. Check firewall rules allow WebSocket connections
-4. Verify CORS configuration includes WebSocket origin
+**Problema**: Aplicação consome muita memória
 
-### Issue: Push Notifications Not Working
+**Soluções**:
+1. Implementar pool de conexões
+2. Limitar conexões WebSocket simultâneas
+3. Implementar limpeza de conexões inativas
+4. Habilitar garbage collection: `node --max-old-space-size=512 server.js`
 
-**Check:**
-1. VAPID key is configured correctly
-2. Service worker is registered
-3. Firebase Cloud Messaging is enabled
-4. Browser permissions are granted
-5. HTTPS is being used
+## Manutenção
 
-### Issue: High Memory Usage
-
-**Diagnosis:**
+### Backups Regulares
 
 ```powershell
-railway metrics
+# Backup manual do SQLite
+cp backend/database.sqlite backend/backups/database-$(date +%Y%m%d).sqlite
+
+# Backup automatizado (adicionar ao cron/task scheduler)
+# Diário às 3:00 AM
+0 3 * * * /caminho/para/backup-script.sh
 ```
 
-**Solutions:**
-1. Check for memory leaks in code
-2. Implement connection pooling
-3. Enable garbage collection logging
-4. Scale vertically (more memory)
-5. Implement caching to reduce database queries
-
-### Issue: Slow API Response Times
-
-**Check:**
-1. Database query performance
-2. Network latency
-3. Cold start times (serverless)
-4. Unoptimized code loops
-
-**Solutions:**
-1. Add database indexes
-2. Implement caching
-3. Use connection pooling
-4. Optimize expensive queries
-5. Use CDN for static assets
-
-## Rollback Procedures
-
-### Railway
+### Atualizações de Segurança
 
 ```powershell
-# List deployments
-railway status
+# Verificar vulnerabilidades
+npm audit
 
-# Rollback to previous deployment
-railway rollback
+# Corrigir automaticamente
+npm audit fix
+
+# Atualizar dependências
+npm update
 ```
 
-### Heroku
+### Rotação de Logs
 
-```powershell
-# List releases
-heroku releases
-
-# Rollback to specific release
-heroku rollback v10
-```
-
-### Firebase Hosting
-
-```powershell
-# List hosting releases
-firebase hosting:channel:list
-
-# Rollback to previous version
-firebase hosting:channel:deploy previous
-```
-
-## Disaster Recovery
-
-### Backup Restoration
-
-**SQLite:**
-
-```powershell
-# Restore from backup
-railway run "sqlite3 database.sqlite < backup-20241024.sql"
-```
-
-**PostgreSQL:**
-
-```powershell
-# Restore from dump
-pg_restore -h hostname -U username -d sentinela_pix backup.dump
-```
-
-### Complete System Recovery
-
-1. Redeploy backend from Git repository
-2. Restore database from latest backup
-3. Verify environment variables
-4. Test critical functionality
-5. Monitor error rates and performance
-6. Notify users of service restoration
-
-## Support Contacts
-
-**Platform Support:**
-- Railway: https://railway.app/help
-- Heroku: https://help.heroku.com
-- Azure: https://azure.microsoft.com/support
-- Firebase: https://firebase.google.com/support
-
-**Internal Team:**
-- Backend issues: backend-team@sentinela-pix.com
-- Frontend issues: frontend-team@sentinela-pix.com
-- Infrastructure: devops@sentinela-pix.com
-- Security: security@sentinela-pix.com
+Configure rotação de logs para evitar enchimento de disco:
+- Manter logs por 30 dias
+- Comprimir logs antigos
+- Implementar limpeza automática
 
 ---
 
-**Document Version**: 1.0.0
-**Last Updated**: October 2024
-**Maintained By**: Sentinela PIX DevOps Team
+**Última Atualização**: Outubro de 2024
