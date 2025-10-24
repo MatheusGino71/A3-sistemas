@@ -7,10 +7,70 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cron = require('node-cron');
 const path = require('path');
+const http = require('http');
+const WebSocket = require('ws');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'sentinela-pix-secret-key';
+
+// Criar servidor HTTP
+const server = http.createServer(app);
+
+// Configurar WebSocket Server
+const wss = new WebSocket.Server({ server, path: '/ws' });
+
+// Armazenar conexões de usuários
+const userConnections = new Map();
+
+wss.on('connection', (ws) => {
+    console.log('🔌 Nova conexão WebSocket estabelecida');
+    let userId = null;
+
+    ws.on('message', (message) => {
+        try {
+            const data = JSON.parse(message);
+            
+            if (data.type === 'identify') {
+                // Usuário se identificou
+                userId = data.userId;
+                userConnections.set(userId, ws);
+                console.log(`✅ Usuário ${userId} conectado via WebSocket`);
+                
+                ws.send(JSON.stringify({
+                    type: 'connected',
+                    message: 'WebSocket conectado com sucesso'
+                }));
+            }
+        } catch (error) {
+            console.error('Erro ao processar mensagem WebSocket:', error);
+        }
+    });
+
+    ws.on('close', () => {
+        if (userId) {
+            userConnections.delete(userId);
+            console.log(`🔌 Usuário ${userId} desconectou`);
+        }
+    });
+
+    ws.on('error', (error) => {
+        console.error('Erro no WebSocket:', error);
+    });
+});
+
+// Função para enviar notificação via WebSocket
+function sendNotificationViaWebSocket(userId, notification) {
+    const userWs = userConnections.get(userId);
+    if (userWs && userWs.readyState === WebSocket.OPEN) {
+        userWs.send(JSON.stringify({
+            type: 'notification',
+            notification: notification
+        }));
+        return true;
+    }
+    return false;
+}
 
 // Middleware
 app.use(cors({
@@ -65,17 +125,55 @@ const initializeDatabase = () => {
         // Notifications table
         db.run(`CREATE TABLE IF NOT EXISTS notifications (
             id TEXT PRIMARY KEY,
-            fraud_report_id TEXT NOT NULL,
-            target_bank TEXT NOT NULL,
-            pix_key TEXT NOT NULL,
+            user_id TEXT,
+            fraud_report_id TEXT,
+            type TEXT NOT NULL,
+            title TEXT NOT NULL,
             message TEXT NOT NULL,
+            icon TEXT DEFAULT 'info',
+            color TEXT DEFAULT 'blue',
+            target_bank TEXT,
+            pix_key TEXT,
             status TEXT DEFAULT 'PENDING',
             sent_at DATETIME,
             delivered_at DATETIME,
+            read_at DATETIME,
             retry_count INTEGER DEFAULT 0,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (fraud_report_id) REFERENCES fraud_reports (id)
         )`);
+        
+        // Adicionar colunas novas se não existirem (migração)
+        db.run(`ALTER TABLE notifications ADD COLUMN user_id TEXT`, (err) => {
+            if (err && !err.message.includes('duplicate column')) {
+                console.error('Erro ao adicionar coluna user_id:', err);
+            }
+        });
+        db.run(`ALTER TABLE notifications ADD COLUMN type TEXT DEFAULT 'info'`, (err) => {
+            if (err && !err.message.includes('duplicate column')) {
+                console.error('Erro ao adicionar coluna type:', err);
+            }
+        });
+        db.run(`ALTER TABLE notifications ADD COLUMN title TEXT`, (err) => {
+            if (err && !err.message.includes('duplicate column')) {
+                console.error('Erro ao adicionar coluna title:', err);
+            }
+        });
+        db.run(`ALTER TABLE notifications ADD COLUMN icon TEXT DEFAULT 'info'`, (err) => {
+            if (err && !err.message.includes('duplicate column')) {
+                console.error('Erro ao adicionar coluna icon:', err);
+            }
+        });
+        db.run(`ALTER TABLE notifications ADD COLUMN color TEXT DEFAULT 'blue'`, (err) => {
+            if (err && !err.message.includes('duplicate column')) {
+                console.error('Erro ao adicionar coluna color:', err);
+            }
+        });
+        db.run(`ALTER TABLE notifications ADD COLUMN read_at DATETIME`, (err) => {
+            if (err && !err.message.includes('duplicate column')) {
+                console.error('Erro ao adicionar coluna read_at:', err);
+            }
+        });;
 
         // System Statistics table
         db.run(`CREATE TABLE IF NOT EXISTS system_stats (
@@ -995,18 +1093,199 @@ app.get('/api/v1/pix-keys/:pixKey', (req, res) => {
 
 // Notifications Routes
 app.get('/api/v1/notifications', (req, res) => {
-    db.all(`SELECT n.*, fr.description as fraud_description 
-           FROM notifications n 
-           LEFT JOIN fraud_reports fr ON n.fraud_report_id = fr.id 
-           ORDER BY n.created_at DESC`, (err, rows) => {
+    const { userId } = req.query;
+    
+    if (!userId) {
+        return res.status(400).json({ success: false, message: 'userId é obrigatório' });
+    }
+    
+    // Criar notificações de exemplo se não existirem
+    db.all(`SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC`, [userId], (err, rows) => {
         if (err) {
             return res.status(500).json({ success: false, message: 'Erro ao buscar notificações' });
         }
         
+        // Se não há notificações, retornar array vazio
+        const notifications = rows.map(row => ({
+            id: row.id,
+            type: row.type,
+            title: row.title,
+            message: row.message,
+            time: row.created_at,
+            read: row.read_at !== null,
+            icon: row.icon || 'info',
+            color: row.color || 'blue'
+        }));
+        
         res.json({
             success: true,
-            data: rows
+            notifications: notifications
         });
+    });
+});
+
+// Marcar notificação como lida
+app.put('/api/v1/notifications/:id/read', (req, res) => {
+    const { id } = req.params;
+    
+    db.run(`UPDATE notifications SET read_at = CURRENT_TIMESTAMP WHERE id = ?`, [id], function(err) {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Erro ao marcar notificação como lida' });
+        }
+        
+        if (this.changes === 0) {
+            return res.status(404).json({ success: false, message: 'Notificação não encontrada' });
+        }
+        
+        res.json({
+            success: true,
+            message: 'Notificação marcada como lida'
+        });
+    });
+});
+
+// Marcar todas como lidas
+app.put('/api/v1/notifications/read-all', (req, res) => {
+    const { userId } = req.body;
+    
+    if (!userId) {
+        return res.status(400).json({ success: false, message: 'userId é obrigatório' });
+    }
+    
+    db.run(`UPDATE notifications SET read_at = CURRENT_TIMESTAMP WHERE user_id = ? AND read_at IS NULL`, 
+           [userId], function(err) {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Erro ao marcar notificações como lidas' });
+        }
+        
+        res.json({
+            success: true,
+            message: `${this.changes} notificações marcadas como lidas`
+        });
+    });
+});
+
+// Verificar novas notificações
+app.get('/api/v1/notifications/check', (req, res) => {
+    const { userId } = req.query;
+    
+    if (!userId) {
+        return res.status(400).json({ success: false, message: 'userId é obrigatório' });
+    }
+    
+    db.get(`SELECT COUNT(*) as unread_count FROM notifications WHERE user_id = ? AND read_at IS NULL`, 
+           [userId], (err, row) => {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Erro ao verificar notificações' });
+        }
+        
+        res.json({
+            success: true,
+            hasNew: row.unread_count > 0,
+            unreadCount: row.unread_count
+        });
+    });
+});
+
+// Salvar token FCM do usuário
+app.post('/api/v1/users/fcm-token', (req, res) => {
+    const { userId, fcmToken } = req.body;
+    
+    if (!userId || !fcmToken) {
+        return res.status(400).json({ success: false, message: 'userId e fcmToken são obrigatórios' });
+    }
+    
+    // Criar tabela se não existir
+    db.run(`CREATE TABLE IF NOT EXISTS user_fcm_tokens (
+        user_id TEXT PRIMARY KEY,
+        fcm_token TEXT NOT NULL,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`, (err) => {
+        if (err) {
+            console.error('Erro ao criar tabela de tokens:', err);
+        }
+    });
+    
+    // Inserir ou atualizar token
+    db.run(`INSERT INTO user_fcm_tokens (user_id, fcm_token, updated_at) 
+            VALUES (?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(user_id) DO UPDATE SET 
+            fcm_token = excluded.fcm_token,
+            updated_at = CURRENT_TIMESTAMP`,
+           [userId, fcmToken], function(err) {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Erro ao salvar token FCM' });
+        }
+        
+        res.json({
+            success: true,
+            message: 'Token FCM salvo com sucesso'
+        });
+    });
+});
+
+// Criar notificação para usuário (com WebSocket)
+function createUserNotification(userId, notification) {
+    const notificationId = uuidv4();
+    const { type, title, message, icon, color, fraudReportId } = notification;
+    
+    db.run(`INSERT INTO notifications 
+            (id, user_id, fraud_report_id, type, title, message, icon, color, created_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+           [notificationId, userId, fraudReportId || null, type, title, message, icon || 'info', color || 'blue'],
+           (err) => {
+        if (err) {
+            console.error('Erro ao criar notificação:', err);
+            return;
+        }
+        
+        console.log(`✅ Notificação criada para usuário ${userId}: ${title}`);
+        
+        // Enviar via WebSocket se usuário estiver online
+        const sent = sendNotificationViaWebSocket(userId, {
+            id: notificationId,
+            type,
+            title,
+            message,
+            icon,
+            color,
+            time: new Date().toISOString(),
+            read: false
+        });
+        
+        if (sent) {
+            console.log(`📤 Notificação enviada via WebSocket para ${userId}`);
+        } else {
+            console.log(`📭 Usuário ${userId} offline, notificação será entregue no próximo acesso`);
+        }
+    });
+    
+    return notificationId;
+}
+
+// Endpoint para criar notificação manualmente (para testes)
+app.post('/api/v1/notifications/create', (req, res) => {
+    const { userId, type, title, message, icon, color } = req.body;
+    
+    if (!userId || !title || !message) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'userId, title e message são obrigatórios' 
+        });
+    }
+    
+    const notificationId = createUserNotification(userId, {
+        type: type || 'info',
+        title,
+        message,
+        icon: icon || 'info',
+        color: color || 'blue'
+    });
+    
+    res.json({
+        success: true,
+        notificationId,
+        message: 'Notificação criada com sucesso'
     });
 });
 
@@ -1130,13 +1409,15 @@ app.use('*', (req, res) => {
 // Initialize database and start server
 initializeDatabase();
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`🚀 Sentinela PIX Backend rodando na porta ${PORT}`);
     console.log(`📊 Dashboard disponível em: http://localhost:8080`);
     console.log(`🔗 API disponível em: http://localhost:${PORT}/api/v1`);
+    console.log(`🔌 WebSocket disponível em: ws://localhost:${PORT}/ws`);
     console.log(`❤️ Health check: http://localhost:${PORT}/health`);
     console.log(`💾 Database: ${dbPath}`);
     console.log(`✅ Sistema 100% funcional - SEM dados mock!`);
+    console.log(`🔔 Notificações em tempo real habilitadas via WebSocket`);
 });
 
 module.exports = app;

@@ -4,6 +4,7 @@ import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import { getMessaging, isSupported } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -25,4 +26,17 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-export { app, analytics, auth, db, storage };
+// Initialize Firebase Messaging (apenas se suportado)
+let messaging = null;
+try {
+  if (await isSupported()) {
+    messaging = getMessaging(app);
+    console.log('✅ Firebase Messaging inicializado');
+  } else {
+    console.log('⚠️ Firebase Messaging não suportado neste navegador');
+  }
+} catch (error) {
+  console.log('Firebase Messaging não disponível:', error);
+}
+
+export { app, analytics, auth, db, storage, messaging };

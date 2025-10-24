@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Configurações - Sentinela PIX</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1193d4",
+                        "secondary": "#16a34a",
+                        "danger": "#dc2626",
+                        "warning": "#f59e0b",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101c22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex items-center gap-4">
+                    <a href="dashboard.html" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </a>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Configurações</h1>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Sidebar de Navegação -->
+                <div class="lg:col-span-1">
+                    <nav class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sticky top-24">
+                        <ul class="space-y-2">
+                            <li>
+                                <a href="#appearance" class="nav-link active flex items-center gap-3 p-3 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined">palette</span>
+                                    <span>Aparência</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#notifications" class="nav-link flex items-center gap-3 p-3 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined">notifications</span>
+                                    <span>Notificações</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#privacy" class="nav-link flex items-center gap-3 p-3 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined">lock</span>
+                                    <span>Privacidade</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#security" class="nav-link flex items-center gap-3 p-3 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined">shield</span>
+                                    <span>Segurança</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#advanced" class="nav-link flex items-center gap-3 p-3 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined">tune</span>
+                                    <span>Avançado</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <!-- Conteúdo Principal -->
+                <div class="lg:col-span-3 space-y-6">
+                    <!-- Aparência -->
+                    <section id="appearance" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Aparência</h2>
+                        
+                        <div class="space-y-6">
+                            <!-- Tema -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                    Tema
+                                </label>
+                                <div class="grid grid-cols-3 gap-4">
+                                    <button onclick="setTheme('light')" class="theme-btn p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary transition-colors">
+                                        <span class="material-symbols-outlined text-4xl mb-2">light_mode</span>
+                                        <p class="text-sm font-medium">Claro</p>
+                                    </button>
+                                    <button onclick="setTheme('dark')" class="theme-btn p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary transition-colors">
+                                        <span class="material-symbols-outlined text-4xl mb-2">dark_mode</span>
+                                        <p class="text-sm font-medium">Escuro</p>
+                                    </button>
+                                    <button onclick="setTheme('auto')" class="theme-btn p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary transition-colors">
+                                        <span class="material-symbols-outlined text-4xl mb-2">brightness_auto</span>
+                                        <p class="text-sm font-medium">Automático</p>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Idioma -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Idioma
+                                </label>
+                                <select id="language-select" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary">
+                                    <option value="pt-BR">Português (Brasil)</option>
+                                    <option value="en-US">English (US)</option>
+                                    <option value="es-ES">Español</option>
+                                </select>
+                            </div>
+
+                            <!-- Densidade da Interface -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Densidade da Interface
+                                </label>
+                                <select id="density-select" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary">
+                                    <option value="comfortable">Confortável</option>
+                                    <option value="compact">Compacta</option>
+                                    <option value="spacious">Espaçosa</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Notificações -->
+                    <section id="notifications" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Notificações</h2>
+                        
+                        <div class="space-y-4">
+                            <!-- Notificações Push -->
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Notificações Push</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Receba notificações em tempo real no navegador</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="push-notifications" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                </label>
+                            </div>
+
+                            <!-- Notificações por Email -->
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Notificações por Email</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Receba um resumo diário por email</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="email-notifications" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                </label>
+                            </div>
+
+                            <!-- Som de Notificação -->
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Som de Notificação</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Reproduzir som ao receber notificações</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="sound-notifications" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                </label>
+                            </div>
+
+                            <!-- Tipos de Notificação -->
+                            <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-3">Tipos de Notificação</h4>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" checked class="rounded border-gray-300 text-primary focus:ring-primary">
+                                        <span class="text-sm text-gray-900 dark:text-white">Fraudes detectadas</span>
+                                    </label>
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" checked class="rounded border-gray-300 text-primary focus:ring-primary">
+                                        <span class="text-sm text-gray-900 dark:text-white">Relatórios processados</span>
+                                    </label>
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" checked class="rounded border-gray-300 text-primary focus:ring-primary">
+                                        <span class="text-sm text-gray-900 dark:text-white">Atualizações do sistema</span>
+                                    </label>
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                        <span class="text-sm text-gray-900 dark:text-white">Newsletter e dicas</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Privacidade -->
+                    <section id="privacy" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Privacidade</h2>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Perfil Público</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Permitir que outros usuários vejam seu perfil</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="public-profile" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                </label>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Analytics</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Ajude-nos a melhorar compartilhando dados de uso</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="analytics" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                </label>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Cookies</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Permitir cookies para melhor experiência</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="cookies" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Segurança -->
+                    <section id="security" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Segurança</h2>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Autenticação de Dois Fatores (2FA)</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Adicione uma camada extra de segurança</p>
+                                </div>
+                                <button class="px-4 py-2 text-primary border border-primary rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                                    Configurar
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Sessões Ativas</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Gerencie dispositivos conectados</p>
+                                </div>
+                                <button class="px-4 py-2 text-primary border border-primary rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                                    Ver Sessões
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Histórico de Login</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Visualize tentativas de acesso recentes</p>
+                                </div>
+                                <button class="px-4 py-2 text-primary border border-primary rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                                    Ver Histórico
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Avançado -->
+                    <section id="advanced" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Avançado</h2>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Modo Desenvolvedor</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Habilitar ferramentas avançadas de debug</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="dev-mode" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                </label>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Limpar Cache</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Remover dados em cache do navegador</p>
+                                </div>
+                                <button id="clear-cache-btn" class="px-4 py-2 text-primary border border-primary rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                                    Limpar
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Exportar Configurações</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Salvar suas preferências em arquivo</p>
+                                </div>
+                                <button id="export-settings-btn" class="px-4 py-2 text-primary border border-primary rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                                    Exportar
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-danger">Resetar Configurações</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Restaurar todas as configurações padrão</p>
+                                </div>
+                                <button id="reset-settings-btn" class="px-4 py-2 text-danger border border-danger rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
+                                    Resetar
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Navegação suave
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active', 'bg-blue-50', 'dark:bg-blue-900/20', 'text-primary'));
+                link.classList.add('active', 'bg-blue-50', 'dark:bg-blue-900/20', 'text-primary');
+            });
+        });
+
+        // Tema
+        function setTheme(theme) {
+            localStorage.setItem('theme', theme);
+            if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            alert(`Tema alterado para: ${theme === 'light' ? 'Claro' : theme === 'dark' ? 'Escuro' : 'Automático'}`);
+        }
+
+        // Notificações Push
+        document.getElementById('push-notifications').addEventListener('change', async (e) => {
+            if (e.target.checked) {
+                if ('Notification' in window) {
+                    const permission = await Notification.requestPermission();
+                    if (permission !== 'granted') {
+                        e.target.checked = false;
+                        alert('Permissão de notificações negada');
+                    }
+                }
+            }
+        });
+
+        // Limpar cache
+        document.getElementById('clear-cache-btn').addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja limpar o cache?')) {
+                localStorage.removeItem('notifications');
+                alert('Cache limpo com sucesso!');
+            }
+        });
+
+        // Exportar configurações
+        document.getElementById('export-settings-btn').addEventListener('click', () => {
+            const settings = {
+                theme: localStorage.getItem('theme') || 'auto',
+                notifications: {
+                    push: document.getElementById('push-notifications').checked,
+                    email: document.getElementById('email-notifications').checked,
+                    sound: document.getElementById('sound-notifications').checked
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sentinela-pix-settings.json';
+            a.click();
+        });
+
+        // Resetar configurações
+        document.getElementById('reset-settings-btn').addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja resetar todas as configurações? Esta ação não pode ser desfeita.')) {
+                localStorage.removeItem('theme');
+                localStorage.removeItem('notifications');
+                alert('Configurações resetadas! Recarregando página...');
+                location.reload();
+            }
+        });
+
+        // Carregar configurações salvas
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'auto';
+            // Aplicar tema salvo visualmente
+        });
+    </script>
+</body>
+</html>

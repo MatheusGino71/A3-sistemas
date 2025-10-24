@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Meu Perfil - Sentinela PIX</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1193d4",
+                        "secondary": "#16a34a",
+                        "danger": "#dc2626",
+                        "warning": "#f59e0b",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101c22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <a href="dashboard.html" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </a>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Meu Perfil</h1>
+                    </div>
+                    <button id="save-btn" class="hidden px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Profile Header -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6">
+                <div class="h-32 bg-gradient-to-r from-blue-500 to-purple-600"></div>
+                <div class="px-6 pb-6">
+                    <div class="flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-16">
+                        <!-- Avatar -->
+                        <div class="relative">
+                            <div id="profile-avatar" class="w-32 h-32 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-4xl font-bold text-white border-4 border-white dark:border-gray-800">
+                                AB
+                            </div>
+                            <button id="change-avatar-btn" class="absolute bottom-0 right-0 p-2 bg-primary text-white rounded-full hover:bg-blue-600 transition-colors shadow-lg">
+                                <span class="material-symbols-outlined text-xl">photo_camera</span>
+                            </button>
+                        </div>
+                        
+                        <!-- User Info -->
+                        <div class="flex-1 text-center sm:text-left">
+                            <h2 id="profile-name" class="text-2xl font-bold text-gray-900 dark:text-white">Carregando...</h2>
+                            <p id="profile-email" class="text-gray-600 dark:text-gray-400">email@example.com</p>
+                            <div class="flex flex-wrap gap-2 mt-2 justify-center sm:justify-start">
+                                <span class="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full text-sm">
+                                    Conta Ativa
+                                </span>
+                                <span id="profile-banco-badge" class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm">
+                                    Banco
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Main Content -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Informações Pessoais -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Informações Pessoais</h3>
+                            <button id="edit-personal-btn" class="px-4 py-2 text-primary border border-primary rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                                <span class="material-symbols-outlined text-sm align-middle">edit</span>
+                                Editar
+                            </button>
+                        </div>
+
+                        <form id="personal-info-form" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Nome
+                                    </label>
+                                    <input type="text" id="input-nome" disabled
+                                           class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Sobrenome
+                                    </label>
+                                    <input type="text" id="input-sobrenome" disabled
+                                           class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Email
+                                </label>
+                                <input type="email" id="input-email" disabled
+                                       class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        CPF
+                                    </label>
+                                    <input type="text" id="input-cpf" disabled
+                                           class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Telefone
+                                    </label>
+                                    <input type="text" id="input-telefone" disabled
+                                           class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Banco
+                                </label>
+                                <select id="input-banco" disabled
+                                        class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <option value="">Selecione seu banco</option>
+                                    <option value="001">Banco do Brasil</option>
+                                    <option value="033">Santander</option>
+                                    <option value="104">Caixa Econômica Federal</option>
+                                    <option value="237">Bradesco</option>
+                                    <option value="341">Itaú</option>
+                                    <option value="756">Bancoob</option>
+                                    <option value="077">Inter</option>
+                                    <option value="260">Nubank</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Segurança -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Segurança</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Alterar Senha</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Última alteração: Nunca</p>
+                                </div>
+                                <button id="change-password-btn" class="px-4 py-2 text-primary border border-primary rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                                    Alterar
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Autenticação de Dois Fatores</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Adicione uma camada extra de segurança</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="two-factor-toggle" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-6">
+                    <!-- Estatísticas -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Estatísticas</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Relatórios Enviados</span>
+                                <span id="stat-reports" class="text-2xl font-bold text-primary">0</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Fraudes Detectadas</span>
+                                <span id="stat-frauds" class="text-2xl font-bold text-danger">0</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Taxa de Sucesso</span>
+                                <span id="stat-success" class="text-2xl font-bold text-secondary">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Atividade Recente -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Atividade Recente</h3>
+                        <div id="recent-activity" class="space-y-3">
+                            <div class="flex items-start gap-3 text-sm">
+                                <span class="material-symbols-outlined text-primary">login</span>
+                                <div>
+                                    <p class="text-gray-900 dark:text-white">Último login</p>
+                                    <p id="last-login" class="text-gray-600 dark:text-gray-400">Carregando...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ações Rápidas -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Ações Rápidas</h3>
+                        <div class="space-y-2">
+                            <a href="settings.html" class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                <span class="material-symbols-outlined text-gray-600 dark:text-gray-400">settings</span>
+                                <span class="text-gray-900 dark:text-white">Configurações</span>
+                            </a>
+                            <button id="export-data-btn" class="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                <span class="material-symbols-outlined text-gray-600 dark:text-gray-400">download</span>
+                                <span class="text-gray-900 dark:text-white">Exportar Dados</span>
+                            </button>
+                            <button id="delete-account-btn" class="w-full flex items-center gap-3 p-3 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors text-danger">
+                                <span class="material-symbols-outlined">delete</span>
+                                <span>Excluir Conta</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Alteração de Senha -->
+    <div id="password-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Alterar Senha</h3>
+                <button onclick="closePasswordModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <form id="password-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Senha Atual
+                    </label>
+                    <input type="password" id="current-password" required
+                           class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Nova Senha
+                    </label>
+                    <input type="password" id="new-password" required
+                           class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Confirmar Nova Senha
+                    </label>
+                    <input type="password" id="confirm-password" required
+                           class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary">
+                </div>
+                <button type="submit" class="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors">
+                    Alterar Senha
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        let currentUser = null;
+        let isEditing = false;
+
+        // Verificar autenticação
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserProfile(user);
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        async function loadUserProfile(user) {
+            try {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                const userData = userDoc.exists() ? userDoc.data() : {};
+
+                // Atualizar cabeçalho
+                const fullName = `${userData.nome || ''} ${userData.sobrenome || ''}`.trim() || 'Usuário';
+                document.getElementById('profile-name').textContent = fullName;
+                document.getElementById('profile-email').textContent = user.email;
+                
+                // Avatar com iniciais
+                const initials = getInitials(fullName);
+                document.getElementById('profile-avatar').textContent = initials;
+
+                // Badge do banco
+                const bancoName = getBancoName(userData.banco);
+                document.getElementById('profile-banco-badge').textContent = bancoName;
+
+                // Preencher formulário
+                document.getElementById('input-nome').value = userData.nome || '';
+                document.getElementById('input-sobrenome').value = userData.sobrenome || '';
+                document.getElementById('input-email').value = user.email;
+                document.getElementById('input-cpf').value = userData.cpf || '';
+                document.getElementById('input-telefone').value = userData.telefone || '';
+                document.getElementById('input-banco').value = userData.banco || '';
+
+                // Último login
+                document.getElementById('last-login').textContent = new Date().toLocaleString('pt-BR');
+
+                // Carregar estatísticas (simulado)
+                loadStatistics(user.uid);
+            } catch (error) {
+                console.error('Erro ao carregar perfil:', error);
+                alert('Erro ao carregar perfil. Tente novamente.');
+            }
+        }
+
+        function getInitials(name) {
+            const parts = name.trim().split(' ');
+            if (parts.length >= 2) {
+                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            }
+            return parts[0].substring(0, 2).toUpperCase();
+        }
+
+        function getBancoName(codigo) {
+            const bancos = {
+                '001': 'Banco do Brasil',
+                '033': 'Santander',
+                '104': 'Caixa',
+                '237': 'Bradesco',
+                '341': 'Itaú',
+                '756': 'Bancoob',
+                '077': 'Inter',
+                '260': 'Nubank'
+            };
+            return bancos[codigo] || 'Banco';
+        }
+
+        async function loadStatistics(userId) {
+            // Simulado - substituir por dados reais do backend
+            document.getElementById('stat-reports').textContent = '0';
+            document.getElementById('stat-frauds').textContent = '0';
+            document.getElementById('stat-success').textContent = '0%';
+        }
+
+        // Editar perfil
+        document.getElementById('edit-personal-btn').addEventListener('click', () => {
+            isEditing = !isEditing;
+            const inputs = ['input-nome', 'input-sobrenome', 'input-telefone', 'input-banco'];
+            inputs.forEach(id => {
+                document.getElementById(id).disabled = !isEditing;
+            });
+            
+            const saveBtn = document.getElementById('save-btn');
+            const editBtn = document.getElementById('edit-personal-btn');
+            
+            if (isEditing) {
+                saveBtn.classList.remove('hidden');
+                editBtn.textContent = 'Cancelar';
+            } else {
+                saveBtn.classList.add('hidden');
+                editBtn.innerHTML = '<span class="material-symbols-outlined text-sm align-middle">edit</span> Editar';
+            }
+        });
+
+        // Salvar alterações
+        document.getElementById('save-btn').addEventListener('click', async () => {
+            try {
+                const userData = {
+                    nome: document.getElementById('input-nome').value,
+                    sobrenome: document.getElementById('input-sobrenome').value,
+                    telefone: document.getElementById('input-telefone').value,
+                    banco: document.getElementById('input-banco').value
+                };
+
+                await updateDoc(doc(db, 'users', currentUser.uid), userData);
+                
+                alert('Perfil atualizado com sucesso!');
+                location.reload();
+            } catch (error) {
+                console.error('Erro ao salvar:', error);
+                alert('Erro ao salvar alterações. Tente novamente.');
+            }
+        });
+
+        // Modal de senha
+        window.closePasswordModal = () => {
+            document.getElementById('password-modal').classList.add('hidden');
+        };
+
+        document.getElementById('change-password-btn').addEventListener('click', () => {
+            document.getElementById('password-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (newPassword !== confirmPassword) {
+                alert('As senhas não coincidem!');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                alert('A senha deve ter pelo menos 6 caracteres!');
+                return;
+            }
+
+            try {
+                const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
+                await reauthenticateWithCredential(currentUser, credential);
+                await updatePassword(currentUser, newPassword);
+                
+                alert('Senha alterada com sucesso!');
+                closePasswordModal();
+                document.getElementById('password-form').reset();
+            } catch (error) {
+                console.error('Erro ao alterar senha:', error);
+                if (error.code === 'auth/wrong-password') {
+                    alert('Senha atual incorreta!');
+                } else {
+                    alert('Erro ao alterar senha. Tente novamente.');
+                }
+            }
+        });
+
+        // Exportar dados
+        document.getElementById('export-data-btn').addEventListener('click', () => {
+            const userData = localStorage.getItem('user');
+            const blob = new Blob([userData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sentinela-pix-dados.json';
+            a.click();
+        });
+
+        // Excluir conta
+        document.getElementById('delete-account-btn').addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita!')) {
+                alert('Funcionalidade em desenvolvimento. Entre em contato com o suporte.');
+            }
+        });
+    </script>
+</body>
+</html>
