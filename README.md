@@ -1,4 +1,4 @@
-# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Fraud Detection and Prevention Platform# Sentinela PIX - Fraud Detection and Prevention Platform
+# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes
 
 
 
