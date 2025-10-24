@@ -14,8 +14,15 @@ const JWT_SECRET = process.env.JWT_SECRET || 'sentinela-pix-secret-key';
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:8080', 'http://127.0.0.1:8080'],
-    credentials: true
+    origin: [
+        'http://localhost:8080', 
+        'http://127.0.0.1:8080',
+        'https://a3-quinta-1a763.web.app',
+        'https://a3-quinta-1a763.firebaseapp.com'
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(bodyParser.json());
 app.use(express.json());
@@ -105,6 +112,20 @@ const initializeDatabase = () => {
             recommendation TEXT,
             checked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (pix_key) REFERENCES registered_pix_keys (pix_key)
+        )`);
+
+        // Users table
+        db.run(`CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            nome TEXT NOT NULL,
+            sobrenome TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            cpf TEXT UNIQUE NOT NULL,
+            telefone TEXT,
+            banco TEXT,
+            senha_hash TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
 
         // Insert initial stats if not exists
@@ -487,6 +508,181 @@ app.get('/api/v1/fraud-reports', (req, res) => {
             });
         });
     });
+});
+
+// ==================== USER ROUTES ====================
+
+// Register new user
+app.post('/api/v1/users/register', async (req, res) => {
+    const { nome, sobrenome, email, cpf, telefone, banco, senha } = req.body;
+    
+    // Validação
+    if (!nome || !sobrenome || !email || !cpf || !senha) {
+        return res.status(400).json({
+            success: false,
+            message: 'Campos obrigatórios: nome, sobrenome, email, cpf, senha'
+        });
+    }
+    
+    // Validar formato do email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Email inválido'
+        });
+    }
+    
+    // Validar CPF (11 dígitos)
+    if (cpf.length !== 11 || !/^\d{11}$/.test(cpf)) {
+        return res.status(400).json({
+            success: false,
+            message: 'CPF deve conter 11 dígitos'
+        });
+    }
+    
+    // Validar senha (mínimo 6 caracteres)
+    if (senha.length < 6) {
+        return res.status(400).json({
+            success: false,
+            message: 'Senha deve ter no mínimo 6 caracteres'
+        });
+    }
+    
+    try {
+        // Verificar se email já existe
+        const existingEmail = await new Promise((resolve, reject) => {
+            db.get('SELECT id FROM users WHERE email = ?', [email], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+        
+        if (existingEmail) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email já cadastrado'
+            });
+        }
+        
+        // Verificar se CPF já existe
+        const existingCPF = await new Promise((resolve, reject) => {
+            db.get('SELECT id FROM users WHERE cpf = ?', [cpf], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+        
+        if (existingCPF) {
+            return res.status(400).json({
+                success: false,
+                message: 'CPF já cadastrado'
+            });
+        }
+        
+        // Hash da senha
+        const senhaHash = await bcrypt.hash(senha, 10);
+        
+        // Criar novo usuário
+        const userId = uuidv4();
+        await new Promise((resolve, reject) => {
+            db.run(
+                `INSERT INTO users (id, nome, sobrenome, email, cpf, telefone, banco, senha_hash) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                [userId, nome, sobrenome, email, cpf, telefone || null, banco || null, senhaHash],
+                (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                }
+            );
+        });
+        
+        // Gerar token JWT
+        const token = jwt.sign(
+            { id: userId, email, nome },
+            JWT_SECRET,
+            { expiresIn: '7d' }
+        );
+        
+        res.status(201).json({
+            success: true,
+            message: 'Usuário criado com sucesso',
+            data: {
+                id: userId,
+                nome,
+                sobrenome,
+                email,
+                token
+            }
+        });
+    } catch (error) {
+        console.error('Erro ao criar usuário:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro ao criar usuário'
+        });
+    }
+});
+
+// Login user
+app.post('/api/v1/users/login', async (req, res) => {
+    const { email, senha } = req.body;
+    
+    if (!email || !senha) {
+        return res.status(400).json({
+            success: false,
+            message: 'Email e senha são obrigatórios'
+        });
+    }
+    
+    try {
+        const user = await new Promise((resolve, reject) => {
+            db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+        
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Email ou senha incorretos'
+            });
+        }
+        
+        const senhaValida = await bcrypt.compare(senha, user.senha_hash);
+        
+        if (!senhaValida) {
+            return res.status(401).json({
+                success: false,
+                message: 'Email ou senha incorretos'
+            });
+        }
+        
+        const token = jwt.sign(
+            { id: user.id, email: user.email, nome: user.nome },
+            JWT_SECRET,
+            { expiresIn: '7d' }
+        );
+        
+        res.json({
+            success: true,
+            data: {
+                id: user.id,
+                nome: user.nome,
+                sobrenome: user.sobrenome,
+                email: user.email,
+                banco: user.banco,
+                token
+            }
+        });
+    } catch (error) {
+        console.error('Erro ao fazer login:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro ao fazer login'
+        });
+    }
 });
 
 app.post('/api/v1/fraud-reports', async (req, res) => {

@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Regras para coleção de usuários
+    match /users/{userId} {
+      // Permitir leitura e escrita apenas para o próprio usuário
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Regras para relatórios de fraude
+    match /fraudReports/{reportId} {
+      // Permitir leitura para qualquer usuário autenticado
+      allow read: if request.auth != null;
+      // Permitir escrita apenas para usuários autenticados
+      allow write: if request.auth != null;
+    }
+    
+    // Regras para análise de risco
+    match /riskAnalysis/{analysisId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+    
+    // Regras para notificações
+    match /notifications/{notificationId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+  }
+}
