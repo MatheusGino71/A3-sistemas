@@ -1,0 +1,314 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "zenit-overview",
+    "title": "ZENIT - Sistema Anti-Fraude PIX",
+    "tags": ["zenit", "pix", "fraud-detection"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "10s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Taxa de Requisições (req/s)",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(zenit_http_requests_total[5m])",
+            "legendFormat": "{{method}} {{route}} ({{status_code}})",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "label": "req/s", "format": "short" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2
+      },
+      {
+        "id": 2,
+        "title": "Latência HTTP (p99)",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.99, rate(zenit_http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{method}} {{route}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "label": "Segundos", "format": "s" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2
+      },
+      {
+        "id": 3,
+        "title": "Taxa de Erros (5xx)",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(zenit_http_requests_total{status_code=~\"5..\"}[5m])",
+            "legendFormat": "{{method}} {{route}} ({{status_code}})",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "label": "erros/s", "format": "short" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "alert": {
+          "name": "Taxa de Erros Alta",
+          "conditions": [
+            {
+              "type": "query",
+              "query": { "params": ["A", "5m", "now"] },
+              "reducer": { "type": "avg", "params": [] },
+              "evaluator": { "type": "gt", "params": [10] }
+            }
+          ],
+          "frequency": "60s",
+          "handler": 1,
+          "message": "Taxa de erros 5xx acima de 10/s"
+        }
+      },
+      {
+        "id": 4,
+        "title": "WebSocket - Conexões Ativas",
+        "type": "stat",
+        "gridPos": { "x": 12, "y": 8, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "zenit_ws_connections_active",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "orientation": "auto",
+          "textMode": "auto",
+          "colorMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "red", "value": 0 },
+                { "color": "yellow", "value": 1 },
+                { "color": "green", "value": 5 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Denúncias Criadas (Últimas 24h)",
+        "type": "stat",
+        "gridPos": { "x": 18, "y": 8, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "increase(zenit_fraud_reports_total[24h])",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "orientation": "auto",
+          "textMode": "auto",
+          "colorMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "green", "value": 0 },
+                { "color": "yellow", "value": 50 },
+                { "color": "red", "value": 100 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "Uso de Memória",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "zenit_process_resident_memory_bytes / 1024 / 1024",
+            "legendFormat": "Memória Residente (MB)",
+            "refId": "A"
+          },
+          {
+            "expr": "zenit_process_heap_bytes / 1024 / 1024",
+            "legendFormat": "Heap Node.js (MB)",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          { "label": "MB", "format": "short" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2
+      },
+      {
+        "id": 7,
+        "title": "Queries do Banco de Dados",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(zenit_db_queries_total[5m])",
+            "legendFormat": "{{operation}} - {{table}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "label": "queries/s", "format": "short" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2
+      },
+      {
+        "id": 8,
+        "title": "Rate Limiting - Requisições Bloqueadas",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 24, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(zenit_rate_limit_blocked_total[5m])",
+            "legendFormat": "{{limiter_type}} - {{endpoint}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "label": "bloqueios/s", "format": "short" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2
+      },
+      {
+        "id": 9,
+        "title": "Análises de Risco por Nível",
+        "type": "piechart",
+        "gridPos": { "x": 12, "y": 24, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "sum by (risk_level) (increase(zenit_risk_analyses_total[24h]))",
+            "legendFormat": "{{risk_level}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "right"
+          },
+          "pieType": "pie"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        }
+      },
+      {
+        "id": 10,
+        "title": "CPU Usage",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 32, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(zenit_process_cpu_user_seconds_total[5m]) * 100",
+            "legendFormat": "CPU User",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(zenit_process_cpu_system_seconds_total[5m]) * 100",
+            "legendFormat": "CPU System",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          { "label": "%", "format": "percent" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2
+      },
+      {
+        "id": 11,
+        "title": "Event Loop Lag",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 32, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "zenit_nodejs_eventloop_lag_seconds * 1000",
+            "legendFormat": "Event Loop Lag (ms)",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "label": "ms", "format": "short" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "alert": {
+          "name": "Event Loop Lag Alto",
+          "conditions": [
+            {
+              "type": "query",
+              "query": { "params": ["A", "5m", "now"] },
+              "reducer": { "type": "avg", "params": [] },
+              "evaluator": { "type": "gt", "params": [100] }
+            }
+          ],
+          "frequency": "60s",
+          "handler": 1,
+          "message": "Event Loop Lag acima de 100ms - possível bloqueio"
+        }
+      }
+    ],
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"]
+    },
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": []
+    }
+  },
+  "overwrite": true
+}

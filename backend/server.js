@@ -10,6 +10,18 @@ const path = require('path');
 const http = require('http');
 const WebSocket = require('ws');
 
+// Importar métricas e middleware
+const { 
+  register, 
+  metricsMiddleware, 
+  incrementWsConnections, 
+  decrementWsConnections,
+  recordDbQuery,
+  recordFraudReport,
+  recordRiskAnalysis,
+  recordError
+} = require('./utils/metrics');
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'sentinela-pix-secret-key';
@@ -25,6 +37,7 @@ const userConnections = new Map();
 
 wss.on('connection', (ws) => {
     console.log('🔌 Nova conexão WebSocket estabelecida');
+    incrementWsConnections(); // Métrica
     let userId = null;
 
     ws.on('message', (message) => {
@@ -44,18 +57,22 @@ wss.on('connection', (ws) => {
             }
         } catch (error) {
             console.error('Erro ao processar mensagem WebSocket:', error);
+            recordError('websocket_message', 'error');
         }
     });
 
     ws.on('close', () => {
         if (userId) {
             userConnections.delete(userId);
-            console.log(`🔌 Usuário ${userId} desconectou`);
+            console.log(`❌ Usuário ${userId} desconectado`);
         }
+        decrementWsConnections(); // Métrica
+        console.log('🔌 Conexão WebSocket fechada');
     });
 
     ws.on('error', (error) => {
         console.error('Erro no WebSocket:', error);
+        recordError('websocket_error', 'error');
     });
 });
 
@@ -86,6 +103,9 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 app.use(express.json());
+
+// Adicionar middleware de métricas
+app.use(metricsMiddleware);
 
 // Database initialization
 const dbPath = path.join(__dirname, 'sentinela_pix.db');
@@ -1386,19 +1406,35 @@ app.get('/api/docs', (req, res) => {
     res.redirect('/api/docs/swagger.html');
 });
 
+// Prometheus metrics endpoint
+app.get('/metrics', async (req, res) => {
+    try {
+        res.set('Content-Type', register.contentType);
+        const metrics = await register.metrics();
+        res.end(metrics);
+    } catch (error) {
+        console.error('Erro ao coletar métricas:', error);
+        recordError('metrics_collection', 'error');
+        res.status(500).end();
+    }
+});
+
 // Health check
 app.get('/health', (req, res) => {
     res.json({ 
         status: 'OK', 
         timestamp: new Date().toISOString(),
-        service: 'Sentinela PIX Backend',
-        database: 'Connected'
+        service: 'ZENIT - Sistema Anti-Fraude PIX',
+        database: 'Connected',
+        websocket: wss.clients.size > 0 ? 'Active' : 'Idle',
+        activeConnections: wss.clients.size
     });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
+    recordError('unhandled_error', 'critical');
     res.status(500).json({
         success: false,
         message: 'Erro interno do servidor'

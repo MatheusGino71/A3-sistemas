@@ -1,0 +1,64 @@
+{
+  "name": "ZENIT - Sistema Anti-Fraude PIX",
+  "short_name": "ZENIT",
+  "description": "Sistema inteligente de prevenção e detecção de fraudes PIX",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#CC092F",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/assets/estrela.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/estrela.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "security", "business"],
+  "screenshots": [
+    {
+      "src": "/assets/screenshot-dashboard.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Dashboard Principal"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nova Denúncia",
+      "short_name": "Denúncia",
+      "description": "Criar nova denúncia de fraude",
+      "url": "/dashboard.html?action=new-report",
+      "icons": [
+        {
+          "src": "/assets/estrela.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Análise de Risco",
+      "short_name": "Análise",
+      "description": "Verificar risco de chave PIX",
+      "url": "/dashboard.html?action=risk-check",
+      "icons": [
+        {
+          "src": "/assets/estrela.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
