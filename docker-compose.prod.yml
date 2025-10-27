@@ -1,0 +1,157 @@
+version: '3.8'
+
+# ==========================================
+# ZENIT - Docker Compose
+# Desenvolvimento e Produção
+# ==========================================
+
+services:
+  # ==========================================
+  # Backend API
+  # ==========================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: zenit-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - JWT_SECRET=${JWT_SECRET:-change_this_secret_key_in_production}
+      - JWT_EXPIRATION=86400
+      - DATABASE_PATH=/app/data/sentinela_pix.db
+      - CORS_ORIGIN=http://localhost:8080
+      - LOG_LEVEL=info
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX_REQUESTS=100
+    volumes:
+      - backend-data:/app/data
+      - backend-logs:/app/logs
+    networks:
+      - zenit-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.zenit-backend.rule=Host(`api.zenit.local`)"
+      - "traefik.http.services.zenit-backend.loadbalancer.server.port=3001"
+
+  # ==========================================
+  # Frontend (Nginx)
+  # ==========================================
+  frontend:
+    image: nginx:alpine
+    container_name: zenit-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - zenit-network
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.zenit-frontend.rule=Host(`zenit.local`)"
+
+  # ==========================================
+  # Redis (Rate Limiting - Opcional)
+  # ==========================================
+  redis:
+    image: redis:7-alpine
+    container_name: zenit-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - zenit-network
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # Prometheus (Métricas - Opcional)
+  # ==========================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: zenit-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - zenit-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+
+  # ==========================================
+  # Grafana (Visualização - Opcional)
+  # ==========================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: zenit-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_INSTALL_PLUGINS=grafana-clock-panel
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - zenit-network
+    depends_on:
+      - prometheus
+
+# ==========================================
+# Volumes Persistentes
+# ==========================================
+volumes:
+  backend-data:
+    driver: local
+  backend-logs:
+    driver: local
+  redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+# ==========================================
+# Rede
+# ==========================================
+networks:
+  zenit-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
