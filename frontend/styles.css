@@ -83,7 +83,7 @@
     transform: translateY(-50%);
     width: 0;
     height: 0;
-    background-color: var(--primary-color, #1193d4);
+    background-color: var(--primary-color, #CC092F);
     border-radius: 0 4px 4px 0;
     transition: all 0.2s ease;
 }
@@ -142,7 +142,7 @@
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #1193d4 0%, #0ea5e9 100%);
+    background: linear-gradient(90deg, #CC092F 0%, #E30613 100%);
     border-radius: 9999px;
     transition: width 0.3s ease;
 }
@@ -222,13 +222,13 @@
 }
 
 .form-input:focus {
-    border-color: #1193d4;
-    box-shadow: 0 0 0 3px rgba(17, 147, 212, 0.1);
+    border-color: #CC092F;
+    box-shadow: 0 0 0 3px rgba(204, 9, 47, 0.1);
 }
 
 .dark .form-input:focus {
-    border-color: #1193d4;
-    box-shadow: 0 0 0 3px rgba(17, 147, 212, 0.2);
+    border-color: #CC092F;
+    box-shadow: 0 0 0 3px rgba(204, 9, 47, 0.2);
 }
 
 /* Notification badge */
@@ -291,7 +291,7 @@
 }
 
 input:checked + .toggle-slider {
-    background-color: #1193d4;
+    background-color: #CC092F;
 }
 
 input:checked + .toggle-slider:before {

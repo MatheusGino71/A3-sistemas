@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentinela PIX - Sistema Anti-Fraude</title>
+    <title>ZENIT - Sistema Anti-Fraude</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500;600;700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -59,7 +59,7 @@
             font-family: 'Montserrat', sans-serif;
             font-size: clamp(3rem, 8vw, 7rem);
             font-weight: 900;
-            background: linear-gradient(135deg, #00d4ff 0%, #0066ff 50%, #6600ff 100%);
+            background: linear-gradient(135deg, #CC092F 0%, #E30613 50%, #FF0000 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -68,7 +68,7 @@
             margin-bottom: 1.5rem;
             animation: fadeInUp 1s ease-out;
             letter-spacing: 2px;
-            text-shadow: 0 0 40px rgba(0, 102, 255, 0.3);
+            text-shadow: 0 0 40px rgba(204, 9, 47, 0.3);
         }
         
         .subtitle {
@@ -88,13 +88,13 @@
             padding: 1.25rem 3rem;
             font-size: 1.25rem;
             font-weight: 600;
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #CC092F 0%, #E30613 100%);
             color: white;
             border: none;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 40px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 10px 40px rgba(204, 9, 47, 0.3);
             animation: fadeInUp 1s ease-out 0.4s backwards;
             text-decoration: none;
             display: inline-flex;
@@ -104,42 +104,48 @@
         
         .cta-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 50px rgba(59, 130, 246, 0.5);
+            box-shadow: 0 15px 50px rgba(204, 9, 47, 0.5);
         }
         
         .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 1.5rem;
             margin-top: 4rem;
+            max-width: 1400px;
             animation: fadeInUp 1s ease-out 0.6s backwards;
+            flex-wrap: wrap;
         }
         
         .feature-card {
             background: rgba(0, 20, 40, 0.6);
             backdrop-filter: blur(15px);
-            border: 1px solid rgba(100, 150, 255, 0.3);
+            border: 1px solid rgba(204, 9, 47, 0.3);
             border-radius: 1rem;
-            padding: 2rem;
+            padding: 1.5rem;
             text-align: center;
             transition: all 0.3s ease;
+            flex: 1;
+            min-width: 200px;
+            max-width: 280px;
         }
         
         .feature-card:hover {
             background: rgba(0, 30, 60, 0.8);
-            border-color: rgba(100, 150, 255, 0.6);
+            border-color: rgba(204, 9, 47, 0.6);
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 102, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(204, 9, 47, 0.3);
         }
         
         .feature-icon {
-            font-size: 3rem;
-            color: #3b82f6;
-            margin-bottom: 1rem;
+            font-size: 2.5rem;
+            color: #CC092F;
+            margin-bottom: 0.75rem;
         }
         
         .feature-title {
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-weight: 700;
             color: white;
             margin-bottom: 0.5rem;
@@ -147,8 +153,8 @@
         
         .feature-description {
             color: #d1d5db;
-            font-size: 0.95rem;
-            line-height: 1.6;
+            font-size: 0.85rem;
+            line-height: 1.5;
         }
         
         @keyframes fadeInUp {
@@ -187,33 +193,38 @@
     <!-- Background Video -->
     <div class="video-container">
         <video id="hero-video" autoplay muted loop playsinline preload="auto" poster="">
-            <source src="tela.mp4" type="video/mp4">
+            <source src="cid.mp4" type="video/mp4">
             Seu navegador não suporta vídeos HTML5.
         </video>
     </div>
 
     <!-- Hero Content -->
     <div class="hero-content">
-        <h1 class="title">SENTINELA PIX</h1>
+        <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 1.5rem; margin-right: 100px;">
+                <img src="star.svg" alt="Estrela" style="width: 80px; height: 80px; filter: drop-shadow(0 0 20px rgba(204, 9, 47, 0.5));">
+                <h1 class="title" style="margin-bottom: 0;">ZENIT</h1>
+            </div>
+        </div>
         <p class="subtitle">
             Sistema Inteligente de Detecção e Prevenção de Fraudes em Transações PIX
         </p>
         
-        <a href="cadastro.html" class="cta-button">
-            <span class="material-symbols-outlined">person_add</span>
-            Criar Conta Grátis
+        <a href="login.html" class="cta-button">
+            <span class="material-symbols-outlined">login</span>
+            Faça seu Login
         </a>
         
         <div style="margin-top: 1rem;">
-            <a href="dashboard.html" style="color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.9rem; transition: color 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">
-                Já tenho uma conta →
+            <a href="cadastro.html" style="color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.9rem; transition: color 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">
+                Crie sua conta →
             </a>
         </div>
         
         <div class="features">
             <div class="feature-card">
                 <div class="feature-icon">
-                    <span class="material-symbols-outlined" style="font-size: 3rem;">verified_user</span>
+                    <span class="material-symbols-outlined" style="font-size: 2.5rem;">verified_user</span>
                 </div>
                 <h3 class="feature-title">Verificação de Chaves PIX</h3>
                 <p class="feature-description">
@@ -223,7 +234,7 @@
             
             <div class="feature-card">
                 <div class="feature-icon">
-                    <span class="material-symbols-outlined" style="font-size: 3rem;">report</span>
+                    <span class="material-symbols-outlined" style="font-size: 2.5rem;">report</span>
                 </div>
                 <h3 class="feature-title">Denúncias de Fraudes</h3>
                 <p class="feature-description">
@@ -233,7 +244,7 @@
             
             <div class="feature-card">
                 <div class="feature-icon">
-                    <span class="material-symbols-outlined" style="font-size: 3rem;">analytics</span>
+                    <span class="material-symbols-outlined" style="font-size: 2.5rem;">analytics</span>
                 </div>
                 <h3 class="feature-title">Análise de Riscos</h3>
                 <p class="feature-description">
@@ -243,17 +254,13 @@
             
             <div class="feature-card">
                 <div class="feature-icon">
-                    <span class="material-symbols-outlined" style="font-size: 3rem;">notifications_active</span>
+                    <span class="material-symbols-outlined" style="font-size: 2.5rem;">notifications_active</span>
                 </div>
                 <h3 class="feature-title">Alertas em Tempo Real</h3>
                 <p class="feature-description">
                     Notificações instantâneas sobre atividades suspeitas
                 </p>
             </div>
-        </div>
-        
-        <div class="scroll-indicator">
-            <span class="material-symbols-outlined text-white text-4xl">expand_more</span>
         </div>
     </div>
 </body>
