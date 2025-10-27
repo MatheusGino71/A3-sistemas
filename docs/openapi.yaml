@@ -1,0 +1,636 @@
+openapi: 3.0.3
+info:
+  title: ZENIT API - Sistema Anti-Fraude PIX
+  description: |
+    API completa do ZENIT para detecção e prevenção de fraudes em transações PIX.
+    
+    ## Autenticação
+    A API utiliza JWT (JSON Web Tokens) para autenticação. Após o login, inclua o token no header:
+    ```
+    Authorization: Bearer {seu_token}
+    ```
+    
+    ## Rate Limiting
+    - Autenticação: 5 requisições por 15 minutos
+    - API Geral: 100 requisições por 15 minutos
+    - Denúncias: 10 por hora
+    - Consulta de Risco: 30 por minuto
+    
+    ## Suporte
+    - Email: suporte@zenit.com.br
+    - GitHub: https://github.com/MatheusGino71/A3-sistemas
+    
+  version: 1.0.0
+  contact:
+    name: Equipe ZENIT
+    email: suporte@zenit.com.br
+  license:
+    name: Academic License
+    
+servers:
+  - url: http://localhost:3001/api/v1
+    description: Servidor de Desenvolvimento
+  - url: https://api.zenit.com.br/api/v1
+    description: Servidor de Produção
+
+tags:
+  - name: Autenticação
+    description: Endpoints de autenticação e registro
+  - name: Denúncias
+    description: Gerenciamento de relatórios de fraude
+  - name: Análise de Risco
+    description: Consulta de score de risco de chaves PIX
+  - name: Notificações
+    description: Gerenciamento de notificações
+  - name: Usuários
+    description: Gerenciamento de perfil do usuário
+  - name: Sistema
+    description: Endpoints de sistema e health check
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Autenticação
+      summary: Registrar novo usuário
+      description: Cria uma nova conta de usuário no sistema
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+            examples:
+              example1:
+                value:
+                  email: usuario@exemplo.com
+                  password: senhaSegura123
+                  full_name: João da Silva
+                  cpf: "12345678901"
+                  phone: "+5511999999999"
+                  bank: Bradesco
+      responses:
+        '201':
+          description: Usuário criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Email já cadastrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Limite de requisições excedido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitError'
+
+  /auth/login:
+    post:
+      tags:
+        - Autenticação
+      summary: Login de usuário
+      description: Autentica usuário e retorna token JWT
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              example1:
+                value:
+                  email: usuario@exemplo.com
+                  password: senhaSegura123
+      responses:
+        '200':
+          description: Login bem-sucedido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Muitas tentativas de login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitError'
+
+  /reports:
+    get:
+      tags:
+        - Denúncias
+      summary: Listar denúncias
+      description: Retorna lista de denúncias de fraude com filtros e paginação
+      operationId: listReports
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Filtrar por status
+          schema:
+            type: string
+            enum: [pending, confirmed, false_positive, investigating]
+        - name: limit
+          in: query
+          description: Número de resultados por página
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Número de resultados para pular
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Lista de denúncias
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportList'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      tags:
+        - Denúncias
+      summary: Criar denúncia
+      description: Registra nova denúncia de fraude PIX
+      operationId: createReport
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FraudReportCreate'
+            examples:
+              example1:
+                value:
+                  pixKey: fraudador@email.com
+                  pixKeyType: email
+                  amount: 5000.00
+                  transactionId: E12345678
+                  victimBank: Bradesco
+                  fraudsterBank: Nubank
+                  description: Golpe do falso suporte técnico
+      responses:
+        '201':
+          description: Denúncia criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FraudReport'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Limite de denúncias excedido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitError'
+
+  /reports/{id}:
+    get:
+      tags:
+        - Denúncias
+      summary: Obter denúncia específica
+      description: Retorna detalhes de uma denúncia específica
+      operationId: getReport
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da denúncia
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detalhes da denúncia
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FraudReport'
+        '404':
+          description: Denúncia não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /keys/{pixKey}/risk:
+    get:
+      tags:
+        - Análise de Risco
+      summary: Consultar risco de chave PIX
+      description: Retorna análise de risco de uma chave PIX específica
+      operationId: checkRisk
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: pixKey
+          in: path
+          required: true
+          description: Chave PIX para consulta
+          schema:
+            type: string
+          examples:
+            email:
+              value: fraudador@email.com
+            cpf:
+              value: "12345678901"
+            phone:
+              value: "+5511999999999"
+      responses:
+        '200':
+          description: Análise de risco
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiskAnalysis'
+        '404':
+          description: Chave não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/me:
+    get:
+      tags:
+        - Usuários
+      summary: Obter perfil do usuário
+      description: Retorna informações do usuário autenticado
+      operationId: getProfile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Perfil do usuário
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    
+    put:
+      tags:
+        - Usuários
+      summary: Atualizar perfil
+      description: Atualiza informações do perfil do usuário
+      operationId: updateProfile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Perfil atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /users/fcm-token:
+    post:
+      tags:
+        - Notificações
+      summary: Registrar token FCM
+      description: Registra token do Firebase Cloud Messaging para notificações push
+      operationId: registerFCMToken
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - fcmToken
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+                fcmToken:
+                  type: string
+                deviceInfo:
+                  type: string
+      responses:
+        '200':
+          description: Token registrado com sucesso
+
+  /health:
+    get:
+      tags:
+        - Sistema
+      summary: Health Check
+      description: Verifica status do sistema e serviços
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Sistema operacional
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheck'
+        '503':
+          description: Sistema indisponível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheck'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Token obtido através do endpoint de login
+
+  schemas:
+    UserRegistration:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: usuario@exemplo.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 128
+          example: senhaSegura123
+        full_name:
+          type: string
+          maxLength: 255
+          example: João da Silva
+        cpf:
+          type: string
+          pattern: '^\d{11}$'
+          example: "12345678901"
+        phone:
+          type: string
+          pattern: '^\+?55\d{10,11}$'
+          example: "+5511999999999"
+        bank:
+          type: string
+          enum: 
+            - Banco do Brasil
+            - Bradesco
+            - Caixa Econômica Federal
+            - Itaú
+            - Santander
+            - Nubank
+            - Inter
+            - C6 Bank
+            - Outro
+          example: Bradesco
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token
+        user:
+          $ref: '#/components/schemas/User'
+        expiresIn:
+          type: integer
+          description: Tempo de expiração em segundos
+          example: 86400
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        full_name:
+          type: string
+        cpf:
+          type: string
+        phone:
+          type: string
+        bank:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        last_login:
+          type: string
+          format: date-time
+
+    UserUpdate:
+      type: object
+      properties:
+        full_name:
+          type: string
+        phone:
+          type: string
+        bank:
+          type: string
+
+    FraudReportCreate:
+      type: object
+      required:
+        - pixKey
+        - pixKeyType
+        - amount
+        - victimBank
+      properties:
+        pixKey:
+          type: string
+          example: fraudador@email.com
+        pixKeyType:
+          type: string
+          enum: [cpf, cnpj, email, phone, random]
+          example: email
+        amount:
+          type: number
+          format: double
+          minimum: 0.01
+          example: 5000.00
+        transactionId:
+          type: string
+          maxLength: 100
+          example: E12345678
+        victimBank:
+          type: string
+          example: Bradesco
+        fraudsterBank:
+          type: string
+          example: Nubank
+        description:
+          type: string
+          maxLength: 2000
+          example: Golpe do falso suporte técnico
+
+    FraudReport:
+      allOf:
+        - $ref: '#/components/schemas/FraudReportCreate'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            user_id:
+              type: string
+              format: uuid
+            status:
+              type: string
+              enum: [pending, confirmed, false_positive, investigating]
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+
+    ReportList:
+      type: object
+      properties:
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/FraudReport'
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    RiskAnalysis:
+      type: object
+      properties:
+        pixKey:
+          type: string
+        riskLevel:
+          type: string
+          enum: [LOW, SUSPICIOUS, HIGH_RISK, CRITICAL]
+        riskScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        reportCount:
+          type: integer
+        lastReportDate:
+          type: string
+          format: date-time
+        affectedInstitutions:
+          type: array
+          items:
+            type: string
+
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        timestamp:
+          type: string
+          format: date-time
+        services:
+          type: object
+          properties:
+            database:
+              type: string
+              enum: [connected, disconnected]
+            websocket:
+              type: string
+              enum: [running, stopped]
+            firebase:
+              type: string
+              enum: [connected, disconnected]
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+
+    RateLimitError:
+      type: object
+      properties:
+        error:
+          type: string
+        retryAfter:
+          type: integer
+          description: Tempo em segundos até poder tentar novamente
+        message:
+          type: string

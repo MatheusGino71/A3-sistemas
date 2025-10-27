@@ -1379,6 +1379,13 @@ cron.schedule('*/5 * * * *', () => {
     console.log('📊 Estatísticas atualizadas automaticamente');
 });
 
+// API Documentation - Serve Swagger UI
+app.use('/api/docs', express.static(path.join(__dirname, '..', 'docs')));
+
+app.get('/api/docs', (req, res) => {
+    res.redirect('/api/docs/swagger.html');
+});
+
 // Health check
 app.get('/health', (req, res) => {
     res.json({ 

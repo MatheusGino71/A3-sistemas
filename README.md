@@ -1,420 +1,838 @@
-# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Fraud Detection and Prevention Platform# Sentinela PIX - Fraud Detection and Prevention Platform
+<div align="center"># Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Fraud Detection and Prevention Platform# Sentinela PIX - Fraud Detection and Prevention Platform
 
 
 
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/MatheusGino71/A3-sistemas)
-
-[![License](https://img.shields.io/badge/License-Academic-green)](https://github.com/MatheusGino71/A3-sistemas)
-
-[![Demo](https://img.shields.io/badge/Demo-Live-success)](https://a3-quinta-1a763.web.app)[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/MatheusGino71/A3-sistemas)
+# ⭐ ZENIT
 
 
+
+### Sistema Inteligente de Detecção e Prevenção de Fraudes em Transações PIX[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/MatheusGino71/A3-sistemas)
+
+
+
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-CC092F?style=for-the-badge&logo=github)](https://github.com/MatheusGino71/A3-sistemas)[![License](https://img.shields.io/badge/License-Academic-green)](https://github.com/MatheusGino71/A3-sistemas)
+
+[![License](https://img.shields.io/badge/License-Academic-CC092F?style=for-the-badge)](https://github.com/MatheusGino71/A3-sistemas)
+
+[![Demo](https://img.shields.io/badge/Demo-Live-CC092F?style=for-the-badge&logo=firebase)](https://a3-quinta-1a763.web.app)[![Demo](https://img.shields.io/badge/Demo-Live-success)](https://a3-quinta-1a763.web.app)[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/MatheusGino71/A3-sistemas)
+
+[![Node](https://img.shields.io/badge/Node.js-18+-CC092F?style=for-the-badge&logo=node.js)](https://nodejs.org)
+
+
+
+![ZENIT Banner](https://img.shields.io/badge/ZENIT-Sistema_Anti_Fraude_PIX-CC092F?style=for-the-badge)
 
 O Sentinela PIX é uma plataforma abrangente de detecção e prevenção de fraudes em tempo real, projetada para combater golpes no sistema de pagamentos PIX brasileiro. A plataforma fornece relatórios centralizados de fraudes, análise de risco e sistemas automatizados de notificação para facilitar a resposta rápida entre instituições financeiras.[![License](https://img.shields.io/badge/License-Academic-green)](https://github.com/MatheusGino71/A3-sistemas)
 
+</div>
 
+
+
+---
 
 ## Demonstração[![Demo](https://img.shields.io/badge/Demo-Live-success)](https://a3-quinta-1a763.web.app)[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/MatheusGino71/A3-sistemas)
 
+## 📋 Sobre o Projeto
 
+
+
+**ZENIT** é uma plataforma avançada de detecção e prevenção de fraudes em tempo real, desenvolvida para combater golpes no sistema de pagamentos PIX brasileiro. A solução oferece uma infraestrutura robusta que conecta instituições financeiras através de um sistema centralizado de denúncias, análise de risco e notificações automatizadas.
 
 **Acesse a aplicação online**: [https://a3-quinta-1a763.web.app](https://a3-quinta-1a763.web.app)
 
-
-
-A demonstração está hospedada no Firebase Hosting e permite:O Sentinela PIX é uma plataforma abrangente de detecção e prevenção de fraudes em tempo real, projetada para combater golpes no sistema de pagamentos PIX brasileiro. A plataforma fornece relatórios centralizados de fraudes, análise de risco e sistemas automatizados de notificação para facilitar a resposta rápida entre instituições financeiras.[![License](https://img.shields.io/badge/License-Academic-green)](https://github.com/MatheusGino71/A3-sistemas)
-
-
-
-- Criar uma conta de teste
-
-- Submeter relatórios de fraude
-
-- Visualizar dashboard em tempo real## Demonstração## Índice
-
-- Testar sistema de notificações
-
-- Consultar análise de risco de chaves PIX
+### 🎯 Principais Diferenciais
 
 
 
-**Nota**: O backend está em modo demonstração e utiliza dados de teste. Para uma implementação completa, siga as instruções de [Instalação e Execução Local](#instalação-e-execução-local).**Acesse a aplicação online**: [https://a3-quinta-1a763.web.app](https://a3-quinta-1a763.web.app)O Sentinela PIX é uma plataforma abrangente de detecção e prevenção de fraudes em tempo real, projetada para combater golpes no sistema de pagamentos PIX brasileiro. A plataforma fornece relatórios centralizados de fraudes, análise de risco e sistemas automatizados de notificação para facilitar a resposta rápida entre instituições financeiras.
+- ⚡ **Notificações em Tempo Real** via WebSocket e Firebase Cloud Messaging
+
+- 🔍 **Análise de Risco Automatizada** com pontuação dinâmica de chaves PIXA demonstração está hospedada no Firebase Hosting e permite:O Sentinela PIX é uma plataforma abrangente de detecção e prevenção de fraudes em tempo real, projetada para combater golpes no sistema de pagamentos PIX brasileiro. A plataforma fornece relatórios centralizados de fraudes, análise de risco e sistemas automatizados de notificação para facilitar a resposta rápida entre instituições financeiras.[![License](https://img.shields.io/badge/License-Academic-green)](https://github.com/MatheusGino71/A3-sistemas)
+
+- 🛡️ **Prevenção Proativa** através de alertas instantâneos entre instituições
+
+- 📊 **Dashboard Completo** com visualização de dados e KPIs em tempo real
+
+- 🔐 **Segurança Robusta** com autenticação JWT e Firebase
+
+- 🌐 **Interface Responsiva** com design moderno Bradesco- Criar uma conta de teste
 
 
+
+---- Submeter relatórios de fraude
+
+
+
+## 🚀 Demonstração Online- Visualizar dashboard em tempo real## Demonstração## Índice
+
+
+
+**Acesse a aplicação**: [https://a3-quinta-1a763.web.app](https://a3-quinta-1a763.web.app)- Testar sistema de notificações
+
+
+
+### Funcionalidades Disponíveis:- Consultar análise de risco de chaves PIX
+
+- ✅ Criar conta de teste
+
+- ✅ Submeter relatórios de fraude
+
+- ✅ Visualizar dashboard em tempo real
+
+- ✅ Testar sistema de notificações**Nota**: O backend está em modo demonstração e utiliza dados de teste. Para uma implementação completa, siga as instruções de [Instalação e Execução Local](#instalação-e-execução-local).**Acesse a aplicação online**: [https://a3-quinta-1a763.web.app](https://a3-quinta-1a763.web.app)O Sentinela PIX é uma plataforma abrangente de detecção e prevenção de fraudes em tempo real, projetada para combater golpes no sistema de pagamentos PIX brasileiro. A plataforma fornece relatórios centralizados de fraudes, análise de risco e sistemas automatizados de notificação para facilitar a resposta rápida entre instituições financeiras.
+
+- ✅ Consultar análise de risco de chaves PIX
+
+
+
+> **Nota**: A demonstração online utiliza dados de teste. Para ambiente completo, execute localmente seguindo as [instruções de instalação](#-instalação-e-execução).
 
 ## Índice
 
+---
 
+
+
+## 📑 Índice
 
 1. [Visão Geral](#visão-geral)A demonstração está hospedada no Firebase Hosting e permite:
 
-2. [O Problema](#o-problema)
+- [Sobre o Projeto](#-sobre-o-projeto)
 
-3. [A Solução Proposta](#a-solução-proposta)
+- [O Problema](#-o-problema)2. [O Problema](#o-problema)
 
-4. [Arquitetura da Solução](#arquitetura-da-solução)
+- [A Solução](#-a-solução)
 
-   - [Implementação de Referência (Node.js)](#implementação-de-referência-nodejs)- Criar uma conta de teste## Índice
+- [Arquitetura](#-arquitetura)3. [A Solução Proposta](#a-solução-proposta)
 
-   - [Arquitetura Alvo (Microservices Java/Spring Boot)](#arquitetura-alvo-microservices-javaspring-boot)
+- [Stack Tecnológica](#-stack-tecnológica)
 
-5. [Stack Tecnológica](#stack-tecnológica)- Submeter relatórios de fraude
+- [Funcionalidades](#-funcionalidades)4. [Arquitetura da Solução](#arquitetura-da-solução)
+
+- [Instalação e Execução](#-instalação-e-execução)
+
+- [Documentação da API](#-documentação-da-api)   - [Implementação de Referência (Node.js)](#implementação-de-referência-nodejs)- Criar uma conta de teste## Índice
+
+- [Segurança](#-segurança)
+
+- [Estrutura do Projeto](#-estrutura-do-projeto)   - [Arquitetura Alvo (Microservices Java/Spring Boot)](#arquitetura-alvo-microservices-javaspring-boot)
+
+- [Roadmap](#-roadmap)
+
+- [Contribuição](#-contribuição)5. [Stack Tecnológica](#stack-tecnológica)- Submeter relatórios de fraude
+
+- [Licença](#-licença)
 
 6. [Funcionalidades Principais](#funcionalidades-principais)
 
+---
+
 7. [Fluxo Operacional](#fluxo-operacional)- Visualizar dashboard em tempo real1. [Visão Geral](#visão-geral)## Overview## Overview
+
+## 🎯 O Problema
 
 8. [Documentação Técnica](#documentação-técnica)
 
+A principal vulnerabilidade nas fraudes PIX é o **tempo**. As transferências de dinheiro ocorrem **instantaneamente**, tornando o bloqueio e a recuperação de valores extremamente difíceis. 
+
 9. [Instalação e Execução Local](#instalação-e-execução-local)- Testar sistema de notificações
 
-10. [Testes](#testes)
+### Desafios Identificados:
 
-11. [Segurança e Monitoramento](#segurança-e-monitoramento)- Consultar análise de risco de chaves PIX1. [Visão Geral](#visão-geral)
+- ❌ Falta de comunicação rápida entre instituições financeiras10. [Testes](#testes)
 
-12. [Estrutura do Projeto](#estrutura-do-projeto)
+- ❌ Ausência de sistema centralizado de denúncias
 
-13. [Roadmap (Visão Futura)](#roadmap-visão-futura)
+- ❌ Dificuldade em rastrear contas suspeitas11. [Segurança e Monitoramento](#segurança-e-monitoramento)- Consultar análise de risco de chaves PIX1. [Visão Geral](#visão-geral)
 
-14. [Contribuição](#contribuição)
+- ❌ Tempo de resposta insuficiente para bloqueio de fundos
 
-15. [Licença](#licença)**Nota**: O backend está em modo demonstração e utiliza dados de teste. Para uma implementação completa, siga as instruções de [Instalação e Execução Local](#instalação-e-execução-local).2. [O Problema](#o-problema)2. [Problema e Solução](#problema-e-solução)
+- ❌ Falta de histórico compartilhado de fraudes12. [Estrutura do Projeto](#estrutura-do-projeto)
 
 
+
+---13. [Roadmap (Visão Futura)](#roadmap-visão-futura)
+
+
+
+## 💡 A Solução14. [Contribuição](#contribuição)
+
+
+
+O **ZENIT** aborda estes desafios através de três pilares fundamentais:15. [Licença](#licença)**Nota**: O backend está em modo demonstração e utiliza dados de teste. Para uma implementação completa, siga as instruções de [Instalação e Execução Local](#instalação-e-execução-local).2. [O Problema](#o-problema)2. [Problema e Solução](#problema-e-solução)
+
+
+
+### 1. 🚨 Sistema de Notificação Rápida
+
+Canal de comunicação de **baixa latência** (via WebSockets e Webhooks) para que instituições vítimas comuniquem instituições receptoras sobre transações fraudulentas **em segundos**.
 
 ## Visão Geral
 
+### 2. 📊 Pontuação de Risco (Risk Scoring)
+
+Análise e sinalização de chaves PIX que recebem múltiplas denúncias de fraude, criando um **score de risco dinâmico** consultável por qualquer instituição participante.
 
 
-O Sentinela PIX é uma plataforma de software como serviço (SaaS) projetada para atuar como uma câmara de compensação centralizada para denúncias de fraude no PIX. O sistema visa conectar instituições financeiras, permitindo que um banco (vítima) notifique instantaneamente outro banco (receptor) sobre uma transação fraudulenta, possibilitando o bloqueio preventivo de fundos antes que sejam dissipados.## Índice3. [A Solução Proposta](#a-solução-proposta)
+
+### 3. 🛡️ Mecanismo de PrevençãoO Sentinela PIX é uma plataforma de software como serviço (SaaS) projetada para atuar como uma câmara de compensação centralizada para denúncias de fraude no PIX. O sistema visa conectar instituições financeiras, permitindo que um banco (vítima) notifique instantaneamente outro banco (receptor) sobre uma transação fraudulenta, possibilitando o bloqueio preventivo de fundos antes que sejam dissipados.## Índice3. [A Solução Proposta](#a-solução-proposta)
+
+Auxilia na **prevenção de transações futuras** para contas fraudulentas, permitindo que bancos consultem o risco de uma chave PIX **antes** de efetivar uma transação.
 
 
+
+---
 
 ## O Problema
 
+## 🏗️ Arquitetura
 
+
+
+### Implementação Atual (Node.js)
 
 A principal vulnerabilidade nas fraudes PIX é o tempo. As transferências de dinheiro ocorrem quase instantaneamente, tornando o bloqueio e a recuperação de valores extremamente difíceis. O ecossistema bancário atual carece de um mecanismo centralizado e padronizado para a comunicação ultrarrápida de fraudes entre diferentes instituições, resultando em perdas financeiras significativas para clientes e bancos.1. [Visão Geral](#visão-geral)4. [Arquitetura da Solução](#arquitetura-da-solução)3. [Arquitetura do Sistema](#arquitetura-do-sistema)
 
-
-
-## A Solução Proposta2. [O Problema](#o-problema)
-
-
-
-A plataforma Sentinela PIX aborda este desafio através de três pilares centrais:3. [A Solução Proposta](#a-solução-proposta)   - [Implementação de Referência (Node.js)](#implementação-de-referência-nodejs)
+Versão funcional e otimizada para demonstração e desenvolvimento local.
 
 
 
-- **Sistema de Notificação Rápida**: Cria um canal de comunicação de baixa latência (via WebSockets e Webhooks) para que instituições vítimas comuniquem instituições receptoras sobre transações fraudulentas em segundos.4. [Arquitetura da Solução](#arquitetura-da-solução)
+```
 
-- **Pontuação de Risco (Risk Scoring)**: Analisa e sinaliza chaves PIX e contas que recebem múltiplas denúncias de fraude, criando um score de risco dinâmico que pode ser consultado por qualquer instituição participante.
+┌─────────────────────────────────────────────────────────┐## A Solução Proposta2. [O Problema](#o-problema)
 
-- **Mecanismo de Prevenção**: Auxilia na prevenção de transações futuras para contas fraudulentas, permitindo que bancos consultem o risco de uma chave PIX antes de efetivar uma transação.   - [Implementação de Referência (Node.js)](#implementação-de-referência-nodejs)   - [Arquitetura Alvo (Microservices Java/Spring Boot)](#arquitetura-alvo-microservices-javaspring-boot)4. [Stack Tecnológica](#stack-tecnológica)
+│                  Aplicações Cliente                     │
 
+│        (Dashboard Web, Apps Mobile, Interfaces)         │
 
+└────────────────────────┬────────────────────────────────┘
 
-## Arquitetura da Solução   - [Arquitetura Alvo (Microservices Java/Spring Boot)](#arquitetura-alvo-microservices-javaspring-boot)
+                         │ HTTPS / WSSA plataforma Sentinela PIX aborda este desafio através de três pilares centrais:3. [A Solução Proposta](#a-solução-proposta)   - [Implementação de Referência (Node.js)](#implementação-de-referência-nodejs)
 
+┌────────────────────────▼────────────────────────────────┐
 
+│                   Camada Frontend                       │
 
-O projeto contempla duas arquiteturas: uma implementação de referência funcional (monolítica, em Node.js) para fins de demonstração e validação, e uma arquitetura alvo (microservices, em Java) projetada para produção, escalabilidade e resiliência.5. [Stack Tecnológica](#stack-tecnológica)5. [Stack Tecnológica](#stack-tecnológica)
+│      • Interface HTML/CSS/JavaScript                    │
 
+│      • Autenticação Firebase                            │- **Sistema de Notificação Rápida**: Cria um canal de comunicação de baixa latência (via WebSockets e Webhooks) para que instituições vítimas comuniquem instituições receptoras sobre transações fraudulentas em segundos.4. [Arquitetura da Solução](#arquitetura-da-solução)
 
+│      • Cliente WebSocket                                │
 
-### Implementação de Referência (Node.js)6. [Funcionalidades Principais](#funcionalidades-principais)
+│      • Service Worker FCM                               │- **Pontuação de Risco (Risk Scoring)**: Analisa e sinaliza chaves PIX e contas que recebem múltiplas denúncias de fraude, criando um score de risco dinâmico que pode ser consultado por qualquer instituição participante.
 
+└────────────────────────┬────────────────────────────────┘
 
+                         │ API REST / WebSocket- **Mecanismo de Prevenção**: Auxilia na prevenção de transações futuras para contas fraudulentas, permitindo que bancos consultem o risco de uma chave PIX antes de efetivar uma transação.   - [Implementação de Referência (Node.js)](#implementação-de-referência-nodejs)   - [Arquitetura Alvo (Microservices Java/Spring Boot)](#arquitetura-alvo-microservices-javaspring-boot)4. [Stack Tecnológica](#stack-tecnológica)
 
-Esta é a versão atualmente funcional no repositório, ideal para execução local e demonstração. Utiliza uma stack simplificada com um backend monolítico e um banco de dados SQLite.7. [Fluxo Operacional](#fluxo-operacional)6. [Funcionalidades Principais](#funcionalidades-principais)5. [Funcionalidades Principais](#funcionalidades-principais)Sentinela PIX is a comprehensive real-time fraud detection and prevention platform designed to combat PIX payment system scams in Brazil. The platform provides centralized fraud reporting, risk analysis, and automated notification systems to facilitate rapid response between financial institutions.Sentinela PIX is a comprehensive real-time fraud detection and prevention platform designed to combat PIX payment system scams in Brazil. The platform provides centralized fraud reporting, risk analysis, and automated notification systems to facilitate rapid response between financial institutions.
+┌────────────────────────▼────────────────────────────────┐
 
+│               Serviços Backend (Node.js)                │
 
+│      • API REST Express.js (Porta 3001)                 │
 
-```8. [Documentação Técnica](#documentação-técnica)
+│      • Servidor WebSocket (ws://localhost:3001/ws)      │## Arquitetura da Solução   - [Arquitetura Alvo (Microservices Java/Spring Boot)](#arquitetura-alvo-microservices-javaspring-boot)
 
-┌─────────────────────────────────────────────────────────────┐
+│      • Autenticação JWT                                 │
 
-│                       Aplicações Cliente                    │   - [Estrutura do Banco de Dados (SQLite)](#estrutura-do-banco-de-dados-sqlite)7. [Fluxo Operacional](#fluxo-operacional)
+│      • Lógica de Negócio                                │
 
-│      (Dashboard Web, Apps Mobile, Interfaces Bancárias)     │
+└────────────────────────┬────────────────────────────────┘
 
-└────────────────────────┬────────────────────────────────────┘   - [Documentação da API](#documentação-da-api)
+                         │O projeto contempla duas arquiteturas: uma implementação de referência funcional (monolítica, em Node.js) para fins de demonstração e validação, e uma arquitetura alvo (microservices, em Java) projetada para produção, escalabilidade e resiliência.5. [Stack Tecnológica](#stack-tecnológica)5. [Stack Tecnológica](#stack-tecnológica)
 
-                         │ HTTPS / WSS
-
-┌────────────────────────▼────────────────────────────────────┐9. [Instalação e Execução Local](#instalação-e-execução-local)8. [Documentação Técnica](#documentação-técnica)6. [Estrutura do Banco de Dados](#estrutura-do-banco-de-dados)
-
-│                       Camada Frontend                       │
-
-│      - Interface do Usuário (HTML/CSS/JavaScript)           │10. [Testes](#testes)
-
-│      - Autenticação Firebase                                │
-
-│      - Cliente WebSocket                                    │11. [Segurança e Monitoramento](#segurança-e-monitoramento)   - [Estrutura do Banco de Dados (SQLite)](#estrutura-do-banco-de-dados-sqlite)
-
-│      - Service Worker FCM                                   │
-
-└────────────────────────┬────────────────────────────────────┘12. [Estrutura do Projeto](#estrutura-do-projeto)
-
-                         │ API REST / WebSocket
-
-┌────────────────────────▼────────────────────────────────────┐13. [Roadmap (Visão Futura)](#roadmap-visão-futura)   - [Documentação da API](#documentação-da-api)7. [Documentação da API](#documentação-da-api)
-
-│                       Serviços Backend (Node.js)            │
-
-│      - API REST Express.js (Porta 3001)                     │14. [Contribuição](#contribuição)
-
-│      - Servidor WebSocket (ws://localhost:3001/ws)          │
-
-│      - Autenticação e Autorização (JWT)                     │15. [Licença](#licença)9. [Instalação e Execução Local](#instalação-e-execução-local)
-
-│      - Lógica de Negócio e Validação                        │
-
-└────────────────────────┬────────────────────────────────────┘
-
-                         │
-
-        ┌────────────────┼────────────────┐## Visão Geral10. [Testes](#testes)8. [Instalação e Configuração](#instalação-e-configuração)
+        ┌────────────────┼────────────────┐
 
         │                │                │
 
         ▼                ▼                ▼
 
-┌────────────────┐ ┌─────────────┐ ┌──────────────┐
+┌──────────────┐  ┌────────────┐  ┌─────────────┐### Implementação de Referência (Node.js)6. [Funcionalidades Principais](#funcionalidades-principais)
 
-│ Banco SQLite   │ │  Firebase   │ │Sistema Arquivos│O Sentinela PIX é uma plataforma de software como serviço (SaaS) projetada para atuar como uma câmara de compensação centralizada para denúncias de fraude no PIX. O sistema visa conectar instituições financeiras, permitindo que um banco (vítima) notifique instantaneamente outro banco (receptor) sobre uma transação fraudulenta, possibilitando o bloqueio preventivo de fundos antes que sejam dissipados.11. [Segurança e Monitoramento](#segurança-e-monitoramento)
+│   SQLite     │  │  Firebase  │  │   Arquivos  │
 
-│ - Usuários     │ │  - Firestore│ │ - Uploads    │
+│ • Usuários   │  │ • Auth     │  │ • Uploads   │
 
-│ - Denúncias    │ │  - Auth     │ │ - Logs       │
+│ • Denúncias  │  │ • Firestore│  │ • Logs      │
 
-│ - Notificações │ │  - FCM      │ │ - Cache      │
+│ • Notificações│  │ • FCM      │  │ • Cache     │Esta é a versão atualmente funcional no repositório, ideal para execução local e demonstração. Utiliza uma stack simplificada com um backend monolítico e um banco de dados SQLite.7. [Fluxo Operacional](#fluxo-operacional)6. [Funcionalidades Principais](#funcionalidades-principais)5. [Funcionalidades Principais](#funcionalidades-principais)Sentinela PIX is a comprehensive real-time fraud detection and prevention platform designed to combat PIX payment system scams in Brazil. The platform provides centralized fraud reporting, risk analysis, and automated notification systems to facilitate rapid response between financial institutions.Sentinela PIX is a comprehensive real-time fraud detection and prevention platform designed to combat PIX payment system scams in Brazil. The platform provides centralized fraud reporting, risk analysis, and automated notification systems to facilitate rapid response between financial institutions.
 
-│ - Tokens FCM   │ │             │ │              │## O Problema12. [Estrutura do Projeto](#estrutura-do-projeto)9. [Execução Local](#execução-local)## Problem Statement## Problem Statement
-
-└────────────────┘ └─────────────┘ └──────────────┘
+└──────────────┘  └────────────┘  └─────────────┘
 
 ```
 
 
 
-### Arquitetura Alvo (Microservices Java/Spring Boot)A principal vulnerabilidade nas fraudes PIX é o tempo. As transferências de dinheiro ocorrem quase instantaneamente, tornando o bloqueio e a recuperação de valores extremamente difíceis. O ecossistema bancário atual carece de um mecanismo centralizado e padronizado para a comunicação ultrarrápida de fraudes entre diferentes instituições, resultando em perdas financeiras significativas para clientes e bancos.13. [Roadmap (Visão Futura)](#roadmap-visão-futura)
+---```8. [Documentação Técnica](#documentação-técnica)
 
 
 
-Esta é a arquitetura planejada para um ambiente de produção robusto. Ela desacopla responsabilidades em serviços independentes, utiliza um broker de mensagens para comunicação assíncrona e um banco de dados relacional mais robusto.
+## 🛠️ Stack Tecnológica┌─────────────────────────────────────────────────────────────┐
 
 
 
-```## A Solução Proposta14. [Contribuição](#contribuição)10. [Testes](#testes)
+### Backend│                       Aplicações Cliente                    │   - [Estrutura do Banco de Dados (SQLite)](#estrutura-do-banco-de-dados-sqlite)7. [Fluxo Operacional](#fluxo-operacional)
 
-┌─────────────────┐    ┌─────────────────────┐    ┌──────────────────────┐
+- **Runtime**: Node.js v18+
 
-│   App Bancário  │───▶│     API Gateway     │───▶│    Load Balancer     │
-
-│   (Banco A)     │    │ (Spring Cloud GW)   │    │                      │
-
-└─────────────────┘    └─────────────────────┘    └──────────────────────┘A plataforma Sentinela PIX aborda este desafio através de três pilares centrais:15. [Licença](#licença)
-
-                                                          │
-
-                               ┌─────────────────┼─────────────────┐
-
-                               │                 │                 │
-
-                               ▼                 ▼                 ▼- **Sistema de Notificação Rápida**: Cria um canal de comunicação de baixa latência (via WebSockets e Webhooks) para que instituições vítimas comuniquem instituições receptoras sobre transações fraudulentas em segundos.11. [Deploy em Produção](#deploy-em-produção)
-
-                        ┌───────────────────┐ ┌─────────────────┐ ┌─────────────────┐
-
-                        │ fraud-report-     │ │ risk-analysis-  │ │ notification-   │- **Pontuação de Risco (Risk Scoring)**: Analisa e sinaliza chaves PIX e contas que recebem múltiplas denúncias de fraude, criando um score de risco dinâmico que pode ser consultado por qualquer instituição participante.
-
-                        │ service           │ │ service         │ │ service         │
-
-                        │ (Java/Spring)     │ │ (Java/Spring)   │ │ (Java/Spring)   │- **Mecanismo de Prevenção**: Auxilia na prevenção de transações futuras para contas fraudulentas, permitindo que bancos consultem o risco de uma chave PIX antes de efetivar uma transação.## Visão Geral
-
-                        │ • Recebe denúncias│ │ • Score de risco│ │ • Notifica bancos│
-
-                        │ • Valida dados    │ │ • Consulta keys │ │ • Webhooks/API  │
-
-                        │ • Persiste no BD  │ │ • Pub/Sub       │ │ • Pub/Sub       │
-
-                        │ • Publica eventos │ │                 │ │                 │## Arquitetura da Solução12. [Segurança](#segurança)
-
-                        └────────┬──────────┘ └────────┬────────┘ └────────┬────────┘
-
-                                 │                   │                   │
-
-                                 └─────────┬─────────┴───────────────────┘
-
-                                           │O projeto contempla duas arquiteturas: uma implementação de referência funcional (monolítica, em Node.js) para fins de demonstração e validação, e uma arquitetura alvo (microservices, em Java) projetada para produção, escalabilidade e resiliência.O Sentinela PIX é uma plataforma de software como serviço (SaaS) projetada para atuar como uma câmara de compensação centralizada para denúncias de fraude no PIX. O sistema visa conectar instituições financeiras, permitindo que um banco (vítima) notifique instantaneamente outro banco (receptor) sobre uma transação fraudulenta, possibilitando o bloqueio preventivo de fundos antes que sejam dissipados.
-
-                                           ▼
-
-                                 ┌─────────────────┐
-
-                                 │    RabbitMQ     │
-
-                                 │  (Mensageria)   │### Implementação de Referência (Node.js)13. [Monitoramento](#monitoramento)The primary vulnerability in PIX fraud is time. Money transfers occur almost instantaneously, making blocking and recovery extremely difficult. The current banking system lacks a centralized mechanism for rapid fraud communication between different institutions.The primary vulnerability in PIX fraud is time. Money transfers occur almost instantaneously, making blocking and recovery extremely difficult. The current banking system lacks a centralized mechanism for rapid fraud communication between different institutions.
-
-                                 │ • NovaDenuncia  │
-
-                                 │ • Async Events  │
-
-                                 └─────────────────┘
-
-                                           │Esta é a versão atualmente funcional no repositório, ideal para execução local e demonstração. Utiliza uma stack simplificada com um backend monolítico e um banco de dados SQLite.## O Problema
-
-                                           ▼
-
-                                 ┌─────────────────┐
-
-                                 │   PostgreSQL    │
-
-                                 │   (Database)    │```14. [Estrutura do Projeto](#estrutura-do-projeto)
-
-                                 │ • Denúncias     │
-
-                                 │ • Scores PIX    │┌─────────────────────────────────────────────────────────────┐
-
-                                 └─────────────────┘
-
-```│                       Aplicações Cliente                    │A principal vulnerabilidade nas fraudes PIX é o tempo. As transferências de dinheiro ocorrem quase instantaneamente, tornando o bloqueio e a recuperação de valores extremamente difíceis. O ecossistema bancário atual carece de um mecanismo centralizado e padronizado para a comunicação ultrarrápida de fraudes entre diferentes instituições, resultando em perdas financeiras significativas para clientes e bancos.
-
-
-
-## Stack Tecnológica│      (Dashboard Web, Apps Mobile, Interfaces Bancárias)     │
-
-
-
-### Implementação de Referência (Node.js)└────────────────────────┬────────────────────────────────────┘15. [Contribuição](#contribuição)
-
-
-
-- **Backend**: Node.js v18+, Express.js                         │ HTTPS / WSS
+- **Framework**: Express.js 4.18│      (Dashboard Web, Apps Mobile, Interfaces Bancárias)     │
 
 - **Banco de Dados**: SQLite3
 
-- **Autenticação**: JSON Web Tokens (JWT), bcryptjs┌────────────────────────▼────────────────────────────────────┐## A Solução Proposta
+- **Autenticação**: JWT + bcryptjs└────────────────────────┬────────────────────────────────────┘   - [Documentação da API](#documentação-da-api)
 
-- **Comunicação Real-time**: WebSockets (biblioteca `ws`)
+- **Real-time**: WebSockets (biblioteca `ws`)
 
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+), Tailwind CSS│                       Camada Frontend                       │
+- **Agendamento**: node-cron                         │ HTTPS / WSS
 
-- **Integração**: Firebase (Authentication, Firestore, Cloud Messaging)
 
-│      - Interface do Usuário (HTML/CSS/JavaScript)           │16. [Licença](#licença)
 
-### Arquitetura Alvo (Java/Spring)
+### Frontend┌────────────────────────▼────────────────────────────────────┐9. [Instalação e Execução Local](#instalação-e-execução-local)8. [Documentação Técnica](#documentação-técnica)6. [Estrutura do Banco de Dados](#estrutura-do-banco-de-dados)
+
+- **Estrutura**: HTML5, CSS3
+
+- **Estilização**: Tailwind CSS 3.x│                       Camada Frontend                       │
+
+- **Scripts**: JavaScript ES6+
+
+- **Ícones**: Material Symbols│      - Interface do Usuário (HTML/CSS/JavaScript)           │10. [Testes](#testes)
+
+- **Fontes**: Montserrat, Roboto
 
 │      - Autenticação Firebase                                │
 
-- **Linguagem**: Java 17+
+### Integrações
 
-- **Framework**: Spring Boot 3.x, Spring Cloud Gateway, Spring Data JPA, Spring Security│      - Cliente WebSocket                                    │A plataforma Sentinela PIX aborda este desafio através de três pilares centrais:
+- **Firebase Authentication**: Gerenciamento de usuários│      - Cliente WebSocket                                    │11. [Segurança e Monitoramento](#segurança-e-monitoramento)   - [Estrutura do Banco de Dados (SQLite)](#estrutura-do-banco-de-dados-sqlite)
 
-- **Banco de Dados**: PostgreSQL
+- **Firebase Firestore**: Sincronização de dados
 
-- **Mensageria**: RabbitMQ (ou Azure Service Bus)│      - Service Worker FCM                                   │
+- **Firebase Cloud Messaging**: Notificações push│      - Service Worker FCM                                   │
 
-- **Infraestrutura**: Docker, Kubernetes (Azure AKS)
+- **Firebase Hosting**: Hospedagem da aplicação
 
-- **Cloud**: Microsoft Azure (ACR, AKS, Azure Monitor)└────────────────────────┬────────────────────────────────────┘## Solution Architecture## Solution Architecture
+└────────────────────────┬────────────────────────────────────┘12. [Estrutura do Projeto](#estrutura-do-projeto)
 
-- **Testes**: JUnit 5, Mockito
+---
 
                          │ API REST / WebSocket
 
-## Funcionalidades Principais
+## ✨ Funcionalidades
 
-┌────────────────────────▼────────────────────────────────────┐- **Sistema de Notificação Rápida**: Cria um canal de comunicação de baixa latência (via WebSockets e Webhooks) para que instituições vítimas comuniquem instituições receptoras sobre transações fraudulentas em segundos.
+┌────────────────────────▼────────────────────────────────────┐13. [Roadmap (Visão Futura)](#roadmap-visão-futura)   - [Documentação da API](#documentação-da-api)7. [Documentação da API](#documentação-da-api)
 
-- **Gerenciamento de Usuários**: Autenticação segura (Firebase/JWT), gerenciamento de perfil, configurações de conta, e suporte a múltiplos bancos.
+### 👤 Gerenciamento de Usuários
 
-- **Sistema de Relatórios de Fraude**: Submissão detalhada de denúncias (chave PIX, valor, ID da transação, bancos envolvidos), validação de dados e gerenciamento de status (pendente, confirmado, falso positivo).│                       Serviços Backend (Node.js)            │
+- Autenticação segura com Firebase e JWT│                       Serviços Backend (Node.js)            │
 
-- **Motor de Análise de Risco**: Algoritmo de pontuação que incrementa o risco de uma chave PIX baseado no número e frequência de denúncias, classificando-as como "suspeita", "alto risco" ou "risco crítico".
+- Perfis completos com informações bancárias
 
-- **API de Consulta de Risco**: Endpoint (GET /api/v1/keys/{chavePix}/risk) que permite a qualquer instituição verificar o score de risco de uma chave antes de processar um pagamento.│      - API REST Express.js (Porta 3001)                     │- **Pontuação de Risco (Risk Scoring)**: Analisa e sinaliza chaves PIX e contas que recebem múltiplas denúncias de fraude, criando um score de risco dinâmico que pode ser consultado por qualquer instituição participante.## Visão Geral
+- Gerenciamento de sessões ativas│      - API REST Express.js (Porta 3001)                     │14. [Contribuição](#contribuição)
 
-- **Notificações em Tempo Real**:
+- Sistema de avatar com iniciais automáticas
 
-  - **WebSocket**: Comunicação persistente com o dashboard web para atualizações instantâneas.│      - Servidor WebSocket (ws://localhost:3001/ws)          │
+- Configurações personalizáveis│      - Servidor WebSocket (ws://localhost:3001/ws)          │
 
-  - **Push Notifications**: Integração com Firebase Cloud Messaging (FCM) para alertas nativos no navegador, mesmo com a aplicação em segundo plano.
 
-  - **Webhooks**: (Arquitetura Alvo) Notificação automática para sistemas de backend de outras instituições financeiras.│      - Autenticação e Autorização (JWT)                     │- **Mecanismo de Prevenção**: Auxilia na prevenção de transações futuras para contas fraudulentas, permitindo que bancos consultem o risco de uma chave PIX antes de efetivar uma transação.
 
-- **Dashboard e Análise**: Interface web responsiva com KPIs (Key Performance Indicators), gráficos de tendências de fraude, e listas de denúncias com filtros avançados.
+### 📝 Sistema de Denúncias│      - Autenticação e Autorização (JWT)                     │15. [Licença](#licença)9. [Instalação e Execução Local](#instalação-e-execução-local)
 
-│      - Lógica de Negócio e Validação                        │
+- Formulário detalhado de relatório de fraude
 
-## Fluxo Operacional
+- Validação em tempo real de chaves PIX│      - Lógica de Negócio e Validação                        │
 
-└────────────────────────┬────────────────────────────────────┘
+- Histórico completo de denúncias
 
-O diagrama abaixo ilustra o fluxo completo de uma denúncia de fraude, desde a vítima até a ação no banco do fraudador, utilizando a arquitetura alvo de microservices.
+- Status de acompanhamento (pendente, confirmado, falso positivo)└────────────────────────┬────────────────────────────────────┘
+
+- Upload de evidências
 
                          │
 
-```
+### 🔍 Análise de Risco
 
-Vítima → Banco A (Vítima) → API Gateway → fraud-report-service        ┌────────────────┼────────────────┐## Arquitetura da Solução
+- Algoritmo de pontuação dinâmica        ┌────────────────┼────────────────┐## Visão Geral10. [Testes](#testes)8. [Instalação e Configuração](#instalação-e-configuração)
 
-                                              ↓
+- Classificação por níveis (suspeita, alto risco, crítico)
 
-                                     Valida e Salva no BD        │                │                │
+- Consulta pública de scores por chave PIX        │                │                │
 
-                                              ↓
+- Histórico de denúncias por conta
 
-                                     Publica evento no RabbitMQ        ▼                ▼                ▼O Sentinela PIX é uma plataforma abrangente de detecção e prevenção de fraudes em tempo real, projetada para combater golpes no sistema de pagamentos PIX brasileiro. A plataforma fornece relatórios centralizados de fraudes, análise de risco e sistemas automatizados de notificação para facilitar a resposta rápida entre instituições financeiras.
+- Identificação de instituições afetadas        ▼                ▼                ▼
 
-                                              ↓
 
-                        ┌─────────────────────┴──────────────────┐┌────────────────┐ ┌─────────────┐ ┌──────────────┐
 
-                        ↓                                        ↓
+### 🔔 Notificações em Tempo Real┌────────────────┐ ┌─────────────┐ ┌──────────────┐
 
-              risk-analysis-service                   notification-service│ Banco SQLite   │ │  Firebase   │ │Sistema Arquivos│O projeto contempla duas arquiteturas: uma implementação de referência funcional (monolítica, em Node.js) para fins de demonstração e validação, e uma arquitetura alvo (microservices, em Java) projetada para produção, escalabilidade e resiliência.
+- **WebSocket**: Comunicação bidirecional persistente
 
-                        ↓                                        ↓
+- **Push Notifications**: Alertas nativos no navegador via FCM│ Banco SQLite   │ │  Firebase   │ │Sistema Arquivos│O Sentinela PIX é uma plataforma de software como serviço (SaaS) projetada para atuar como uma câmara de compensação centralizada para denúncias de fraude no PIX. O sistema visa conectar instituições financeiras, permitindo que um banco (vítima) notifique instantaneamente outro banco (receptor) sobre uma transação fraudulenta, possibilitando o bloqueio preventivo de fundos antes que sejam dissipados.11. [Segurança e Monitoramento](#segurança-e-monitoramento)
 
-              Calcula/Atualiza Score                  Identifica Banco B│ - Usuários     │ │  - Firestore│ │ - Uploads    │
+- Central de notificações no dashboard
 
-                        ↓                                        ↓
+- Configurações granulares de preferências│ - Usuários     │ │  - Firestore│ │ - Uploads    │
 
-                Salva novo score                      Envia Webhook para Banco B│ - Denúncias    │ │  - Auth     │ │ - Logs       │The Sentinela PIX platform addresses this challenge through:The Sentinela PIX platform addresses this challenge through:
 
-                                                                 ↓
 
-                                                      Banco B recebe notificação│ - Notificações │ │  - FCM      │ │ - Cache      │
+### 📊 Dashboard Analítico│ - Denúncias    │ │  - Auth     │ │ - Logs       │
 
-                                                                 ↓
+- KPIs em tempo real
 
-                                                      Dispara bloqueio preventivo│ - Tokens FCM   │ │             │ │              │### Implementação de Referência (Node.js)
+- Gráficos de tendências de fraude│ - Notificações │ │  - FCM      │ │ - Cache      │
 
-```
+- Lista de denúncias com filtros avançados
+
+- Estatísticas da conta│ - Tokens FCM   │ │             │ │              │## O Problema12. [Estrutura do Projeto](#estrutura-do-projeto)9. [Execução Local](#execução-local)## Problem Statement## Problem Statement
+
+- Exportação de relatórios
 
 └────────────────┘ └─────────────┘ └──────────────┘
 
-## Documentação Técnica
+---
 
-```### Características Principais
+```
 
-### Estrutura do Banco de Dados (SQLite)
-
-
-
-Este esquema refere-se à implementação de referência (Node.js). A arquitetura alvo utilizará PostgreSQL, mas manterá uma estrutura de dados similar.
-
-### Arquitetura Alvo (Microservices Java/Spring Boot)Esta é a versão atualmente funcional no repositório, ideal para execução local e demonstração. Utiliza uma stack simplificada com um backend monolítico e um banco de dados SQLite.
-
-**Tabela: `users`**
+## 🚀 Instalação e Execução
 
 
+
+### Pré-requisitos
+
+### Arquitetura Alvo (Microservices Java/Spring Boot)A principal vulnerabilidade nas fraudes PIX é o tempo. As transferências de dinheiro ocorrem quase instantaneamente, tornando o bloqueio e a recuperação de valores extremamente difíceis. O ecossistema bancário atual carece de um mecanismo centralizado e padronizado para a comunicação ultrarrápida de fraudes entre diferentes instituições, resultando em perdas financeiras significativas para clientes e bancos.13. [Roadmap (Visão Futura)](#roadmap-visão-futura)
+
+- Node.js v18.0.0 ou superior
+
+- npm v8.0.0 ou superior
+
+- Python 3.8+ (para servidor frontend local)
+
+- GitEsta é a arquitetura planejada para um ambiente de produção robusto. Ela desacopla responsabilidades em serviços independentes, utiliza um broker de mensagens para comunicação assíncrona e um banco de dados relacional mais robusto.
+
+- Conta Firebase (Authentication, Firestore, FCM)
+
+
+
+### Passo 1: Clonar o Repositório
+
+```## A Solução Proposta14. [Contribuição](#contribuição)10. [Testes](#testes)
+
+```powershell
+
+git clone https://github.com/MatheusGino71/A3-sistemas.git┌─────────────────┐    ┌─────────────────────┐    ┌──────────────────────┐
+
+cd A3-sistemas/sentinela-pix
+
+```│   App Bancário  │───▶│     API Gateway     │───▶│    Load Balancer     │
+
+
+
+### Passo 2: Configurar o Backend│   (Banco A)     │    │ (Spring Cloud GW)   │    │                      │
+
+
+
+```powershell└─────────────────┘    └─────────────────────┘    └──────────────────────┘A plataforma Sentinela PIX aborda este desafio através de três pilares centrais:15. [Licença](#licença)
+
+cd backend
+
+npm install                                                          │
+
+```
+
+                               ┌─────────────────┼─────────────────┐
+
+Crie um arquivo `.env` no diretório `backend/`:
+
+                               │                 │                 │
+
+```env
+
+PORT=3001                               ▼                 ▼                 ▼- **Sistema de Notificação Rápida**: Cria um canal de comunicação de baixa latência (via WebSockets e Webhooks) para que instituições vítimas comuniquem instituições receptoras sobre transações fraudulentas em segundos.11. [Deploy em Produção](#deploy-em-produção)
+
+JWT_SECRET=sua_chave_secreta_jwt_com_pelo_menos_32_caracteres
+
+DATABASE_PATH=./database.sqlite                        ┌───────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+
+NODE_ENV=development
+
+CORS_ORIGIN=http://localhost:8080                        │ fraud-report-     │ │ risk-analysis-  │ │ notification-   │- **Pontuação de Risco (Risk Scoring)**: Analisa e sinaliza chaves PIX e contas que recebem múltiplas denúncias de fraude, criando um score de risco dinâmico que pode ser consultado por qualquer instituição participante.
+
+```
+
+                        │ service           │ │ service         │ │ service         │
+
+### Passo 3: Configurar o Firebase
+
+                        │ (Java/Spring)     │ │ (Java/Spring)   │ │ (Java/Spring)   │- **Mecanismo de Prevenção**: Auxilia na prevenção de transações futuras para contas fraudulentas, permitindo que bancos consultem o risco de uma chave PIX antes de efetivar uma transação.## Visão Geral
+
+1. Acesse o [Console do Firebase](https://console.firebase.google.com/)
+
+2. Crie um novo projeto ou use um existente                        │ • Recebe denúncias│ │ • Score de risco│ │ • Notifica bancos│
+
+3. Ative Authentication, Firestore e Cloud Messaging
+
+4. Obtenha as credenciais do projeto                        │ • Valida dados    │ │ • Consulta keys │ │ • Webhooks/API  │
+
+
+
+Edite `frontend/firebase-config.js` com suas credenciais.                        │ • Persiste no BD  │ │ • Pub/Sub       │ │ • Pub/Sub       │
+
+
+
+### Passo 4: Executar a Aplicação                        │ • Publica eventos │ │                 │ │                 │## Arquitetura da Solução12. [Segurança](#segurança)
+
+
+
+**Terminal 1 - Backend:**                        └────────┬──────────┘ └────────┬────────┘ └────────┬────────┘
+
+```powershell
+
+cd backend                                 │                   │                   │
+
+node server.js
+
+```                                 └─────────┬─────────┴───────────────────┘
+
+
+
+**Terminal 2 - Frontend:**                                           │O projeto contempla duas arquiteturas: uma implementação de referência funcional (monolítica, em Node.js) para fins de demonstração e validação, e uma arquitetura alvo (microservices, em Java) projetada para produção, escalabilidade e resiliência.O Sentinela PIX é uma plataforma de software como serviço (SaaS) projetada para atuar como uma câmara de compensação centralizada para denúncias de fraude no PIX. O sistema visa conectar instituições financeiras, permitindo que um banco (vítima) notifique instantaneamente outro banco (receptor) sobre uma transação fraudulenta, possibilitando o bloqueio preventivo de fundos antes que sejam dissipados.
+
+```powershell
+
+cd frontend                                           ▼
+
+python -m http.server 8080
+
+```                                 ┌─────────────────┐
+
+
+
+### Passo 5: Acessar a Aplicação                                 │    RabbitMQ     │
+
+
+
+Abra seu navegador em: **http://localhost:8080**                                 │  (Mensageria)   │### Implementação de Referência (Node.js)13. [Monitoramento](#monitoramento)The primary vulnerability in PIX fraud is time. Money transfers occur almost instantaneously, making blocking and recovery extremely difficult. The current banking system lacks a centralized mechanism for rapid fraud communication between different institutions.The primary vulnerability in PIX fraud is time. Money transfers occur almost instantaneously, making blocking and recovery extremely difficult. The current banking system lacks a centralized mechanism for rapid fraud communication between different institutions.
+
+
+
+---                                 │ • NovaDenuncia  │
+
+
+
+## 📚 Documentação da API                                 │ • Async Events  │
+
+
+
+### Autenticação                                 └─────────────────┘
+
+
+
+#### Registrar Usuário                                           │Esta é a versão atualmente funcional no repositório, ideal para execução local e demonstração. Utiliza uma stack simplificada com um backend monolítico e um banco de dados SQLite.## O Problema
+
+```http
+
+POST /api/v1/auth/register                                           ▼
+
+Content-Type: application/json
+
+                                 ┌─────────────────┐
+
+{
+
+  "email": "usuario@exemplo.com",                                 │   PostgreSQL    │
+
+  "password": "senhaSegura123",
+
+  "full_name": "João da Silva",                                 │   (Database)    │```14. [Estrutura do Projeto](#estrutura-do-projeto)
+
+  "cpf": "12345678901",
+
+  "phone": "+5511999999999",                                 │ • Denúncias     │
+
+  "bank": "Bradesco"
+
+}                                 │ • Scores PIX    │┌─────────────────────────────────────────────────────────────┐
+
+```
+
+                                 └─────────────────┘
+
+#### Login
+
+```http```│                       Aplicações Cliente                    │A principal vulnerabilidade nas fraudes PIX é o tempo. As transferências de dinheiro ocorrem quase instantaneamente, tornando o bloqueio e a recuperação de valores extremamente difíceis. O ecossistema bancário atual carece de um mecanismo centralizado e padronizado para a comunicação ultrarrápida de fraudes entre diferentes instituições, resultando em perdas financeiras significativas para clientes e bancos.
+
+POST /api/v1/auth/login
+
+Content-Type: application/json
+
+
+
+{## Stack Tecnológica│      (Dashboard Web, Apps Mobile, Interfaces Bancárias)     │
+
+  "email": "usuario@exemplo.com",
+
+  "password": "senhaSegura123"
+
+}
+
+```### Implementação de Referência (Node.js)└────────────────────────┬────────────────────────────────────┘15. [Contribuição](#contribuição)
+
+
+
+### Relatórios de Fraude
+
+
+
+#### Criar Denúncia- **Backend**: Node.js v18+, Express.js                         │ HTTPS / WSS
+
+```http
+
+POST /api/v1/reports- **Banco de Dados**: SQLite3
+
+Authorization: Bearer {token}
+
+```- **Autenticação**: JSON Web Tokens (JWT), bcryptjs┌────────────────────────▼────────────────────────────────────┐## A Solução Proposta
+
+
+
+#### Listar Denúncias- **Comunicação Real-time**: WebSockets (biblioteca `ws`)
+
+```http
+
+GET /api/v1/reports?status=pending&limit=20&offset=0- **Frontend**: HTML5, CSS3, JavaScript (ES6+), Tailwind CSS│                       Camada Frontend                       │
+
+Authorization: Bearer {token}
+
+```- **Integração**: Firebase (Authentication, Firestore, Cloud Messaging)
+
+
+
+### Análise de Risco│      - Interface do Usuário (HTML/CSS/JavaScript)           │16. [Licença](#licença)
+
+
+
+#### Consultar Risco### Arquitetura Alvo (Java/Spring)
+
+```http
+
+GET /api/v1/keys/{chavePix}/risk│      - Autenticação Firebase                                │
+
+Authorization: Bearer {token}
+
+```- **Linguagem**: Java 17+
+
+
+
+---- **Framework**: Spring Boot 3.x, Spring Cloud Gateway, Spring Data JPA, Spring Security│      - Cliente WebSocket                                    │A plataforma Sentinela PIX aborda este desafio através de três pilares centrais:
+
+
+
+## 🔐 Segurança- **Banco de Dados**: PostgreSQL
+
+
+
+### Medidas Implementadas- **Mensageria**: RabbitMQ (ou Azure Service Bus)│      - Service Worker FCM                                   │
+
+
+
+- ✅ **Autenticação Dupla**: Firebase + JWT- **Infraestrutura**: Docker, Kubernetes (Azure AKS)
+
+- ✅ **Hash de Senhas**: bcryptjs com 10 rounds
+
+- ✅ **Tokens Expiráveis**: Renovação automática de sessão- **Cloud**: Microsoft Azure (ACR, AKS, Azure Monitor)└────────────────────────┬────────────────────────────────────┘## Solution Architecture## Solution Architecture
+
+- ✅ **Validação de Entrada**: Sanitização contra XSS e injeção
+
+- ✅ **HTTPS Obrigatório**: Em produção- **Testes**: JUnit 5, Mockito
+
+- ✅ **WebSocket Seguro**: WSS em produção
+
+- ✅ **CORS Configurado**: Proteção contra requisições não autorizadas                         │ API REST / WebSocket
+
+- ✅ **Rate Limiting**: Prevenção de ataques de força bruta
+
+## Funcionalidades Principais
+
+---
+
+┌────────────────────────▼────────────────────────────────────┐- **Sistema de Notificação Rápida**: Cria um canal de comunicação de baixa latência (via WebSockets e Webhooks) para que instituições vítimas comuniquem instituições receptoras sobre transações fraudulentas em segundos.
+
+## 📁 Estrutura do Projeto
+
+- **Gerenciamento de Usuários**: Autenticação segura (Firebase/JWT), gerenciamento de perfil, configurações de conta, e suporte a múltiplos bancos.
+
+```
+
+sentinela-pix/- **Sistema de Relatórios de Fraude**: Submissão detalhada de denúncias (chave PIX, valor, ID da transação, bancos envolvidos), validação de dados e gerenciamento de status (pendente, confirmado, falso positivo).│                       Serviços Backend (Node.js)            │
+
+├── README.md                    # Documentação principal
+
+├── backend/                     # Backend Node.js- **Motor de Análise de Risco**: Algoritmo de pontuação que incrementa o risco de uma chave PIX baseado no número e frequência de denúncias, classificando-as como "suspeita", "alto risco" ou "risco crítico".
+
+│   ├── server.js                # Aplicação principal
+
+│   ├── package.json             # Dependências- **API de Consulta de Risco**: Endpoint (GET /api/v1/keys/{chavePix}/risk) que permite a qualquer instituição verificar o score de risco de uma chave antes de processar um pagamento.│      - API REST Express.js (Porta 3001)                     │- **Pontuação de Risco (Risk Scoring)**: Analisa e sinaliza chaves PIX e contas que recebem múltiplas denúncias de fraude, criando um score de risco dinâmico que pode ser consultado por qualquer instituição participante.## Visão Geral
+
+│   └── database.sqlite          # Banco de dados
+
+│- **Notificações em Tempo Real**:
+
+├── frontend/                    # Interface Web
+
+│   ├── index.html               # Página inicial  - **WebSocket**: Comunicação persistente com o dashboard web para atualizações instantâneas.│      - Servidor WebSocket (ws://localhost:3001/ws)          │
+
+│   ├── login.html               # Autenticação
+
+│   ├── cadastro.html            # Registro  - **Push Notifications**: Integração com Firebase Cloud Messaging (FCM) para alertas nativos no navegador, mesmo com a aplicação em segundo plano.
+
+│   ├── dashboard.html           # Dashboard principal
+
+│   ├── profile.html             # Perfil do usuário  - **Webhooks**: (Arquitetura Alvo) Notificação automática para sistemas de backend de outras instituições financeiras.│      - Autenticação e Autorização (JWT)                     │- **Mecanismo de Prevenção**: Auxilia na prevenção de transações futuras para contas fraudulentas, permitindo que bancos consultem o risco de uma chave PIX antes de efetivar uma transação.
+
+│   ├── settings.html            # Configurações
+
+│   ├── dashboard.js             # Lógica do dashboard- **Dashboard e Análise**: Interface web responsiva com KPIs (Key Performance Indicators), gráficos de tendências de fraude, e listas de denúncias com filtros avançados.
+
+│   ├── user-system.js           # Sistema de usuário
+
+│   ├── styles.css               # Estilos│      - Lógica de Negócio e Validação                        │
+
+│   ├── star.svg                 # Logo ZENIT
+
+│   └── cid.mp4                  # Vídeo de fundo## Fluxo Operacional
+
+│
+
+└── docs/                        # Documentação adicional└────────────────────────┬────────────────────────────────────┘
+
+    ├── API-DOCUMENTATION.md     # API completa
+
+    └── DEPLOYMENT-GUIDE.md      # Guia de deployO diagrama abaixo ilustra o fluxo completo de uma denúncia de fraude, desde a vítima até a ação no banco do fraudador, utilizando a arquitetura alvo de microservices.
+
+```
+
+                         │
+
+---
+
+```
+
+## 🗺️ Roadmap
+
+Vítima → Banco A (Vítima) → API Gateway → fraud-report-service        ┌────────────────┼────────────────┐## Arquitetura da Solução
+
+### ✅ Fase 1: MVP (Concluída)
+
+- [x] Sistema de autenticação                                              ↓
+
+- [x] CRUD de denúncias
+
+- [x] Dashboard básico                                     Valida e Salva no BD        │                │                │
+
+- [x] Notificações WebSocket
+
+- [x] Análise de risco simples                                              ↓
+
+- [x] Identidade visual Bradesco
+
+                                     Publica evento no RabbitMQ        ▼                ▼                ▼O Sentinela PIX é uma plataforma abrangente de detecção e prevenção de fraudes em tempo real, projetada para combater golpes no sistema de pagamentos PIX brasileiro. A plataforma fornece relatórios centralizados de fraudes, análise de risco e sistemas automatizados de notificação para facilitar a resposta rápida entre instituições financeiras.
+
+### 🚧 Fase 2: Escalabilidade (Planejado)
+
+- [ ] Migração para microservices                                              ↓
+
+- [ ] Implementação de RabbitMQ
+
+- [ ] Migração para PostgreSQL                        ┌─────────────────────┴──────────────────┐┌────────────────┐ ┌─────────────┐ ┌──────────────┐
+
+- [ ] API Gateway com Spring Cloud
+
+- [ ] Containerização com Docker                        ↓                                        ↓
+
+
+
+### 📅 Fase 3: Inteligência Artificial (Futuro)              risk-analysis-service                   notification-service│ Banco SQLite   │ │  Firebase   │ │Sistema Arquivos│O projeto contempla duas arquiteturas: uma implementação de referência funcional (monolítica, em Node.js) para fins de demonstração e validação, e uma arquitetura alvo (microservices, em Java) projetada para produção, escalabilidade e resiliência.
+
+- [ ] Modelo de Machine Learning
+
+- [ ] Análise preditiva de comportamento                        ↓                                        ↓
+
+- [ ] Detecção de padrões complexos
+
+- [ ] Auto-aprendizado com feedback              Calcula/Atualiza Score                  Identifica Banco B│ - Usuários     │ │  - Firestore│ │ - Uploads    │
+
+
+
+---                        ↓                                        ↓
+
+
+
+## 🤝 Contribuição                Salva novo score                      Envia Webhook para Banco B│ - Denúncias    │ │  - Auth     │ │ - Logs       │The Sentinela PIX platform addresses this challenge through:The Sentinela PIX platform addresses this challenge through:
+
+
+
+Este é um projeto acadêmico e contribuições são bem-vindas!                                                                 ↓
+
+
+
+### Como Contribuir                                                      Banco B recebe notificação│ - Notificações │ │  - FCM      │ │ - Cache      │
+
+
+
+1. Faça um **fork** do repositório                                                                 ↓
+
+2. Crie uma **branch** para sua feature (`git checkout -b feature/nova-funcionalidade`)
+
+3. **Commit** suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)                                                      Dispara bloqueio preventivo│ - Tokens FCM   │ │             │ │              │### Implementação de Referência (Node.js)
+
+4. **Push** para a branch (`git push origin feature/nova-funcionalidade`)
+
+5. Abra um **Pull Request** com descrição detalhada```
+
+
+
+---└────────────────┘ └─────────────┘ └──────────────┘
+
+
+
+## 📄 Licença## Documentação Técnica
+
+
+
+Este projeto foi desenvolvido para fins **acadêmicos** como parte do curso A3 de Sistemas Distribuídos.```### Características Principais
+
+
+
+Todos os direitos reservados à equipe de desenvolvimento.### Estrutura do Banco de Dados (SQLite)
+
+
+
+---
+
+
+
+<div align="center">Este esquema refere-se à implementação de referência (Node.js). A arquitetura alvo utilizará PostgreSQL, mas manterá uma estrutura de dados similar.
+
+
+
+### 💙 Desenvolvido com dedicação para combater fraudes no sistema PIX brasileiro### Arquitetura Alvo (Microservices Java/Spring Boot)Esta é a versão atualmente funcional no repositório, ideal para execução local e demonstração. Utiliza uma stack simplificada com um backend monolítico e um banco de dados SQLite.
+
+
+
+**ZENIT** © 2024 - Sistema Anti-Fraude PIX**Tabela: `users`**
+
+
+
+[![Made with Love](https://img.shields.io/badge/Made%20with-❤️-CC092F?style=for-the-badge)]()
+
+[![Bradesco Identity](https://img.shields.io/badge/Bradesco-Identity-CC092F?style=for-the-badge)]()
 
 ```sql
 
+**Última Atualização**: Outubro de 2024
+
 CREATE TABLE users (Esta é a arquitetura planejada para um ambiente de produção robusto. Ela desacopla responsabilidades em serviços independentes, utiliza um broker de mensagens para comunicação assíncrona e um banco de dados relacional mais robusto.
+
+</div>
 
     id TEXT PRIMARY KEY,
 
