@@ -1,166 +1,164 @@
-# ZENIT - Sistema Inteligente Anti-Fraude PIX
+# ZENIT Anti-Fraud System
 
-![GitHub Repository](https://img.shields.io/badge/-GitHub%20Repository-black?style=flat-square&logo=github) ![Demo Live](https://img.shields.io/badge/-Demo%20Live-blue?style=flat-square) ![Node.js 18+](https://img.shields.io/badge/-Node.js%2018%2B-green?style=flat-square) ![License](https://img.shields.io/badge/License-MIT-lightgrey)
+## Project Overview
 
-## 📋 Índice
-- [Sobre o Projeto](#-sobre-o-projeto)
-- [Funcionalidades Principais](#-funcionalidades-principais)
-- [Arquitetura](#-arquitetura)
-- [Stack Tecnológica](#-stack-tecnológica)
-- [Instalação e Execução](#-instalação-e-execução)
-- [Documentação da API](#-documentação-da-api)
-- [Testes](#-testes)
-- [Monitoramento](#-monitoramento)
-- [Segurança](#-segurança)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
-- [Contribuição](#-contribuição)
-- [Licença](#-licença)
-- [Autor](#-autor)
+ZENIT is a cutting-edge anti-fraud system designed to mitigate the risks associated with PIX transactions. By leveraging advanced technologies and methodologies, ZENIT aims to provide a robust, secure, and efficient solution to users navigating the complexities of digital payments.
 
-## 🎯 Sobre o Projeto
+## Problem Statement
 
-ZENIT é uma plataforma avançada de detecção e prevenção de fraudes em tempo real para transações PIX no Brasil. Para ver o sistema em ação, confira a [demo aqui](https://a3-quinta-1a763.web.app).
+The proliferation of digital payment systems such as PIX has led to an increase in fraud vulnerabilities. ZENIT addresses these vulnerabilities by employing a multi-faceted approach to fraud detection and prevention, ensuring users are protected from potential threats.
 
-### O Problema
+## Three-Pillar Solution Architecture
+1. **Authentication**  
+   Secure user access through industry-standard authentication protocols.  
+2. **Fraud Detection**  
+   Real-time monitoring and reporting systems to identify suspicious transactions.  
+3. **Risk Analysis**  
+   Comprehensive analysis of transaction data to assess risk factors and prevent fraud.
 
-As transferências instantâneas tornam muito difícil bloquear e recuperar fundos em fraudes PIX, resultando em vulnerabilidades temporais que podem ser exploradas por fraudadores.
+## Detailed Functionality List
+- **Authentication**: Secure login and user management.  
+- **Fraud Reports**: Generate detailed reports on fraudulent activities.  
+- **Risk Analysis**: Analytical tools to assess transaction risks.  
+- **Notifications**: Alerts and notifications for suspicious activity.  
+- **Dashboard**: User-friendly interface to monitor transactions in real-time.  
+- **PWA**: Progressive Web App for seamless user experience.  
+- **Security**: Implementing best practices for data protection.  
+- **Monitoring**: Continuous system monitoring to ensure operational integrity.
 
-### A Solução ZENIT
+## Architecture Diagrams
+- **Current Node.js + SQLite Architecture**:  
+  ![Node.js + SQLite Architecture](path/to/node-sqlite-diagram.png)  
+- **Future Java Microservices Architecture**:  
+  ![Java Microservices Architecture](path/to/java-microservices-diagram.png)
 
-Três pilares fundamentais:
-1. **Sistema de Notificação em Tempo Real**: Infraestrutura baseada em WebSocket e Firebase Cloud Messaging.
-2. **Análise de Risco Automatizada**: Cálculo dinâmico de risco com base no histórico de denúncias.
-3. **Prevenção Proativa**: Alertas instantâneos para bloqueios preventivos.
+## Complete Technology Stack Comparison Table
+| Technology           | Description                           |
+|---------------------|---------------------------------------|
+| Node.js             | JavaScript runtime for server-side   |
+| SQLite              | Lightweight database engine           |
+| Java                | Object-oriented programming           |
+| PostgreSQL          | Object-relational database            |
+| Docker              | Containerization platform             |
+| Prometheus          | Monitoring system                     |
+| Grafana             | Visualization tool for metrics        |
 
-## ✨ Funcionalidades Principais
+## Installation Prerequisites & Setup Instructions
+1. Install Node.js (version x.x.x)  
+2. Install SQLite (version x.x.x)  
+3. Clone the repository:  
+   ```bash  
+   git clone https://github.com/MatheusGino71/A3-sistemas.git  
+   ```  
+4. Navigate to the project directory:  
+   ```bash  
+   cd A3-sistemas  
+   ```  
+5. Install dependencies:  
+   ```bash  
+   npm install  
+   ```  
+6. Set up your database configuration in `.env`.  
 
-- 🔐 Sistema de Autenticação (Firebase Auth + JWT)
-- 📝 Gerenciamento de Denúncias
-- 📊 Análise de Risco em Tempo Real
-- 🔔 Notificações Push e WebSocket
-- 📈 Dashboard Analítico com KPIs
-- 🌐 Progressive Web App (PWA)
-- 🔒 Segurança Avançada (rate limiting, input validation)
-- 📡 Monitoramento (Prometheus + Grafana)
+## Execution Commands
+### Manual Execution  
+   ```bash  
+   npm start  
+   ```  
+### Docker Execution  
+   ```bash  
+   docker-compose up  
+   ```  
 
-## 🏗️ Arquitetura
+## Complete API Documentation
+### Endpoints
+- **Authentication**  
+   - POST `/api/auth/login` - Login a user  
+   - POST `/api/auth/register` - Register a new user  
+- **Reports**  
+   - GET `/api/reports` - Retrieve fraud reports  
+   - POST `/api/reports` - Create a new fraud report  
+- **Risk Analysis**  
+   - GET `/api/risk` - Analyze transaction risks  
+- **Notifications**  
+   - GET `/api/notifications` - Retrieve notifications  
 
-### Implementação Atual (Node.js + SQLite)
+### Rate Limiting  
+   Rate limits are implemented to prevent abuse of the API. Standard request limits are 1000 requests per hour.
 
-![Diagram](link_do_diagrama_atual)
-- Frontend PWA
-- API Gateway (Express.js)
-- Services Layer
-- Data Layer (SQLite + Firebase)
-- Monitoring Layer
+## Testing Information
+- **E2E Testing**: Use Playwright for end-to-end testing  
+- **Unit Testing**: Use JUnit for unit testing classes and methods.  
 
-### Arquitetura Futura (Microservices)
+## Monitoring Setup
+- **Prometheus**: For collecting metrics.  
+- **Grafana**: For visualizing the collected data.
 
-![Diagram](link_do_diagrama_futuro)
-- API Gateway (Spring Cloud)
-- Fraud Report Service
-- Risk Analysis Service
-- Notification Service
-- PostgreSQL + RabbitMQ
+## Security Implementations
+- **JWT**: For secure authentication token generation  
+- **Rate Limiting**: To prevent abuse  
+- **Validation**: Input validation to avoid malicious data  
+- **Helmet**: For setting HTTP headers for security  
+- **Bcrypt**: For password hashing  
 
-## 🛠️ Stack Tecnológica
-
-| Implementação Atual   | Arquitetura Futura |
-| --------------------- | ------------------- |
-| Node.js, SQLite       | Microservices       |
-| Firebase              | Spring Cloud        |
-
-## 🚀 Instalação e Execução
-
-### Pré-requisitos
-- Node.js 18+
-- Python 3
-- Conta no Firebase
-
-### Execução Rápida
-
-```bash
-# Linux/macOS
-npm install
-npm start
-
-# Windows
-npm install
-npm start
+## Full Project Structure Tree
 ```
-
-### Execução Manual
-
-Comandos para iniciar o backend e o frontend:
-```bash
-# Backend
-node server.js
-
-# Frontend
-npm start
-```
-
-### Docker (Microservices)
-
-Comandos do docker compose:
-```bash
-docker-compose up
-```
-
-## 📡 Documentação da API
-
-A especificação OpenAPI pode ser encontrada [aqui](link_da_documentacao_api).
-
-Endpoints principais:
-- Endpoints de Autenticação
-- Endpoints de Denúncias
-- Endpoints de Análise de Risco
-- Endpoints de Notificações
-
-Inclui informações sobre rate limiting.
-
-## 🧪 Testes
-
-Testes E2E realizados com Playwright e testes unitários com JUnit, incluindo métricas de cobertura.
-
-## 📊 Monitoramento
-
-Dashboards do Grafana e métricas do Prometheus, acessíveis através dos URLs fornecidos.
-
-## 🔒 Segurança
-
-Recursos de segurança implementados:
-- Autenticação JWT
-- Rate limiting
-- Validação de entrada
-- Helmet.js
-- bcrypt
-
-## 📁 Estrutura do Projeto
-
-```
-/nome-do-projeto
-├── /src
-│   ├── /frontend
-│   └── /backend
-├── /tests
+A3-sistemas/
+├── src/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+├── tests/
+├── .env
+├── package.json
 └── README.md
 ```
 
-## 🤝 Contribuição
+## CI/CD Pipeline Details
+- Automated testing with each pull request.  
+- Continuous deployment to production with Docker containers.
 
-Diretrizes para contribuição.
+## Contribution Guidelines
+We welcome contributions! Please follow these steps:  
+1. Fork the repo  
+2. Create a new branch  
+3. Make your changes  
+4. Create a pull request  
 
-## 📄 Licença
+## License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-MIT License para fins acadêmicos.
+## Author
+Matheus Gino
 
-## 👨‍💻 Autor
+# Dashboard Features
+- **Real-time Analytics**: Live updates on transaction status.  
+- **User-Friendly Design**: Intuitive interface for easy navigation.  
+- **Responsive Design**: Optimized for various device sizes.
 
-- **Matheus Gino**  
-  GitHub: [@MatheusGino71](https://github.com/MatheusGino71)  
-  Repositório: [github.com/MatheusGino71/A3-sistemas](https://github.com/MatheusGino71/A3-sistemas)
+## Design System
+- **Color Palette**:  
+  | Color Name  | Hex Value  |
+  |-------------|------------|
+  | Primary     | #003366    |
+  | Secondary   | #FFCC00    |
 
----
+- **Responsiveness Breakpoints**:  
+  - Mobile:  ≤ 600px  
+  - Tablet:  ≥ 601px and ≤ 960px  
+  - Desktop: ≥ 961px
 
-**Desenvolvido para combater fraudes PIX no Brasil 🇧🇷🛡️
+## API Integration Examples
+- Sample code for API calls to authenticate and post reports.
+
+## Microservices CQRS Architecture
+- Description and diagram illustrating the Command Query Responsibility Segregation approach.
+
+## PostgreSQL Setup
+- Step-by-step guide for PostgreSQL installation and configuration.
+
+## Azure Deployment Guide with Container Instances
+- How to deploy the application on Azure using container instances.
+
+## Production Considerations
+- Best practices and recommendations for operating ZENIT in production.
