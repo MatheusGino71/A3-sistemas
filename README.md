@@ -1,5 +1,4 @@
-# ZENIT - Sistema Inteligente Anti-Fraude PIX# ZENIT - Sistema Inteligente de Detecção e Prevenção de Fraudes PIX<div align="center"># Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Fraud Detection and Prevention Platform# Sentinela PIX - Fraud Detection and Prevention Platform
-
+# ZENIT - Sistema Inteligente Anti-Fraude PIX
 
 
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/MatheusGino71/A3-sistemas)
