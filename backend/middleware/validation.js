@@ -131,13 +131,14 @@ function validateAmount(amount) {
 function validateBankName(bank) {
     const allowedBanks = [
         'Banco do Brasil',
+        'Itaú Unibanco',
         'Bradesco',
-        'Caixa Econômica Federal',
-        'Itaú',
         'Santander',
+        'Caixa Econômica Federal',
         'Nubank',
         'Inter',
         'C6 Bank',
+        'Next',
         'Outro'
     ];
     
@@ -203,12 +204,29 @@ function validateUserRegistration(req, res, next) {
  */
 function validateFraudReport(req, res, next) {
     try {
-        const { pixKey, pixKeyType, amount, victimBank, description, transactionId } = req.body;
+        const { pixKey, pixKeyType, amount, victimBank, reporterBank, description, transactionId } = req.body;
         
         // Validações obrigatórias
-        req.body.pixKey = validatePixKey(pixKey, pixKeyType);
-        req.body.amount = validateAmount(amount);
-        req.body.victimBank = validateBankName(victimBank);
+        if (pixKey) {
+            req.body.pixKey = validatePixKey(pixKey, pixKeyType);
+        }
+        
+        // Validação de amount (opcional)
+        if (amount !== undefined && amount !== null && amount !== '') {
+            req.body.amount = validateAmount(amount);
+        }
+        
+        // Validação de banco (aceita victimBank ou reporterBank)
+        const bankName = victimBank || reporterBank;
+        if (bankName) {
+            const validatedBank = validateBankName(bankName);
+            if (victimBank) {
+                req.body.victimBank = validatedBank;
+            }
+            if (reporterBank) {
+                req.body.reporterBank = validatedBank;
+            }
+        }
         
         // Validações opcionais
         if (description) {
@@ -231,7 +249,12 @@ function validateFraudReport(req, res, next) {
         
         next();
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        console.error('❌ Erro na validação fraud report:', error.message);
+        res.status(400).json({ 
+            success: false,
+            message: 'Erro de validação',
+            errors: [{ field: 'validation', message: error.message }]
+        });
     }
 }
 

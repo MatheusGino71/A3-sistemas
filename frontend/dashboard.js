@@ -6,7 +6,24 @@ class SentinelaPixDashboard {
         this.apiUrl = 'http://localhost:3001/api/v1';
         this.refreshInterval = 5000; // 5 segundos
         this.autoRefreshEnabled = true;
+        this.userId = this.getUserId();
         this.init();
+    }
+
+    // Get user ID from localStorage or Firebase
+    getUserId() {
+        // Try to get from Firebase user
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                return user.uid || user.id || 1;
+            } catch (e) {
+                console.warn('Error parsing user:', e);
+            }
+        }
+        // Default to 1 for testing
+        return 1;
     }
 
     init() {
@@ -14,12 +31,218 @@ class SentinelaPixDashboard {
         this.updateStats();
         this.startRealTimeUpdates();
         this.setupAutoRefresh();
+        this.setupWebSocket();
+        this.setupFirebaseMessaging();
         
         // Set initial theme
         document.documentElement.classList.toggle('dark', this.isDarkMode);
+    }
+
+    // Setup WebSocket connection for real-time notifications
+    setupWebSocket() {
+        // Avoid multiple connection attempts
+        if (this.wsConnecting) return;
+        this.wsConnecting = true;
         
-        // Show notification that system is fully functional
-        this.showNotification('✅ Sistema 100% funcional - Dados reais em tempo real!', 'success');
+        const wsUrl = 'ws://localhost:3001/ws';
+        console.log('🔌 Conectando ao WebSocket:', wsUrl);
+        
+        try {
+            this.ws = new WebSocket(wsUrl);
+            
+            this.ws.onopen = () => {
+                console.log('✅ WebSocket conectado');
+                this.wsConnecting = false;
+                this.wsConnected = true;
+                this.showNotification('Conectado ao sistema de notificações em tempo real', 'success');
+            };
+            
+            this.ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    console.log('📨 Notificação recebida via WebSocket:', data);
+                    
+                    if (data.type === 'notification') {
+                        this.handleNewNotification(data.notification);
+                    }
+                } catch (error) {
+                    console.error('❌ Erro ao processar mensagem WebSocket:', error);
+                }
+            };
+            
+            this.ws.onerror = (error) => {
+                console.warn('⚠️ WebSocket erro:', error.message || 'Conexão falhou');
+                this.wsConnecting = false;
+                this.wsConnected = false;
+                // Don't show error notification to user - will retry automatically
+            };
+            
+            this.ws.onclose = () => {
+                console.log('🔌 WebSocket desconectado. Tentando reconectar em 5s...');
+                this.wsConnecting = false;
+                this.wsConnected = false;
+                setTimeout(() => this.setupWebSocket(), 5000);
+            };
+        } catch (error) {
+            console.error('❌ Erro ao criar WebSocket:', error);
+            this.wsConnecting = false;
+            setTimeout(() => this.setupWebSocket(), 5000);
+        }
+    }
+
+    // Handle new notification received
+    handleNewNotification(notification) {
+        console.log('🔔 Nova notificação:', notification);
+        
+        // Show toast notification
+        this.showNotification(notification.message || notification.title, 'info');
+        
+        // Update notification badge
+        this.updateNotificationBadge();
+        
+        // Play notification sound (optional)
+        this.playNotificationSound();
+        
+        // If user is on notifications page, refresh the list
+        if (this.currentPage === 'notifications') {
+            this.loadNotifications();
+        }
+        
+        // Request browser notification permission if not granted
+        if (Notification.permission === 'granted') {
+            new Notification(notification.title || 'Nova Notificação ZENIT', {
+                body: notification.message,
+                icon: '/favicon.ico',
+                badge: '/favicon.ico',
+                tag: 'sentinela-pix',
+                requireInteraction: false
+            });
+        }
+    }
+
+    // Update notification badge with unread count
+    async updateNotificationBadge() {
+        try {
+            const response = await fetch(`${this.apiUrl}/notifications/check?userId=${this.userId}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const badge = document.getElementById('notification-badge');
+                const count = document.getElementById('notification-count');
+                
+                if (data.hasNew && data.unreadCount > 0) {
+                    if (badge) {
+                        badge.classList.remove('hidden');
+                    }
+                    if (count) {
+                        count.textContent = data.unreadCount > 99 ? '99+' : data.unreadCount;
+                    }
+                } else {
+                    if (badge) {
+                        badge.classList.add('hidden');
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('❌ Erro ao atualizar badge de notificações:', error);
+        }
+    }
+
+    // Play notification sound
+    playNotificationSound() {
+        try {
+            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUKfo77RiGwU7k9jzwHkpBSh+zPLaizsKFV+16uupVRQKRp/g8r5sIQUrgs/y2Ik2Bhxpve/mnE4MDk+n6O+0YhsFO5PY88B5KQYof8zy2os7ChZfterpqVUUCkaf4PK+bCEFK4PP8tiJNgYcab3v5pxODA5Pp+jvtGIbBTuU2PLBeSgFJ3/N8tuLOwoWX7Xq6qlVFApGn+DyvmshBSuDz/LYiTYGHGm97+acTgwOT6fo77RiGwU7lNjzwXkoBSh/zfLaizsKFl+16uqpVRQKRp/g8r5sIQUrg8/y2Ik2Bhxpve/mnE4MDk+n6O+0YhsFO5TY88F5KAUof83y2os7ChZfterpqVUUCkaf4PK+bCEFK4PP8tiJNgYcab3v5pxODA5Pp+jvtGIbBTuU2PPBeSgFKH/N8tqLOwoWX7Xq6qlVFApGn+DyvmwhBSuDz/LYiTYGHGm97+acTgwOT6fo77RiGwU7lNjzwXkoBSh/zfLaizsKFl+16uqpVRQKRp/g8r5sIQUrg8/y2Ik2Bhxpve/mnE4MDk+n6O+0YhsFO5TY88F5KAUof83y2os7ChZfterpqVUUCkaf4PK+bCEFK4PP8tiJNgYcab3v5pxODA5Pp+jvtGIbBTuU2PPBeSgFKH/N8tqLOwoWX7Xq6qlVFApGn+DyvmwhBSuDz/LYiTYGHGm97+acTgwOT6fo77RiGwU7lNjzwXkoBSh/zfLaizsKFl+16uqpVRQKRp/g8r5sIQUrg8/y2Ik2Bhxpve/mnE4MDk+n6O+0YhsFO5TY88F5KAUof83y2os7ChZfterpqVUUCkaf4PK+bCEFK4PP8tiJNgYcab3v5pxODA5Pp+jvtGIbBTuU2PPBeSgFKH/N8tqLOwoWX7Xq6qlVFApGn+DyvmwhBSuDz/LYiTYGHGm97+acTgwOT6fo77RiGwU7lNjzwXkoBSh/zfLaizsKFl+16uqpVRQKRp/g8r5sIQUrg8/y2Ik2Bhxpve/mnE4MDk+n6O+0YhsFO5TY88F5KAUof83y2os7ChZfterpqVUUCkaf4PK+bCEFK4PP8tiJNgYcab3v5pxODA5Pp+jvtGIbBTuU2PPBeSgFKH/N8tqLOwA=');
+            audio.volume = 0.3;
+            audio.play().catch(() => {}); // Ignore errors if autoplay is blocked
+        } catch (error) {
+            // Ignore sound errors
+        }
+    }
+
+    // Setup Firebase Cloud Messaging
+    async setupFirebaseMessaging() {
+        try {
+            // Check if notifications are supported
+            if (!('Notification' in window)) {
+                console.warn('⚠️ Navegador não suporta notificações');
+                return;
+            }
+            
+            // Import Firebase config
+            const firebaseModule = await import('./firebase-config.js').catch(() => null);
+            
+            if (!firebaseModule || !firebaseModule.messaging) {
+                console.warn('⚠️ Firebase Messaging não está disponível - continuando sem push notifications');
+                return;
+            }
+            
+            const { messaging } = firebaseModule;
+            
+            // Request notification permission
+            const permission = await Notification.requestPermission();
+            
+            if (permission === 'granted') {
+                console.log('✅ Permissão de notificação concedida');
+                
+                // Register service worker
+                if ('serviceWorker' in navigator) {
+                    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(() => null);
+                    
+                    if (!registration) {
+                        console.warn('⚠️ Service Worker não pôde ser registrado');
+                        return;
+                    }
+                    
+                    console.log('✅ Service Worker registrado');
+                    
+                    // Get FCM token (optional - requires VAPID key)
+                    // Uncomment when you have a VAPID key from Firebase Console
+                    /*
+                    const { getToken } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js');
+                    const token = await getToken(messaging, {
+                        vapidKey: 'YOUR_VAPID_KEY',
+                        serviceWorkerRegistration: registration
+                    });
+                    
+                    if (token) {
+                        console.log('✅ FCM Token obtido');
+                        await this.saveFCMToken(token);
+                    }
+                    */
+                }
+            } else {
+                console.warn('⚠️ Permissão de notificação não concedida');
+            }
+        } catch (error) {
+            console.warn('⚠️ Firebase Messaging não disponível:', error.message);
+            // Continue without Firebase - WebSocket notifications will still work
+        }
+    }
+
+    // Save FCM token to backend
+    async saveFCMToken(token) {
+        try {
+            const response = await fetch(`${this.apiUrl}/users/fcm-token`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ fcm_token: token })
+            });
+            
+            if (response.ok) {
+                console.log('✅ FCM Token salvo no backend');
+            } else {
+                console.error('❌ Erro ao salvar FCM Token');
+            }
+        } catch (error) {
+            console.error('❌ Erro ao salvar FCM Token:', error);
+        }
     }
 
     // Setup automatic refresh for real-time updates
@@ -203,10 +426,10 @@ class SentinelaPixDashboard {
                             <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Chave PIX</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tipo</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Descrição</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Valor</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Banco</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Prioridade</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Data</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Ações</th>
                                 </tr>
@@ -382,10 +605,8 @@ class SentinelaPixDashboard {
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Notificações Recentes</h3>
                         <div class="flex gap-2">
-                            <button class="px-4 py-2 text-primary border border-primary rounded-lg hover:bg-primary/10 transition-colors">
-                                Filtros
-                            </button>
-                            <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                            <button onclick="window.dashboard.loadNotifications()" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
+                                <span class="material-symbols-outlined text-lg">refresh</span>
                                 Atualizar
                             </button>
                         </div>
@@ -395,17 +616,16 @@ class SentinelaPixDashboard {
                         <table class="w-full">
                             <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Banco Destino</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Chave PIX</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Tipo</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Tentativas</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Notificação</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Mensagem</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Hora</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            <tbody id="notifications-table-body" class="divide-y divide-gray-200 dark:divide-gray-700">
                                 <tr>
-                                    <td colspan="6" class="px-6 py-12 text-center">
+                                    <td colspan="5" class="px-6 py-12 text-center">
                                         <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-2">notifications_off</span>
                                         <p class="text-gray-500 dark:text-gray-400">Nenhuma notificação enviada ainda</p>
                                         <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Notificações aparecerão aqui quando forem enviadas</p>
@@ -558,8 +778,10 @@ class SentinelaPixDashboard {
     // API Methods
     async updateStats() {
         try {
+            console.log('updateStats: Iniciando, currentPage =', this.currentPage);
             const response = await fetch(`${this.apiUrl}/dashboard/stats`);
             const result = await response.json();
+            console.log('updateStats: Resposta stats:', result);
             
             if (result.success) {
                 const stats = result.data;
@@ -578,11 +800,229 @@ class SentinelaPixDashboard {
                         element.textContent = value;
                     }
                 });
+                
+                // Update charts if on dashboard page
+                if (this.currentPage === 'dashboard') {
+                    console.log('Atualizando gráficos do dashboard...');
+                    this.updateActivityChart();
+                    this.updateRiskLevelsChart();
+                    this.updateRecentAlerts();
+                }
             }
         } catch (error) {
             console.error('Erro ao buscar estatísticas:', error);
-            this.showNotification('⚠️ Erro ao carregar estatísticas. Verifique se o backend está rodando.', 'warning');
+            // Silently fail - no notification shown
         }
+    }
+    
+    async updateActivityChart() {
+        try {
+            console.log('updateActivityChart: Iniciando...');
+            const response = await fetch(`${this.apiUrl}/fraud-reports?limit=100`);
+            const result = await response.json();
+            console.log('updateActivityChart: Resposta da API:', result);
+            
+            const reports = (result.success && result.data && result.data.reports) ? result.data.reports : [];
+            console.log('updateActivityChart: Total de reports:', reports.length);
+            
+            // Group reports by date (last 7 days)
+            const last7Days = [];
+            const counts = {};
+            const today = new Date();
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                last7Days.push(dateStr);
+                counts[dateStr] = 0;
+            }
+            
+            // Count reports per day
+            reports.forEach(report => {
+                const reportDate = new Date(report.created_at);
+                const dateStr = reportDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                if (counts.hasOwnProperty(dateStr)) {
+                    counts[dateStr]++;
+                }
+            });
+            
+            const chartElement = document.getElementById('activity-chart');
+            const totalElement = document.getElementById('chart-total');
+            
+            if (totalElement) {
+                totalElement.textContent = reports.length;
+            }
+            
+            if (chartElement) {
+                const maxValue = Math.max(...Object.values(counts), 1);
+                
+                chartElement.innerHTML = `
+                    <div class="flex items-end justify-between h-full gap-2 px-4">
+                        ${last7Days.map(day => {
+                            const count = counts[day];
+                            const height = (count / maxValue) * 100;
+                            return `
+                                <div class="flex flex-col items-center flex-1 group">
+                                    <div class="relative w-full">
+                                        <div class="bg-primary/20 dark:bg-primary/30 rounded-t-lg transition-all duration-300 group-hover:bg-primary/40" 
+                                             style="height: ${height > 5 ? height : 5}%; min-height: 4px">
+                                        </div>
+                                        <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                                            ${count} denúncias
+                                        </div>
+                                    </div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-2">${day}</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar gráfico de atividade:', error);
+        }
+    }
+    
+    async updateRiskLevelsChart() {
+        try {
+            console.log('updateRiskLevelsChart: Iniciando...');
+            const response = await fetch(`${this.apiUrl}/fraud-reports?limit=100`);
+            const result = await response.json();
+            console.log('updateRiskLevelsChart: Resposta da API:', result);
+            
+            const reports = (result.success && result.data && result.data.reports) ? result.data.reports : [];
+            console.log('updateRiskLevelsChart: Total de reports:', reports.length);
+            
+            // Count by priority
+            const counts = {
+                'CRITICAL': 0,
+                'HIGH': 0,
+                'MEDIUM': 0,
+                'LOW': 0
+            };
+            
+            reports.forEach(report => {
+                if (counts.hasOwnProperty(report.priority)) {
+                    counts[report.priority]++;
+                }
+            });
+            
+            const total = Object.values(counts).reduce((a, b) => a + b, 0);
+            
+            const chartElement = document.getElementById('risk-levels');
+            if (!chartElement) return;
+            
+            if (total === 0) {
+                chartElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400"><p>Crie denúncias para ver a distribuição de riscos</p></div>';
+                return;
+            }
+            
+            const colors = {
+                'CRITICAL': { bg: 'bg-red-500', text: 'text-red-500' },
+                'HIGH': { bg: 'bg-orange-500', text: 'text-orange-500' },
+                'MEDIUM': { bg: 'bg-yellow-500', text: 'text-yellow-500' },
+                'LOW': { bg: 'bg-green-500', text: 'text-green-500' }
+            };
+            
+            const labels = {
+                'CRITICAL': 'Crítica',
+                'HIGH': 'Alta',
+                'MEDIUM': 'Média',
+                'LOW': 'Baixa'
+            };
+            
+            chartElement.innerHTML = `
+                <div class="space-y-4 w-full">
+                    ${Object.entries(counts).filter(([_, count]) => count > 0).map(([level, count]) => {
+                        const percentage = ((count / total) * 100).toFixed(1);
+                        return `
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-medium text-gray-700 dark:text-gray-300">${labels[level]}</span>
+                                    <span class="${colors[level].text} font-semibold">${count} (${percentage}%)</span>
+                                </div>
+                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                                    <div class="${colors[level].bg} h-3 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        } catch (error) {
+            console.error('Erro ao atualizar níveis de risco:', error);
+        }
+    }
+    
+    async updateRecentAlerts() {
+        try {
+            console.log('updateRecentAlerts: Iniciando...');
+            const response = await fetch(`${this.apiUrl}/fraud-reports?limit=5`);
+            const result = await response.json();
+            console.log('updateRecentAlerts: Resposta da API:', result);
+            
+            const reports = (result.success && result.data && result.data.reports) ? result.data.reports : [];
+            console.log('updateRecentAlerts: Total de reports:', reports.length);
+            
+            const alertsElement = document.getElementById('recent-alerts');
+            if (!alertsElement) return;
+            
+            if (reports.length === 0) {
+                alertsElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400"><p>Nenhum alerta recente</p></div>';
+                return;
+            }
+            
+            const priorityIcons = {
+                'CRITICAL': { icon: 'error', color: 'text-red-500' },
+                'HIGH': { icon: 'warning', color: 'text-orange-500' },
+                'MEDIUM': { icon: 'info', color: 'text-yellow-500' },
+                'LOW': { icon: 'check_circle', color: 'text-green-500' }
+            };
+            
+            alertsElement.innerHTML = `
+                <div class="space-y-3">
+                    ${reports.slice(0, 5).map(report => {
+                        const date = new Date(report.created_at);
+                        const timeAgo = this.getTimeAgo(date);
+                        const priority = priorityIcons[report.priority] || priorityIcons['LOW'];
+                        
+                        return `
+                            <div class="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer"
+                                 onclick="dashboard.viewReportDetails('${report.id}')">
+                                <span class="material-symbols-outlined ${priority.color} text-2xl">${priority.icon}</span>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                        Denúncia de fraude - ${report.pix_key}
+                                    </p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                        ${report.description}
+                                    </p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                        ${timeAgo}
+                                    </p>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        } catch (error) {
+            console.error('Erro ao atualizar alertas recentes:', error);
+        }
+    }
+    
+    getTimeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        
+        if (seconds < 60) return 'Agora mesmo';
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes} min atrás`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours}h atrás`;
+        const days = Math.floor(hours / 24);
+        if (days < 7) return `${days}d atrás`;
+        return date.toLocaleDateString('pt-BR');
     }
 
     async analyzePixKey() {
@@ -616,13 +1056,12 @@ class SentinelaPixDashboard {
                 };
 
                 this.displayRiskResult(analysisResult);
-                this.showNotification(`✅ Análise concluída para ${pixKey}`, 'success');
             } else {
-                this.showNotification(`❌ Erro na análise: ${result.message}`, 'error');
+                alert(`Erro na análise: ${result.message}`);
             }
         } catch (error) {
             console.error('Erro ao analisar chave PIX:', error);
-            this.showNotification('❌ Erro de conexão durante a análise', 'error');
+            alert('Erro de conexão. Verifique se o backend está rodando.');
         } finally {
             button.innerHTML = originalText;
             button.disabled = false;
@@ -721,13 +1160,11 @@ class SentinelaPixDashboard {
     async verifyPixKeySecurity() {
         const pixKey = document.getElementById('verify-pix-key')?.value;
         if (!pixKey) {
-            this.showNotification('⚠️ Por favor, digite uma chave PIX', 'warning');
+            alert('Por favor, digite uma chave PIX');
             return;
         }
 
         try {
-            this.showNotification('🔍 Verificando segurança...', 'info');
-            
             const response = await fetch(`${this.apiUrl}/pix-keys/verify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -738,13 +1175,12 @@ class SentinelaPixDashboard {
 
             if (result.success) {
                 this.displaySecurityResult(result.data);
-                this.showNotification(`✅ Verificação concluída!`, 'success');
             } else {
-                this.showNotification(`❌ Erro: ${result.message}`, 'error');
+                alert(`Erro: ${result.message}`);
             }
         } catch (error) {
             console.error('Erro ao verificar segurança:', error);
-            this.showNotification('❌ Erro ao verificar segurança da chave PIX', 'error');
+            alert('Erro de conexão. Verifique se o backend está rodando.');
         }
     }
 
@@ -855,13 +1291,11 @@ class SentinelaPixDashboard {
         const bankName = document.getElementById('register-bank')?.value;
 
         if (!pixKey) {
-            this.showNotification('⚠️ Por favor, preencha a chave PIX', 'warning');
+            alert('Por favor, preencha a chave PIX');
             return;
         }
 
         try {
-            this.showNotification('💾 Cadastrando chave PIX...', 'info');
-            
             const response = await fetch(`${this.apiUrl}/pix-keys/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -871,7 +1305,7 @@ class SentinelaPixDashboard {
             const result = await response.json();
 
             if (result.success) {
-                this.showNotification(`✅ Chave PIX cadastrada com sucesso!`, 'success');
+                alert('Chave PIX cadastrada com sucesso!');
                 
                 // Switch to verify tab and show results
                 this.switchRiskTab('verify');
@@ -891,11 +1325,11 @@ class SentinelaPixDashboard {
                 
                 this.clearRegisterForm();
             } else {
-                this.showNotification(`❌ Erro: ${result.message}`, 'error');
+                alert(`Erro: ${result.message}`);
             }
         } catch (error) {
             console.error('Erro ao cadastrar chave PIX:', error);
-            this.showNotification('❌ Erro ao cadastrar chave PIX', 'error');
+            alert('Erro de conexão. Verifique se o backend está rodando.');
         }
     }
 
@@ -1093,11 +1527,16 @@ class SentinelaPixDashboard {
     }
 
     async submitFraudReport(event) {
+        console.log('🚀 submitFraudReport INICIADO');
         event.preventDefault();
         
         const form = event.target;
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
+        
+        // Debug logging
+        console.log('📤 Enviando denúncia:', data);
+        console.log('🔗 URL:', `${this.apiUrl}/fraud-reports`);
         
         // Show loading state
         const submitButton = form.querySelector('button[type="submit"]');
@@ -1114,10 +1553,19 @@ class SentinelaPixDashboard {
                 body: JSON.stringify(data)
             });
             
+            console.log('📥 Status da resposta:', response.status);
             const result = await response.json();
+            console.log('📥 Resultado:', result);
+            
+            if (result.errors && result.errors.length > 0) {
+                console.error('❌ Erros de validação:', result.errors);
+                result.errors.forEach((err, idx) => {
+                    console.error(`  ${idx + 1}. ${err.field}: ${err.message}`);
+                });
+            }
             
             if (result.success) {
-                this.showNotification('✅ Denúncia enviada com sucesso! Sistema processando automaticamente...', 'success');
+                alert('Denúncia enviada com sucesso! O sistema está processando automaticamente.');
                 form.closest('.fixed').remove();
                 
                 // Refresh the reports page if we're on it
@@ -1128,21 +1576,12 @@ class SentinelaPixDashboard {
                 // Update stats
                 this.updateStats();
                 
-                // Show additional info about automatic processing
-                setTimeout(() => {
-                    this.showNotification('🔄 Análise de risco atualizada automaticamente', 'info');
-                }, 1500);
-                
-                setTimeout(() => {
-                    this.showNotification('📤 Notificação enviada para a instituição do golpista', 'info');
-                }, 3000);
-                
             } else {
-                this.showNotification(`❌ Erro: ${result.message}`, 'error');
+                alert(`Erro: ${result.message}`);
             }
         } catch (error) {
-            console.error('Erro ao enviar denúncia:', error);
-            this.showNotification('❌ Erro de conexão. Tente novamente.', 'error');
+            console.error('❌ Erro ao enviar denúncia:', error);
+            alert('Erro de conexão. Tente novamente.');
         } finally {
             submitButton.innerHTML = originalText;
             submitButton.disabled = false;
@@ -1170,7 +1609,7 @@ class SentinelaPixDashboard {
         if (reports.length === 0) {
             container.innerHTML = `
                 <tr>
-                    <td colspan="6" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                    <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                         Nenhuma denúncia encontrada. Clique em "Nova Denúncia" para adicionar.
                     </td>
                 </tr>
@@ -1195,6 +1634,14 @@ class SentinelaPixDashboard {
             
             const date = new Date(report.created_at).toLocaleString('pt-BR');
             
+            // Format currency
+            const formatCurrency = (value) => {
+                return new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(value || 0);
+            };
+            
             return `
                 <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
                     <td class="px-6 py-4">
@@ -1204,6 +1651,11 @@ class SentinelaPixDashboard {
                     <td class="px-6 py-4">
                         <div class="text-sm text-gray-900 dark:text-white max-w-xs truncate" title="${report.description}">
                             ${report.description}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="font-medium text-gray-900 dark:text-white">
+                            ${formatCurrency(report.amount)}
                         </div>
                     </td>
                     <td class="px-6 py-4">
@@ -1231,8 +1683,178 @@ class SentinelaPixDashboard {
     }
 
     async viewReportDetails(reportId) {
-        // Implementation for viewing report details
-        this.showNotification('Funcionalidade de detalhes será implementada', 'info');
+        try {
+            const response = await fetch(`${this.apiUrl}/fraud-reports/${reportId}`);
+            const result = await response.json();
+            
+            if (!result.success) {
+                alert('Erro ao carregar detalhes da denúncia');
+                return;
+            }
+            
+            const report = result.data;
+            
+            // Format status and priority
+            const statusLabels = {
+                'PENDING': 'Pendente',
+                'CONFIRMED': 'Confirmado',
+                'UNDER_INVESTIGATION': 'Em Investigação',
+                'FALSE_POSITIVE': 'Falso Positivo'
+            };
+            
+            const priorityLabels = {
+                'CRITICAL': 'Crítica',
+                'HIGH': 'Alta',
+                'MEDIUM': 'Média',
+                'LOW': 'Baixa'
+            };
+            
+            const statusColor = {
+                'PENDING': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
+                'CONFIRMED': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+                'UNDER_INVESTIGATION': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+                'FALSE_POSITIVE': 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+            }[report.status] || 'bg-gray-100 text-gray-800';
+            
+            const priorityColor = {
+                'CRITICAL': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+                'HIGH': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300',
+                'MEDIUM': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
+                'LOW': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+            }[report.priority] || 'bg-gray-100 text-gray-800';
+            
+            const createdDate = new Date(report.created_at).toLocaleString('pt-BR');
+            const updatedDate = report.updated_at ? new Date(report.updated_at).toLocaleString('pt-BR') : 'N/A';
+            
+            // Format currency
+            const formatCurrency = (value) => {
+                return new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(value || 0);
+            };
+            
+            // Create modal
+            const modalHtml = `
+                <div id="reportDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+                        <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex justify-between items-center">
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Detalhes da Denúncia</h2>
+                            <button onclick="document.getElementById('reportDetailsModal').remove()" 
+                                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                <span class="material-symbols-outlined text-3xl">close</span>
+                            </button>
+                        </div>
+                        
+                        <div class="p-6 space-y-6">
+                            <!-- Status e Prioridade -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
+                                    <span class="px-3 py-2 text-sm font-medium rounded-lg ${statusColor} inline-block">
+                                        ${statusLabels[report.status] || report.status}
+                                    </span>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Prioridade</label>
+                                    <span class="px-3 py-2 text-sm font-medium rounded-lg ${priorityColor} inline-block">
+                                        ${priorityLabels[report.priority] || report.priority}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Chave PIX e Valor -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Chave PIX</label>
+                                    <p class="text-gray-900 dark:text-white font-mono bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                                        ${report.pix_key}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Valor da Transação</label>
+                                    <p class="text-gray-900 dark:text-white font-bold text-lg bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                                        ${formatCurrency(report.amount)}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Banco e ID da Transação -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Banco/Instituição</label>
+                                    <p class="text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                                        ${report.reporter_bank || 'N/A'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ID da Transação</label>
+                                    <p class="text-gray-900 dark:text-white font-mono text-sm bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                                        ${report.transaction_id || 'N/A'}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Descrição -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Descrição da Fraude</label>
+                                <p class="text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 p-4 rounded-lg whitespace-pre-wrap">
+                                    ${report.description}
+                                </p>
+                            </div>
+                            
+                            <!-- Informações da Vítima -->
+                            ${report.victim_info ? `
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Informações da Vítima</label>
+                                <p class="text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 p-4 rounded-lg whitespace-pre-wrap">
+                                    ${report.victim_info}
+                                </p>
+                            </div>
+                            ` : ''}
+                            
+                            <!-- Datas -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Data de Criação</label>
+                                    <p class="text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                                        ${createdDate}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Última Atualização</label>
+                                    <p class="text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                                        ${updatedDate}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- ID do Relatório -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ID do Relatório</label>
+                                <p class="text-gray-500 dark:text-gray-400 font-mono text-xs bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                                    ${report.id}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="sticky bottom-0 bg-gray-50 dark:bg-gray-900 p-6 border-t border-gray-200 dark:border-gray-700">
+                            <button onclick="document.getElementById('reportDetailsModal').remove()" 
+                                    class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-lg transition">
+                                Fechar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to page
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+        } catch (error) {
+            console.error('Erro ao visualizar detalhes:', error);
+            alert('Erro ao carregar detalhes da denúncia');
+        }
     }
 
     // Load risk analysis data
@@ -1257,20 +1879,160 @@ class SentinelaPixDashboard {
     // Load notifications
     async loadNotifications() {
         try {
-            const response = await fetch(`${this.apiUrl}/notifications`);
+            console.log('📥 Carregando notificações para userId:', this.userId);
+            const response = await fetch(`${this.apiUrl}/notifications?userId=${this.userId}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
             const result = await response.json();
+            console.log('📥 Resposta das notificações:', result);
             
             if (result.success) {
-                this.displayNotifications(result.data);
+                console.log('✅ Notificações recebidas:', result.notifications?.length || 0);
+                this.displayNotifications(result.notifications || []);
+            } else {
+                console.warn('⚠️ Falha ao carregar notificações:', result.message);
+                this.displayNotifications([]);
             }
         } catch (error) {
-            console.error('Erro ao carregar notificações:', error);
+            console.error('❌ Erro ao carregar notificações:', error);
+            this.displayNotifications([]);
+        }
+    }
+
+    // Load recent notifications for dropdown
+    async loadRecentNotifications() {
+        try {
+            const response = await fetch(`${this.apiUrl}/notifications?userId=${this.userId}&limit=5`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                const notificationsList = document.getElementById('notifications-list');
+                const notifications = result.notifications || [];
+                
+                if (result.success && notifications.length > 0) {
+                    notificationsList.innerHTML = notifications.map(notif => `
+                        <div class="p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer ${notif.read_at ? 'opacity-60' : ''}">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full ${notif.color || 'bg-blue-500'} flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-white">${notif.icon || 'notifications'}</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">${notif.title || 'Notificação'}</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">${notif.message}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                                        ${new Date(notif.created_at).toLocaleString('pt-BR')}
+                                    </p>
+                                </div>
+                                ${!notif.read_at ? '<div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full"></div>' : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    notificationsList.innerHTML = `
+                        <div class="p-8 text-center text-gray-500 dark:text-gray-400">
+                            <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-2">notifications_off</span>
+                            <p>Nenhuma notificação recente</p>
+                        </div>
+                    `;
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar notificações recentes:', error);
         }
     }
 
     displayNotifications(notifications) {
-        // Implementation for displaying notifications
-        console.log('Notifications:', notifications);
+        console.log('Exibindo notificações:', notifications);
+        
+        const container = document.getElementById('notifications-table-body');
+        if (!container) {
+            console.warn('Container de notificações não encontrado');
+            return;
+        }
+        
+        if (!notifications || notifications.length === 0) {
+            container.innerHTML = `
+                <tr>
+                    <td colspan="7" class="px-6 py-12 text-center">
+                        <div class="flex flex-col items-center justify-center">
+                            <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">notifications_off</span>
+                            <p class="text-gray-500 dark:text-gray-400 text-lg mb-2">Nenhuma notificação encontrada</p>
+                            <p class="text-gray-400 dark:text-gray-500 text-sm">As notificações aparecerão aqui quando forem enviadas</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            
+            // Update stats
+            document.getElementById('notifications-sent').textContent = '0';
+            document.getElementById('notifications-success').textContent = '0';
+            document.getElementById('notifications-failed').textContent = '0';
+            return;
+        }
+        
+        // Update stats
+        const sent = notifications.length;
+        const success = notifications.filter(n => n.read_at).length;
+        const failed = 0; // No failed status in current implementation
+        
+        document.getElementById('notifications-sent').textContent = sent;
+        document.getElementById('notifications-success').textContent = success;
+        document.getElementById('notifications-failed').textContent = failed;
+        
+        // Render table
+        container.innerHTML = notifications.map(notif => {
+            const statusClass = notif.read_at ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+            const statusText = notif.read_at ? 'Lida' : 'Não lida';
+            const iconColor = notif.color || 'bg-blue-500';
+            
+            return `
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 ${iconColor} rounded-full flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-outlined text-white">${notif.icon || 'notifications'}</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">${notif.title || 'Notificação'}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">${notif.type || 'info'}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <p class="text-sm text-gray-900 dark:text-white max-w-md">${notif.message || '-'}</p>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                        ${new Date(notif.created_at || notif.time).toLocaleString('pt-BR', { 
+                            day: '2-digit', 
+                            month: '2-digit', 
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1 text-xs font-medium rounded-full ${statusClass}">
+                            ${statusText}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        ${!notif.read_at ? `
+                            <button onclick="markAsRead('${notif.id}')" class="text-blue-600 dark:text-blue-400 hover:underline text-sm">
+                                Marcar como lida
+                            </button>
+                        ` : `
+                            <span class="text-gray-400 text-sm">-</span>
+                        `}
+                    </td>
+                </tr>
+            `;
+        }).join('');
     }
 
     startRealTimeUpdates() {
@@ -1301,7 +2063,84 @@ function toggleTheme() {
     window.dashboard.toggleTheme();
 }
 
+// Toggle notifications dropdown
+function toggleNotifications() {
+    const dropdown = document.getElementById('notifications-dropdown');
+    dropdown.classList.toggle('hidden');
+    
+    if (!dropdown.classList.contains('hidden')) {
+        window.dashboard.loadRecentNotifications();
+    }
+}
+
+// Mark all notifications as read
+async function markAllAsRead() {
+    try {
+        const response = await fetch(`${window.dashboard.apiUrl}/notifications/read-all`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        
+        if (response.ok) {
+            window.dashboard.updateNotificationBadge();
+            window.dashboard.loadRecentNotifications();
+            window.dashboard.showNotification('Todas as notificações foram marcadas como lidas', 'success');
+        }
+    } catch (error) {
+        console.error('Erro ao marcar notificações como lidas:', error);
+    }
+}
+
+// View all notifications
+function viewAllNotifications() {
+    document.getElementById('notifications-dropdown').classList.add('hidden');
+    showPage('notifications');
+}
+
+// Mark single notification as read
+async function markAsRead(notificationId) {
+    try {
+        const response = await fetch(`${window.dashboard.apiUrl}/notifications/${notificationId}/read`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        
+        if (response.ok) {
+            window.dashboard.showNotification('Notificação marcada como lida', 'success');
+            window.dashboard.loadNotifications();
+            window.dashboard.updateNotificationBadge();
+        }
+    } catch (error) {
+        console.error('Erro ao marcar notificação como lida:', error);
+    }
+}
+
+// Toggle user menu
+function toggleUserMenu() {
+    // Implementation for user menu
+    console.log('Toggle user menu');
+}
+
 // Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.dashboard = new SentinelaPixDashboard();
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+        const notificationDropdown = document.getElementById('notifications-dropdown');
+        const notificationButton = e.target.closest('button[onclick="toggleNotifications()"]');
+        
+        if (!notificationButton && !notificationDropdown.contains(e.target)) {
+            notificationDropdown.classList.add('hidden');
+        }
+    });
+    
+    // Update notification badge every 30 seconds
+    setInterval(() => {
+        window.dashboard.updateNotificationBadge();
+    }, 30000);
 });
