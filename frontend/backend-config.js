@@ -1,21 +1,37 @@
 // Backend Configuration
-// Atualizar esta URL depois de fazer deploy no Railway/Render/Fly.io
+// Configuração automática para desenvolvimento e produção
 
 const BACKEND_CONFIG = {
     // Para desenvolvimento local:
     LOCAL: 'http://localhost:3001',
     
-    // Para produção (substitua pela URL do Railway depois do deploy):
-    PRODUCTION: 'https://seu-backend.railway.app', // ALTERAR AQUI DEPOIS DO DEPLOY
+    // Para produção na Vercel (mesma URL do frontend):
+    VERCEL: '', // Deixe vazio - será a mesma URL do frontend
+    
+    // Para produção em servidor separado (Railway/Render):
+    SEPARATE_SERVER: 'https://seu-backend.railway.app', // ALTERAR se usar servidor separado
     
     // Detectar automaticamente o ambiente
     get API_URL() {
-        // Se estiver rodando localmente, usa localhost
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        const hostname = window.location.hostname;
+        
+        // Desenvolvimento local
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
             return this.LOCAL;
         }
-        // Se estiver no Firebase Hosting, usa produção
-        return this.PRODUCTION;
+        
+        // Produção na Vercel (backend e frontend juntos)
+        if (hostname.includes('vercel.app')) {
+            return window.location.origin; // Mesma URL do frontend
+        }
+        
+        // Produção em servidor separado
+        if (this.SEPARATE_SERVER && this.SEPARATE_SERVER !== 'https://seu-backend.railway.app') {
+            return this.SEPARATE_SERVER;
+        }
+        
+        // Fallback: assume mesma origem
+        return window.location.origin;
     }
 };
 
