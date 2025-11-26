@@ -6,8 +6,8 @@ const BACKEND_CONFIG = {
     LOCAL: 'http://localhost:3001',
     
     // Para produção na AWS (backend separado):
-    // IMPORTANTE: Substitua pela URL do seu backend AWS após deploy
-    AWS_BACKEND: 'https://seu-backend-aws.elasticbeanstalk.com', // ALTERAR após deploy AWS
+    // Backend rodando no EC2 us-east-2
+    AWS_BACKEND: 'http://3.148.105.205:3001', // ✅ Backend configurado!
     
     // Detectar automaticamente o ambiente
     get API_URL() {
