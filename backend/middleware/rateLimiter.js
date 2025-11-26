@@ -6,10 +6,24 @@
 const rateLimit = require('express-rate-limit');
 const RedisStore = require('rate-limit-redis');
 
+// Desabilitar validação IPv6 para compatibilidade
+const RATE_LIMIT_DEFAULTS = {
+    validate: {
+        trustProxy: false,
+        xForwardedForHeader: false,
+        limit: false,
+        onLimitReached: false,
+        validationsConfig: false,
+        default: true,
+        draftPolli: false
+    }
+};
+
 /**
  * Rate limiter para autenticação (mais restritivo)
  */
 const authLimiter = rateLimit({
+    ...RATE_LIMIT_DEFAULTS,
     windowMs: 15 * 60 * 1000, // 15 minutos
     max: 5, // 5 tentativas
     message: {
@@ -19,12 +33,6 @@ const authLimiter = rateLimit({
     legacyHeaders: false,
     skipSuccessfulRequests: false,
     skipFailedRequests: false,
-    // Fix para IPv6: usar apenas o IP sem modificações
-    keyGenerator: (req) => {
-        const ip = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
-        const email = req.body.email || 'unknown';
-        return `${ip}:${email}`;
-    },
     handler: (req, res) => {
         res.status(429).json({
             error: 'Muitas tentativas de login',
@@ -37,6 +45,7 @@ const authLimiter = rateLimit({
  * Rate limiter para API geral
  */
 const apiLimiter = rateLimit({
+    ...RATE_LIMIT_DEFAULTS,
     windowMs: 15 * 60 * 1000, // 15 minutos
     max: 100, // 100 requisições
     message: {
@@ -45,10 +54,6 @@ const apiLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skipSuccessfulRequests: true,
-    // Fix para IPv6
-    keyGenerator: (req) => {
-        return req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
-    },
     handler: (req, res) => {
         res.status(429).json({
             error: 'Limite de requisições excedido',
@@ -61,6 +66,7 @@ const apiLimiter = rateLimit({
  * Rate limiter para criação de denúncias
  */
 const reportLimiter = rateLimit({
+    ...RATE_LIMIT_DEFAULTS,
     windowMs: 60 * 60 * 1000, // 1 hora
     max: 10, // 10 denúncias por hora
     message: {
@@ -68,12 +74,6 @@ const reportLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    // Fix para IPv6
-    keyGenerator: (req) => {
-        const userId = req.user?.id;
-        const ip = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
-        return userId || ip;
-    },
     handler: (req, res) => {
         res.status(429).json({
             error: 'Limite de denúncias por hora excedido',
@@ -86,6 +86,7 @@ const reportLimiter = rateLimit({
  * Rate limiter para consultas de risco
  */
 const riskCheckLimiter = rateLimit({
+    ...RATE_LIMIT_DEFAULTS,
     windowMs: 60 * 1000, // 1 minuto
     max: 30, // 30 consultas por minuto
     message: {
@@ -93,17 +94,14 @@ const riskCheckLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    skipSuccessfulRequests: true,
-    // Fix para IPv6
-    keyGenerator: (req) => {
-        return req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
-    }
+    skipSuccessfulRequests: true
 });
 
 /**
  * Rate limiter para registro de novos usuários
  */
 const registerLimiter = rateLimit({
+    ...RATE_LIMIT_DEFAULTS,
     windowMs: 60 * 60 * 1000, // 1 hora
     max: 3, // 3 registros por hora por IP
     message: {
@@ -112,10 +110,6 @@ const registerLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skipSuccessfulRequests: false,
-    // Fix para IPv6
-    keyGenerator: (req) => {
-        return req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
-    },
     handler: (req, res) => {
         res.status(429).json({
             error: 'Limite de registros por hora excedido',
@@ -128,17 +122,14 @@ const registerLimiter = rateLimit({
  * Rate limiter para upload de arquivos
  */
 const uploadLimiter = rateLimit({
+    ...RATE_LIMIT_DEFAULTS,
     windowMs: 15 * 60 * 1000, // 15 minutos
     max: 20, // 20 uploads
     message: {
         error: 'Muitos uploads. Aguarde alguns minutos.'
     },
     standardHeaders: true,
-    legacyHeaders: false,
-    // Fix para IPv6
-    keyGenerator: (req) => {
-        return req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
-    }
+    legacyHeaders: false
 });
 
 /**
