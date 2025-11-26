@@ -5,11 +5,9 @@ const BACKEND_CONFIG = {
     // Para desenvolvimento local:
     LOCAL: 'http://localhost:3001',
     
-    // Para produção na Vercel (mesma URL do frontend):
-    VERCEL: '', // Deixe vazio - será a mesma URL do frontend
-    
-    // Para produção em servidor separado (Railway/Render):
-    SEPARATE_SERVER: 'https://seu-backend.railway.app', // ALTERAR se usar servidor separado
+    // Para produção na AWS (backend separado):
+    // IMPORTANTE: Substitua pela URL do seu backend AWS após deploy
+    AWS_BACKEND: 'https://seu-backend-aws.elasticbeanstalk.com', // ALTERAR após deploy AWS
     
     // Detectar automaticamente o ambiente
     get API_URL() {
@@ -20,18 +18,33 @@ const BACKEND_CONFIG = {
             return this.LOCAL;
         }
         
-        // Produção na Vercel (backend e frontend juntos)
-        if (hostname.includes('vercel.app')) {
-            return window.location.origin; // Mesma URL do frontend
+        // Produção - Frontend na Vercel, Backend na AWS
+        // Verificar se AWS_BACKEND foi configurado
+        if (this.AWS_BACKEND && !this.AWS_BACKEND.includes('seu-backend-aws')) {
+            return this.AWS_BACKEND;
         }
         
-        // Produção em servidor separado
-        if (this.SEPARATE_SERVER && this.SEPARATE_SERVER !== 'https://seu-backend.railway.app') {
-            return this.SEPARATE_SERVER;
+        // Fallback: avisar que precisa configurar
+        console.warn('⚠️ Configure BACKEND_CONFIG.AWS_BACKEND com a URL do seu backend AWS!');
+        return this.LOCAL; // Usar local como fallback
+    },
+    
+    // WebSocket URL (apenas para desenvolvimento local)
+    get WS_URL() {
+        const hostname = window.location.hostname;
+        
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'ws://localhost:3001/ws';
         }
         
-        // Fallback: assume mesma origem
-        return window.location.origin;
+        // WebSocket na AWS (se configurado)
+        if (this.AWS_BACKEND && !this.AWS_BACKEND.includes('seu-backend-aws')) {
+            const wsProtocol = this.AWS_BACKEND.startsWith('https') ? 'wss' : 'ws';
+            const wsHost = this.AWS_BACKEND.replace('https://', '').replace('http://', '');
+            return `${wsProtocol}://${wsHost}/ws`;
+        }
+        
+        return null; // Sem WebSocket em produção
     }
 };
 

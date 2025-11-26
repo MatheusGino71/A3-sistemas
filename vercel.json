@@ -2,29 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": [
-          "api/**",
-          "frontend/**"
-        ]
-      }
+      "src": "frontend/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js"
-    },
-    {
-      "src": "/health",
-      "dest": "/api/index.js"
-    },
-    {
-      "src": "/metrics",
-      "dest": "/api/index.js"
-    },
     {
       "src": "/frontend/(.*\\.(js|css|html|png|jpg|jpeg|gif|svg|ico))",
       "dest": "/frontend/$1"
@@ -45,14 +27,5 @@
       "src": "/(.*)",
       "dest": "/frontend/$1"
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "/api/index.js"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }
