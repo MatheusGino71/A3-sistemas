@@ -502,25 +502,31 @@ app.use((err, req, res, next) => {
 
 // ==================== SERVER START ====================
 
-server.listen(PORT, () => {
-    console.log('🚀 ZENIT Backend rodando na porta', PORT);
-    console.log('📊 Dashboard disponível em: http://localhost:8080');
-    console.log('🔗 API disponível em: http://localhost:' + PORT + '/api/v1');
-    console.log('🔌 WebSocket disponível em: ws://localhost:' + PORT + '/ws');
-    console.log('❤️ Health check: http://localhost:' + PORT + '/health');
-    console.log('🔥 Firebase Firestore: Conectado');
-    console.log('✅ Sistema 100% funcional com Firebase!');
-    console.log('🔔 Notificações em tempo real habilitadas via WebSocket');
-});
+// Para desenvolvimento local
+if (require.main === module) {
+    server.listen(PORT, () => {
+        console.log('🚀 ZENIT Backend rodando na porta', PORT);
+        console.log('📊 Dashboard disponível em: http://localhost:8080');
+        console.log('🔗 API disponível em: http://localhost:' + PORT + '/api/v1');
+        console.log('🔌 WebSocket disponível em: ws://localhost:' + PORT + '/ws');
+        console.log('❤️ Health check: http://localhost:' + PORT + '/health');
+        console.log('🔥 Firebase Firestore: Conectado');
+        console.log('✅ Sistema 100% funcional com Firebase!');
+        console.log('🔔 Notificações em tempo real habilitadas via WebSocket');
+    });
 
-// Tratamento de erros não capturados
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-    recordError('unhandled_rejection', 'error');
-});
+    // Tratamento de erros não capturados
+    process.on('unhandledRejection', (reason, promise) => {
+        console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+        recordError('unhandled_rejection', 'error');
+    });
 
-process.on('uncaughtException', (error) => {
-    console.error('Uncaught Exception:', error);
-    recordError('uncaught_exception', 'error');
-    process.exit(1);
-});
+    process.on('uncaughtException', (error) => {
+        console.error('Uncaught Exception:', error);
+        recordError('uncaught_exception', 'error');
+        process.exit(1);
+    });
+}
+
+// Exportar para Vercel
+module.exports = app;
