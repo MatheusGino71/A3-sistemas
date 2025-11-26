@@ -19,9 +19,11 @@ const authLimiter = rateLimit({
     legacyHeaders: false,
     skipSuccessfulRequests: false,
     skipFailedRequests: false,
+    // Fix para IPv6: usar apenas o IP sem modificações
     keyGenerator: (req) => {
-        // Rate limit por IP e email
-        return req.ip + ':' + (req.body.email || 'unknown');
+        const ip = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
+        const email = req.body.email || 'unknown';
+        return `${ip}:${email}`;
     },
     handler: (req, res) => {
         res.status(429).json({
@@ -43,6 +45,10 @@ const apiLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skipSuccessfulRequests: true,
+    // Fix para IPv6
+    keyGenerator: (req) => {
+        return req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
+    },
     handler: (req, res) => {
         res.status(429).json({
             error: 'Limite de requisições excedido',
@@ -62,8 +68,11 @@ const reportLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
+    // Fix para IPv6
     keyGenerator: (req) => {
-        return req.user?.id || req.ip;
+        const userId = req.user?.id;
+        const ip = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
+        return userId || ip;
     },
     handler: (req, res) => {
         res.status(429).json({
@@ -84,7 +93,11 @@ const riskCheckLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    skipSuccessfulRequests: true
+    skipSuccessfulRequests: true,
+    // Fix para IPv6
+    keyGenerator: (req) => {
+        return req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
+    }
 });
 
 /**
@@ -99,7 +112,10 @@ const registerLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skipSuccessfulRequests: false,
-    keyGenerator: (req) => req.ip,
+    // Fix para IPv6
+    keyGenerator: (req) => {
+        return req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
+    },
     handler: (req, res) => {
         res.status(429).json({
             error: 'Limite de registros por hora excedido',
@@ -118,7 +134,11 @@ const uploadLimiter = rateLimit({
         error: 'Muitos uploads. Aguarde alguns minutos.'
     },
     standardHeaders: true,
-    legacyHeaders: false
+    legacyHeaders: false,
+    // Fix para IPv6
+    keyGenerator: (req) => {
+        return req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
+    }
 });
 
 /**
