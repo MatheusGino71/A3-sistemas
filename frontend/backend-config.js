@@ -6,8 +6,9 @@ const BACKEND_CONFIG = {
     LOCAL: 'http://localhost:3001',
     
     // Para produção na AWS (backend separado):
-    // Backend rodando no EC2 us-east-2
-    AWS_BACKEND: 'http://3.148.105.205:3001', // ✅ Backend configurado!
+    // Backend rodando no EC2 us-east-2 (Ohio)
+    // ⚠️ IMPORTANTE: Security Group deve permitir porta 3001
+    AWS_BACKEND: 'http://3.148.105.205:3001', // ✅ IP do EC2 configurado
     
     // Detectar automaticamente o ambiente
     get API_URL() {
