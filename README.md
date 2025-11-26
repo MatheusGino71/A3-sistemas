@@ -1,4 +1,4 @@
-# 🛡️ ZENIT - Plataforma de Detecção de Fraudes PIX
+#  ZENIT - Plataforma de Detecção de Fraudes PIX
 
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
@@ -8,19 +8,19 @@
 
 ---
 
-## 📋 Sobre o Projeto
+##  Sobre o Projeto
 
 Sistema completo de detecção de fraudes PIX que permite:
-- 🚨 Registro e gerenciamento de denúncias de fraude
-- 📊 Dashboard em tempo real com estatísticas
-- 🔔 Notificações instantâneas via WebSocket
-- 🔥 **100% Firebase** - Firestore como único banco de dados
-- 🎯 Análise e classificação automática de riscos
-- 👥 Autenticação segura com Firebase Auth
+-  Registro e gerenciamento de denúncias de fraude
+-  Dashboard em tempo real com estatísticas
+-  Notificações instantâneas via WebSocket
+-  **100% Firebase** - Firestore como único banco de dados
+-  Análise e classificação automática de riscos
+-  Autenticação segura com Firebase Auth
 
 ---
 
-## 🏗️ Arquitetura
+##  Arquitetura
 
 ```
 ┌──────────────────────────────────────────────────┐
@@ -43,7 +43,7 @@ Sistema completo de detecção de fraudes PIX que permite:
 
 ---
 
-## 🚀 Tecnologias
+##  Tecnologias
 
 ### Backend
 - **Node.js 18+** - Runtime JavaScript
@@ -66,7 +66,7 @@ Sistema completo de detecção de fraudes PIX que permite:
 
 ---
 
-## 📦 Instalação Rápida
+##  Instalação Rápida
 
 ### 1. Pré-requisitos
 - Node.js 18+ ([Download](https://nodejs.org/))
@@ -125,7 +125,7 @@ Acesse: **http://localhost:8080**
 
 ---
 
-## 🔥 Estrutura do Firebase
+##  Estrutura do Firebase
 
 ### Coleções do Firestore
 
@@ -181,7 +181,7 @@ service cloud.firestore {
 
 ---
 
-## 🌐 API Endpoints
+##  API Endpoints
 
 ### Fraud Reports
 ```http
@@ -210,7 +210,7 @@ GET    /metrics   # Métricas Prometheus
 
 ---
 
-## 🔌 WebSocket - Tempo Real
+##  WebSocket - Tempo Real
 
 O sistema usa WebSocket para notificações instantâneas:
 
@@ -235,7 +235,7 @@ ws.onmessage = (event) => {
 
 ---
 
-## 📁 Estrutura do Projeto
+##  Estrutura do Projeto
 
 ```
 sentinela-pix/
@@ -262,7 +262,7 @@ sentinela-pix/
 
 ---
 
-## 🚀 Deploy para Produção
+##  Deploy para Produção
 
 ### Opção 1: Firebase Hosting (Recomendado)
 
@@ -292,7 +292,7 @@ vercel
 
 ---
 
-## 🔐 Segurança
+##  Segurança
 
 - ✅ Firebase Authentication com tokens JWT
 - ✅ Firestore Security Rules configuradas
@@ -303,7 +303,7 @@ vercel
 
 ---
 
-## 📊 Monitoramento
+##  Monitoramento
 
 O sistema expõe métricas Prometheus em `/metrics`:
 
@@ -320,7 +320,7 @@ curl http://localhost:3001/metrics
 
 ---
 
-## 🧪 Testes
+##  Testes
 
 ```bash
 # Testes unitários
@@ -332,7 +332,7 @@ npm run test:coverage
 
 ---
 
-## 🤝 Contribuindo
+##  Contribuindo
 
 1. Fork o projeto
 2. Crie uma branch (`git checkout -b feature/NovaFeature`)
@@ -342,13 +342,13 @@ npm run test:coverage
 
 ---
 
-## 📝 Licença
+##  Licença
 
 Este projeto está sob a licença MIT.
 
 ---
 
-## 👥 Equipe
+##  Equipe
 
 **ZENIT Team** - [MatheusGino71](https://github.com/MatheusGino71)
 
@@ -363,13 +363,9 @@ Este projeto está sob a licença MIT.
 - [ ] Dashboard de analytics avançado
 - [ ] Multi-idioma (i18n)
 
----
 
-## 📞 Suporte
 
-- 🐛 [Issues](https://github.com/MatheusGino71/A3-sistemas/issues)
-- 📖 [Wiki](https://github.com/MatheusGino71/A3-sistemas/wiki)
-- 📧 Email: suporte@zenit.com
+
 
 ---
 
