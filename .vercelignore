@@ -12,6 +12,16 @@ backend/logs
 backend/*.db
 backend/coverage
 backend/tests
+backend/middleware
+backend/services
+backend/utils
+backend/server.js
+backend/server-firebase.js
+backend/server-test.js
+backend/jest.config.js
+backend/Procfile
+backend/package.json
+backend/package-lock.json
 .git
 .github
 rabbitmq
@@ -21,3 +31,9 @@ kube
 sentinela-pix-bradesco
 playwright-report
 test-results
+*.sh
+*.bat
+*.ps1
+docker-compose*.yml
+Dockerfile
+nginx.conf
