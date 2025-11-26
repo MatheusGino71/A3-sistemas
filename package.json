@@ -1,8 +1,8 @@
 {
-  "name": "sentinela-pix",
-  "version": "1.0.0",
-  "description": "<div align=\"center\"># Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Plataforma de Detecção e Prevenção de Fraudes# Sentinela PIX - Fraud Detection and Prevention Platform# Sentinela PIX - Fraud Detection and Prevention Platform",
-  "main": "index.js",
+  "name": "zenit",
+  "version": "2.0.0",
+  "description": "ZENIT - Plataforma de Detecção e Prevenção de Fraudes PIX usando Firebase",
+  "main": "backend/server-firebase.js",
   "directories": {
     "doc": "docs"
   },
@@ -13,7 +13,7 @@
     "test:debug": "playwright test --debug",
     "test:report": "playwright show-report tests/reports/playwright",
     "test:chromium": "playwright test --project=chromium",
-    "start:backend": "cd backend && node server.js",
+    "start:backend": "cd backend && node server-firebase.js",
     "start:frontend": "cd frontend && python -m http.server 8080",
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
   },
@@ -21,9 +21,16 @@
     "type": "git",
     "url": "git+https://github.com/MatheusGino71/A3-sistemas.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "zenit",
+    "pix",
+    "fraud-detection",
+    "firebase",
+    "firestore",
+    "anti-fraud"
+  ],
+  "author": "ZENIT Team",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/MatheusGino71/A3-sistemas/issues"
   },

@@ -60,3 +60,4 @@ ENV/
 # Temporary files
 *.tmp
 *.temp*.db
+.vercel
