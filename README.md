@@ -294,12 +294,12 @@ vercel
 
 ##  Segurança
 
-- ✅ Firebase Authentication com tokens JWT
-- ✅ Firestore Security Rules configuradas
-- ✅ Rate limiting em todos os endpoints
-- ✅ Validação e sanitização de inputs
-- ✅ CORS restrito a domínios específicos
-- ✅ HTTPS obrigatório em produção
+-  Firebase Authentication com tokens JWT
+-  Firestore Security Rules configuradas
+-  Rate limiting em todos os endpoints
+-  Validação e sanitização de inputs
+-  CORS restrito a domínios específicos
+-  HTTPS obrigatório em produção
 
 ---
 
@@ -354,7 +354,7 @@ Este projeto está sob a licença MIT.
 
 ---
 
-## 🎯 Roadmap
+##  Roadmap
 
 - [ ] Machine Learning para detecção automática
 - [ ] App mobile React Native
@@ -373,7 +373,7 @@ Este projeto está sob a licença MIT.
 
 **[⬆ Voltar ao topo](#-zenit---plataforma-de-detecção-de-fraudes-pix)**
 
-Desenvolvido com ❤️ pela equipe **ZENIT**
+Desenvolvido pela equipe **ZENIT**
 
 ![ZENIT](https://img.shields.io/badge/Powered%20by-Firebase-FFCA28?style=flat-square&logo=firebase)
 
