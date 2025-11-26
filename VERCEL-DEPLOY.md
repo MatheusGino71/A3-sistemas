@@ -1,24 +1,25 @@
-# 🚀 Deploy na Vercel - Sentinela PIX
+# 🚀 Deploy no Vercel - ZENIT
 
 ## 📋 Pré-requisitos
 
-1. Conta na [Vercel](https://vercel.com)
-2. [Vercel CLI](https://vercel.com/cli) instalado (opcional)
-3. Repositório no GitHub conectado
+1. ✅ Conta na [Vercel](https://vercel.com)
+2. ✅ Repositório no GitHub (já configurado!)
+3. ✅ Credenciais Firebase (service account JSON)
 
-## 🔧 Configuração Inicial
+## 🔧 Deploy Rápido
 
-### 1. Instalar Vercel CLI (Opcional)
+### 1. Criar Conta/Login no Vercel
 
-```bash
-npm install -g vercel
-```
+1. Acesse: https://vercel.com
+2. Clique em **"Sign Up"** ou **"Login"**
+3. Escolha **"Continue with GitHub"**
+4. Autorize o Vercel
 
-### 2. Fazer Login na Vercel
+### 2. Importar Projeto do GitHub
 
-```bash
-vercel login
-```
+1. No dashboard, clique em **"Add New Project"**
+2. Selecione o repositório **"A3-sistemas"**
+3. Clique em **"Import"**
 
 ## 📦 Deploy via Dashboard da Vercel
 
@@ -29,33 +30,38 @@ vercel login
 3. Selecione o repositório `A3-sistemas`
 4. Clique em **Import**
 
-### Passo 2: Configurar Projeto
+### 3. Configurar Projeto
 
-**Framework Preset:** Other  
-**Root Directory:** `sentinela-pix`  
-**Build Command:** `cd backend && npm install`  
-**Output Directory:** `.`  
-**Install Command:** `npm install`
+Configure os seguintes parâmetros:
 
-### Passo 3: Configurar Variáveis de Ambiente
+- **Framework Preset:** `Other`
+- **Root Directory:** `sentinela-pix`
+- **Build Command:** `cd backend && npm install`
+- **Output Directory:** `frontend`
+
+### 4. Configurar Variáveis de Ambiente ⚠️ CRÍTICO
 
 No painel da Vercel, vá em **Settings → Environment Variables** e adicione:
 
-```env
-NODE_ENV=production
-DATABASE_URL=file:./zenit.db
-FRONTEND_URL=https://seu-dominio.vercel.app
+**Variável Obrigatória:**
+
+```
+FIREBASE_SERVICE_ACCOUNT
 ```
 
-**Opcional (Firebase):**
+**Valor:** Cole o conteúdo COMPLETO do arquivo `firebase-service-account.json` (todo o JSON)
+
+**Como obter:**
+1. Acesse: https://console.firebase.google.com/project/a3-quinta-1a763/settings/serviceaccounts/adminsdk
+2. Clique em "Gerar nova chave privada"
+3. Copie TODO o conteúdo do arquivo JSON baixado
+4. Cole no campo Value no Vercel
+
+**Outras variáveis:**
+
 ```env
-FIREBASE_API_KEY=sua_api_key
-FIREBASE_AUTH_DOMAIN=seu_auth_domain
-FIREBASE_PROJECT_ID=seu_project_id
-FIREBASE_STORAGE_BUCKET=seu_storage_bucket
-FIREBASE_MESSAGING_SENDER_ID=seu_sender_id
-FIREBASE_APP_ID=seu_app_id
-FIREBASE_VAPID_KEY=sua_vapid_key
+NODE_ENV=production
+PORT=3001
 ```
 
 ### Passo 4: Deploy
