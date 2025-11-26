@@ -3,16 +3,75 @@ const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const bodyParser = require('body-parser');
 const admin = require('firebase-admin');
-
-// Importar validações
-const { validateFraudReport } = require('../backend/middleware/validation');
-const { reportLimiter, authLimiter, apiLimiter } = require('../backend/middleware/rateLimiter');
+const rateLimit = require('express-rate-limit');
+const validator = require('validator');
 
 const app = express();
 
+// Rate Limiters inline
+const reportLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { success: false, message: 'Muitas requisições. Tente novamente em 15 minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 50,
+  message: { success: false, message: 'Muitas tentativas de autenticação. Tente novamente em 15 minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 200,
+  message: { success: false, message: 'Muitas requisições. Tente novamente em 1 minuto.' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+// Validation middleware inline
+function validateFraudReport(req, res, next) {
+  const { pixKey, reporterBank, description } = req.body;
+  const errors = [];
+
+  if (!pixKey || typeof pixKey !== 'string' || pixKey.trim().length === 0) {
+    errors.push('Chave PIX é obrigatória');
+  }
+
+  if (!reporterBank || typeof reporterBank !== 'string' || reporterBank.trim().length === 0) {
+    errors.push('Banco denunciante é obrigatório');
+  }
+
+  if (!description || typeof description !== 'string' || description.trim().length < 10) {
+    errors.push('Descrição deve ter no mínimo 10 caracteres');
+  }
+
+  if (req.body.amount && (isNaN(req.body.amount) || req.body.amount < 0)) {
+    errors.push('Valor deve ser um número positivo');
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).json({ success: false, message: 'Dados inválidos', errors });
+  }
+
+  next();
+}
+
+// Middlewares ANTES de tudo
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 // Inicializar Firebase Admin (apenas uma vez)
-if (!admin.apps.length) {
-  try {
+let db;
+let firebaseInitialized = false;
+
+try {
+  if (!admin.apps.length) {
     const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT 
       ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
       : require('../backend/firebase-service-account.json');
@@ -22,17 +81,25 @@ if (!admin.apps.length) {
     });
 
     console.log('✅ Firebase Admin inicializado');
-  } catch (error) {
-    console.error('❌ Erro Firebase:', error.message);
   }
+  
+  db = admin.firestore();
+  firebaseInitialized = true;
+} catch (error) {
+  console.error('❌ Erro ao inicializar Firebase:', error.message);
+  firebaseInitialized = false;
 }
 
-const db = admin.firestore();
-
-// Middlewares
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Middleware para verificar Firebase
+function checkFirebase(req, res, next) {
+  if (!firebaseInitialized) {
+    return res.status(503).json({ 
+      success: false, 
+      message: 'Serviço temporariamente indisponível. Firebase não inicializado.' 
+    });
+  }
+  next();
+}
 
 // Cache
 const cache = new Map();
@@ -63,7 +130,7 @@ app.get('/health', (req, res) => {
 });
 
 // Criar denúncia
-app.post('/api/v1/fraud-reports', reportLimiter, validateFraudReport, async (req, res) => {
+app.post('/api/v1/fraud-reports', checkFirebase, reportLimiter, validateFraudReport, async (req, res) => {
   try {
     const { pixKey, reporterBank, description, amount, priority } = req.body;
 
@@ -106,7 +173,7 @@ app.post('/api/v1/fraud-reports', reportLimiter, validateFraudReport, async (req
 });
 
 // Listar denúncias
-app.get('/api/v1/fraud-reports', apiLimiter, async (req, res) => {
+app.get('/api/v1/fraud-reports', checkFirebase, apiLimiter, async (req, res) => {
   const cacheKey = `reports:${JSON.stringify(req.query)}`;
   const cached = getFromCache(cacheKey);
   
@@ -143,7 +210,7 @@ app.get('/api/v1/fraud-reports', apiLimiter, async (req, res) => {
 });
 
 // Buscar denúncia por ID
-app.get('/api/v1/fraud-reports/:id', apiLimiter, async (req, res) => {
+app.get('/api/v1/fraud-reports/:id', checkFirebase, apiLimiter, async (req, res) => {
   try {
     const doc = await db.collection('fraudReports').doc(req.params.id).get();
     
@@ -168,7 +235,7 @@ app.get('/api/v1/fraud-reports/:id', apiLimiter, async (req, res) => {
 });
 
 // Listar notificações
-app.get('/api/v1/notifications', apiLimiter, async (req, res) => {
+app.get('/api/v1/notifications', checkFirebase, apiLimiter, async (req, res) => {
   const cacheKey = `notifications:${JSON.stringify(req.query)}`;
   const cached = getFromCache(cacheKey);
   
@@ -204,7 +271,7 @@ app.get('/api/v1/notifications', apiLimiter, async (req, res) => {
 });
 
 // Dashboard Stats
-app.get('/api/v1/dashboard/stats', apiLimiter, async (req, res) => {
+app.get('/api/v1/dashboard/stats', checkFirebase, apiLimiter, async (req, res) => {
   const cached = getFromCache('stats');
   if (cached) return res.json(cached);
 
@@ -242,10 +309,23 @@ app.get('/api/v1/dashboard/stats', apiLimiter, async (req, res) => {
   }
 });
 
+// 404 Handler
+app.use((req, res, next) => {
+  res.status(404).json({ 
+    success: false, 
+    message: 'Endpoint não encontrado',
+    path: req.path 
+  });
+});
+
 // Error Handler
 app.use((err, req, res, next) => {
-  console.error('Erro:', err);
-  res.status(500).json({ success: false, message: 'Erro interno' });
+  console.error('Erro não tratado:', err);
+  res.status(err.status || 500).json({ 
+    success: false, 
+    message: err.message || 'Erro interno do servidor',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  });
 });
 
 module.exports = app;
