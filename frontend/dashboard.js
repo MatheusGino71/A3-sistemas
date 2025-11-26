@@ -3,7 +3,16 @@ class SentinelaPixDashboard {
     constructor() {
         this.currentPage = 'dashboard';
         this.isDarkMode = true;
-        this.apiUrl = 'http://localhost:3001/api/v1';
+        // Auto-detectar URL da API
+        const hostname = window.location.hostname;
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            this.apiUrl = 'http://localhost:3001/api/v1';
+            this.wsUrl = 'ws://localhost:3001/ws';
+        } else {
+            // Produção (Vercel)
+            this.apiUrl = `${window.location.origin}/api/v1`;
+            this.wsUrl = null; // WebSocket não disponível na Vercel
+        }
         this.refreshInterval = 5000; // 5 segundos
         this.autoRefreshEnabled = true;
         this.userId = this.getUserId();
@@ -40,15 +49,20 @@ class SentinelaPixDashboard {
 
     // Setup WebSocket connection for real-time notifications
     setupWebSocket() {
+        // WebSocket não disponível na Vercel
+        if (!this.wsUrl) {
+            console.log('⚠️ WebSocket não disponível (Vercel)');
+            return;
+        }
+        
         // Avoid multiple connection attempts
         if (this.wsConnecting) return;
         this.wsConnecting = true;
         
-        const wsUrl = 'ws://localhost:3001/ws';
-        console.log('🔌 Conectando ao WebSocket:', wsUrl);
+        console.log('🔌 Conectando ao WebSocket:', this.wsUrl);
         
         try {
-            this.ws = new WebSocket(wsUrl);
+            this.ws = new WebSocket(this.wsUrl);
             
             this.ws.onopen = () => {
                 console.log('✅ WebSocket conectado');

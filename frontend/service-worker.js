@@ -22,8 +22,7 @@ const STATIC_CACHE = [
 
 // URLs de API que devem usar estratégia Network First
 const API_URLS = [
-  '/api/v1/',
-  'http://localhost:3001/api/v1/'
+  '/api/v1/'
 ];
 
 // ==========================================

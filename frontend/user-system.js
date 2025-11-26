@@ -8,6 +8,17 @@ class NotificationSystem {
         this.reconnectAttempts = 0;
         this.maxReconnectAttempts = 5;
         this.fcmToken = null;
+        
+        // Auto-detecção do ambiente
+        const hostname = window.location.hostname;
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            this.apiUrl = 'http://localhost:3001/api/v1';
+            this.wsEnabled = true;
+        } else {
+            this.apiUrl = `${window.location.origin}/api/v1`;
+            this.wsEnabled = false; // No WebSocket on Vercel
+        }
+        
         this.init();
     }
 
@@ -27,6 +38,12 @@ class NotificationSystem {
 
     // WebSocket para notificações em tempo real
     initWebSocket() {
+        // WebSocket não disponível no Vercel
+        if (!this.wsEnabled) {
+            console.log('⚠️ WebSocket não disponível em ambiente de produção (Vercel)');
+            return;
+        }
+        
         try {
             const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const wsHost = window.location.hostname === 'localhost' ? 'localhost:3001' : window.location.host;
@@ -168,7 +185,7 @@ class NotificationSystem {
     async saveFCMToken(token) {
         try {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
-            const response = await fetch('http://localhost:3001/api/v1/users/fcm-token', {
+            const response = await fetch(`${this.apiUrl}/users/fcm-token`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -209,7 +226,7 @@ class NotificationSystem {
             }
 
             // Buscar notificações do backend
-            const response = await fetch(`http://localhost:3001/api/v1/notifications?userId=${user.uid || user.id}`);
+            const response = await fetch(`${this.apiUrl}/notifications?userId=${user.uid || user.id}`);
             if (response.ok) {
                 const data = await response.json();
                 this.notifications = data.notifications || [];
@@ -354,7 +371,7 @@ class NotificationSystem {
             this.renderNotifications();
             
             // Enviar para o backend
-            fetch(`http://localhost:3001/api/v1/notifications/${notificationId}/read`, {
+            fetch(`${this.apiUrl}/notifications/${notificationId}/read`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' }
             }).catch(err => console.log('Backend offline, mantendo estado local'));
@@ -367,7 +384,7 @@ class NotificationSystem {
         this.renderNotifications();
         
         // Enviar para o backend
-        fetch(`http://localhost:3001/api/v1/notifications/read-all`, {
+        fetch(`${this.apiUrl}/notifications/read-all`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' }
         }).catch(err => console.log('Backend offline, mantendo estado local'));
@@ -376,7 +393,7 @@ class NotificationSystem {
     async checkNewNotifications() {
         try {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
-            const response = await fetch(`http://localhost:3001/api/v1/notifications/check?userId=${user.uid || user.id}`);
+            const response = await fetch(`${this.apiUrl}/notifications/check?userId=${user.uid || user.id}`);
             
             if (response.ok) {
                 const data = await response.json();
