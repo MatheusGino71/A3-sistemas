@@ -2,14 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "zenit-core-api/pom.xml",
-      "use": "@vercel/java"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "zenit-core-api/$1"
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "zenit-frontend-java/src/main/webapp"
+      }
     }
   ]
 }

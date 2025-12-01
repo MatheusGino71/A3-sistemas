@@ -1,0 +1,8 @@
+{
+  "name": "zenit",
+  "version": "1.0.0",
+  "description": "Sistema Anti-Fraude PIX",
+  "scripts": {
+    "build": "echo 'Frontend estático'"
+  }
+}
