@@ -1,0 +1,5 @@
+com\zenit\core\controller\OcorrenciaController.class
+com\zenit\core\repository\OcorrenciaRepository.class
+com\zenit\core\model\Ocorrencia.class
+com\zenit\core\ZenitCoreApiApplication.class
+com\zenit\core\service\OcorrenciaService.class

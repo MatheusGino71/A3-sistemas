@@ -1,0 +1,11 @@
+### Exemplo de requisição para registrar uma ocorrência (POST)
+POST http://localhost:8080/ocorrencias
+Content-Type: application/json
+
+{
+  "chavePixGolpista": "chave-exemplo@pix.com.br",
+  "valor": 6000.0
+}
+
+### Exemplo de requisição para consultar uma ocorrência (GET)
+GET http://localhost:8080/ocorrencias/1

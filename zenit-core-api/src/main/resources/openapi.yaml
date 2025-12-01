@@ -1,0 +1,75 @@
+openapi: 3.0.1
+info:
+  title: ZENIT Core API
+  version: 1.0.0
+  description: API para registro e consulta de ocorrências de golpes via PIX.
+paths:
+  /ocorrencias:
+    post:
+      summary: Registrar nova ocorrência
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OcorrenciaRequest'
+      responses:
+        '200':
+          description: Ocorrência registrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ocorrencia'
+    get:
+      summary: Listar todas as ocorrências
+      responses:
+        '200':
+          description: Lista de ocorrências
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ocorrencia'
+  /ocorrencias/{id}:
+    get:
+      summary: Consultar ocorrência por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ocorrência encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ocorrencia'
+components:
+  schemas:
+    OcorrenciaRequest:
+      type: object
+      properties:
+        chavePixGolpista:
+          type: string
+        valor:
+          type: number
+      required:
+        - chavePixGolpista
+        - valor
+    Ocorrencia:
+      type: object
+      properties:
+        id:
+          type: integer
+        chavePixGolpista:
+          type: string
+        valor:
+          type: number
+        status:
+          type: string
+        dataOcorrencia:
+          type: string
+          format: date-time

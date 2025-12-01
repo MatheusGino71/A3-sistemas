@@ -1,0 +1,24 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build zenit-core-api (backend)",
+			"type": "shell",
+			"command": "mvn clean package",
+			"args": [],
+			"problemMatcher": [
+				"$javac"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Build zenit-core-api (backend)",
+			"type": "shell",
+			"command": "mvn clean package",
+			"problemMatcher": [
+				"$javac"
+			],
+			"group": "build"
+		}
+	]
+}

@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: zenit
+      POSTGRES_USER: zenit
+      POSTGRES_PASSWORD: zenit123
+    ports:
+      - "5432:5432"
+    networks:
+      - zenit-net
+
+  zenit-core-api:
+    build: ./zenit-core-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/zenit
+      SPRING_DATASOURCE_USERNAME: zenit
+      SPRING_DATASOURCE_PASSWORD: zenit123
+      FRAUD_ANALYZER_URL: http://zenit-fraud-analyzer:8081
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - zenit-fraud-analyzer
+    networks:
+      - zenit-net
+
+  zenit-fraud-analyzer:
+    build: ./zenit-fraud-analyzer
+    ports:
+      - "8081:8081"
+    networks:
+      - zenit-net
+
+networks:
+  zenit-net:

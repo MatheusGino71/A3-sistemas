@@ -1,0 +1,4 @@
+com\zenit\fraudanalyzer\model\Suspeito.class
+com\zenit\fraudanalyzer\ZenitFraudAnalyzerApplication.class
+com\zenit\fraudanalyzer\controller\FraudAnalyzerController.class
+com\zenit\fraudanalyzer\service\FraudAnalyzerService.class
