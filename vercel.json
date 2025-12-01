@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "zenit-core-api/pom.xml",
+      "use": "@vercel/java"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "zenit-core-api/$1"
+    }
+  ],
+  "env": {
+    "SPRING_DATASOURCE_URL": "@spring_datasource_url",
+    "SPRING_DATASOURCE_USERNAME": "@spring_datasource_username",
+    "SPRING_DATASOURCE_PASSWORD": "@spring_datasource_password"
+  }
+}

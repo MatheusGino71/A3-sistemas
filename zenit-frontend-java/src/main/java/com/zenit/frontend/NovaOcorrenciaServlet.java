@@ -13,9 +13,10 @@ public class NovaOcorrenciaServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String descricao = req.getParameter("descricao");
         String data = req.getParameter("data");
-        // Aqui será feita a chamada à API para salvar a ocorrência
-        // Exemplo: salvar localmente ou simular sucesso
-        // Após salvar, redireciona para a lista
+        
+        // TODO: Implementar chamada à API REST para salvar a ocorrência
+        // String apiUrl = "http://localhost:8080/api/ocorrencias";
+        
         resp.sendRedirect("/ocorrencias");
     }
 }

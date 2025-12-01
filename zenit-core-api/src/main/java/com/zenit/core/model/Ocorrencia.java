@@ -21,7 +21,7 @@ public class Ocorrencia {
     @Column(name = "tipo_chave", length = 50)
     private String tipoChave; // CPF, CNPJ, EMAIL, TELEFONE, ALEATORIA
     
-    @Column(name = "valor", precision = 10, scale = 2)
+    @Column(name = "valor")
     private Double valor;
     
     @Column(name = "status", length = 50, nullable = false)
