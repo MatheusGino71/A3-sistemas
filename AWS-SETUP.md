@@ -177,4 +177,5 @@ Se continuar com problemas:
 ---
 
 **Última atualização**: 01/12/2025
-**Status**: Aguardando configuração Security Group AWS
+**Status**: Configuração AWS em progresso - Aguardando Security Group
+**Projeto**: Pronto para produção - Deploy disponível na Vercel (veja DEPLOY.md)
